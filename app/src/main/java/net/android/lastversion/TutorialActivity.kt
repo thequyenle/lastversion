@@ -27,6 +27,6 @@ class TutorialActivity : AppCompatActivity() {
                 startActivity(Intent(this, PermissionActivity::class.java))
                 finish()
             }//do ra e mon
-        }
+        }//nhanhB
     }
 }
