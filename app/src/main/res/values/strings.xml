@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">lastversion</string>
+
+    <!-- Splash -->
+    <string name="splash_welcome">Welcome to the App</string>
+
+    <!-- Language -->
+    <string name="select_language">Select your language</string>
+    <string name="done">Done</string>
+
+    <!-- Tutorial -->
+    <string name="next">Next</string>
+    <string name="slide1">Welcome</string>
+    <string name="slide2">Explore Features</string>
+    <string name="slide3">Get Started</string>
+
+    <!-- Permission -->
+    <string name="grant_permission">Grant permission to continue</string>
+
+
+    <!-- Main -->
+    <string name="home_screen">Welcome to Home Screen</string>
+</resources>
