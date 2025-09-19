@@ -29,5 +29,6 @@ class TutorialActivity : AppCompatActivity() {
             }//do ra e mon
         }//nhanhB
         //nhanhC
+        //coutinue nhanhC
     }
 }
