@@ -43,7 +43,14 @@ class PermissionActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(req: Int, p: Array<out String>, res: IntArray) {
         super.onRequestPermissionsResult(req, p, res)
-        if (req == REQ_CODE) continueToHome()
+        if (req == REQ_CODE) {
+            if (res.isNotEmpty() && res[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission was granted
+                continueToHome()
+            } else {
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun continueToHome() {

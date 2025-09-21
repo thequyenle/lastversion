@@ -26,9 +26,7 @@ class TutorialActivity : AppCompatActivity() {
                     .edit().putBoolean("intro_done", true).apply()
                 startActivity(Intent(this, PermissionActivity::class.java))
                 finish()
-            }//do ra e mon
-        }//nhanhB
-        //nhanhC
-        //coutinue nhanhC
+            }
+        }
     }
 }
