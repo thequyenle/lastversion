@@ -1,60 +1,91 @@
 package net.android.lastversion.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.*
+import androidx.fragment.app.Fragment
 import net.android.lastversion.R
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [TimerFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class TimerFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var hourPicker: NumberPicker
+    private lateinit var minutePicker: NumberPicker
+    private lateinit var secondPicker: NumberPicker
+    private lateinit var btnStart: Button
+    private lateinit var switchKeepScreen: Switch
+    private var countDownTimer: CountDownTimer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_timer, container, false)
+        val view = inflater.inflate(R.layout.fragment_timer, container, false)
+
+        // Gán view
+        hourPicker = view.findViewById(R.id.npHour)
+        minutePicker = view.findViewById(R.id.npMinute)
+        secondPicker = view.findViewById(R.id.npSecond)
+        btnStart = view.findViewById(R.id.btnStartTimer)
+        switchKeepScreen = view.findViewById(R.id.switchKeepScreen)
+
+        // Set giá trị giới hạn
+        hourPicker.minValue = 0
+        hourPicker.maxValue = 99
+        minutePicker.minValue = 0
+        minutePicker.maxValue = 59
+        secondPicker.minValue = 0
+        secondPicker.maxValue = 59
+
+        btnStart.setOnClickListener {
+            startTimer()
+        }
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment TimerFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            TimerFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun startTimer() {
+        val totalMillis = (
+                hourPicker.value * 3600 +
+                        minutePicker.value * 60 +
+                        secondPicker.value
+                ) * 1000L
+
+        if (totalMillis <= 0) {
+            Toast.makeText(requireContext(), "Please set time", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (switchKeepScreen.isChecked) {
+            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+
+        btnStart.isEnabled = false
+
+        countDownTimer = object : CountDownTimer(totalMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val hours = (millisUntilFinished / 1000) / 3600
+                val minutes = ((millisUntilFinished / 1000) % 3600) / 60
+                val seconds = (millisUntilFinished / 1000) % 60
+
+                hourPicker.value = hours.toInt()
+                minutePicker.value = minutes.toInt()
+                secondPicker.value = seconds.toInt()
             }
+
+            override fun onFinish() {
+                Toast.makeText(requireContext(), "Time’s up!", Toast.LENGTH_SHORT).show()
+                btnStart.isEnabled = true
+                requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
+        }.start()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        countDownTimer?.cancel()
     }
 }
