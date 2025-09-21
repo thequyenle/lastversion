@@ -42,6 +42,9 @@ dependencies {
     implementation ("androidx.recyclerview:recyclerview:1.3.1")
     // Preference
     implementation ("androidx.preference:preference-ktx:1.2.1")
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.5")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.7.5")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
