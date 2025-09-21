@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/alarmFragment"
+
+        android:title="Alarm"/>
+    <item
+        android:id="@+id/clockFragment"
+
+        android:title="Clock"/>
+    <item
+        android:id="@+id/stopwatchFragment"
+
+        android:title="Stopwatch"/>
+    <item
+        android:id="@+id/timerFragment"
+
+        android:title="Timer"/>
+    <item
+        android:id="@+id/settingsFragment"
+
+        android:title="Settings"/>
+</menu>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/alarmFragment">
+
+    <fragment
+        android:id="@+id/alarmFragment"
+        android:name="net.android.lastversion.fragment.AlarmFragment"
+        android:label="Alarm" />
+
+    <fragment
+        android:id="@+id/clockFragment"
+        android:name="net.android.lastversion.fragment.ClockFragment"
+        android:label="Clock" />
+
+    <fragment
+        android:id="@+id/stopwatchFragment"
+        android:name="net.android.lastversion.fragment.StopwatchFragment"
+        android:label="Stopwatch" />
+
+    <fragment
+        android:id="@+id/timerFragment"
+        android:name="net.android.lastversion.fragment.TimerFragment"
+        android:label="Timer" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="net.android.lastversion.fragment.SettingsFragment"
+        android:label="Settings" />
+</navigation>

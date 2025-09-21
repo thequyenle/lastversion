@@ -21,7 +21,7 @@ class SplashActivity : AppCompatActivity() {
                 !prefs.getBoolean("lang_done", false) -> startActivity(Intent(this, LanguageActivity::class.java))
                 !prefs.getBoolean("intro_done", false) -> startActivity(Intent(this, TutorialActivity::class.java))
                 !prefs.getBoolean("perm_done", false) -> startActivity(Intent(this, PermissionActivity::class.java))
-                else -> startActivity(Intent(this, MainActivity::class.java))
+                else -> startActivity(Intent(this, HomeActivity::class.java))
             }
             finish()
         }, 2000)
