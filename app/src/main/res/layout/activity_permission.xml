@@ -56,4 +56,20 @@
         android:checked="false"
         tools:layout_editor_absoluteX="163dp"
         tools:layout_editor_absoluteY="269dp" />
+    <Switch
+        android:id="@+id/switchNotification"
+        android:layout_width="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.2"
+        android:layout_height="wrap_content"
+        android:text="Notification Permission"
+        android:checked="false"
+        android:visibility="gone"
+        tools:layout_editor_absoluteX="163dp"
+        tools:layout_editor_absoluteY="269dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
