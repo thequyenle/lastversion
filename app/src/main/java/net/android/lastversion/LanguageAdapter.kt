@@ -2,16 +2,17 @@ package net.android.lastversion
 
 
 import android.view.*
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import net.android.lastversion.data.LanguageItem
 
-class LanguageAdapter(private val items: List<String>,
-                      private val onItemSelected: (String) -> Unit
-) :
-    RecyclerView.Adapter<LanguageAdapter.LanguageViewHolder>() {
-
-    private var selectedPosition = -1
+class LanguageAdapter(
+    private val items: MutableList<LanguageItem>,
+    private val onItemSelected: (LanguageItem) -> Unit
+) : RecyclerView.Adapter<LanguageAdapter.LanguageViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LanguageViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_language, parent, false)
@@ -19,32 +20,27 @@ class LanguageAdapter(private val items: List<String>,
     }
 
     override fun onBindViewHolder(holder: LanguageViewHolder, position: Int) {
-        //  Dùng position ngay lập tức (ổn)
-        holder.bind(items[position], position == selectedPosition)
-
-        //  Dùng adapterPosition trong onClick để tránh sai lệch
+        val item = items[position]
+        holder.bind(item)
         holder.itemView.setOnClickListener {
-            val currentPos = holder.adapterPosition
-            if (currentPos == RecyclerView.NO_POSITION) return@setOnClickListener
-
-            val previousPosition = selectedPosition
-            selectedPosition = currentPos
-
-            notifyItemChanged(previousPosition)
-            notifyItemChanged(currentPos)
-
-            onItemSelected(items[currentPos])
+            items.forEachIndexed { index, lang -> lang.isSelected = index == position }
+            notifyDataSetChanged()
+            onItemSelected(item)
         }
     }
 
     override fun getItemCount(): Int = items.size
 
     class LanguageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvLang = itemView.findViewById<TextView>(R.id.tvLang)
-        private val radio: RadioButton = itemView.findViewById(R.id.radio)
-        fun bind(language: String, isSelected: Boolean) {
-            tvLang.text = language
-            radio.isChecked = isSelected
+        private val tvLanguage: TextView = itemView.findViewById(R.id.tvLanguage)
+        private val ivFlag: ImageView = itemView.findViewById(R.id.ivLanguage)
+        private val radio: ImageButton = itemView.findViewById(R.id.radio)
+
+        fun bind(item: LanguageItem) {
+            tvLanguage.text = item.name
+            ivFlag.setImageResource(item.flagResId)
+            val icon = if (item.isSelected) R.drawable.ic_select_checked else R.drawable.ic_select_unchecked
+            radio.setImageResource(icon)
         }
     }
 }

@@ -105,7 +105,7 @@ class PermissionActivity : AppCompatActivity() {
     private fun continueToHome() {
         getSharedPreferences("onboarding_prefs", MODE_PRIVATE)
             .edit().putBoolean("perm_done", true).apply()
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, HomeActivity::class.java))
         finish()
     }
 }

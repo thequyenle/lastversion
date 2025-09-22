@@ -4,10 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,6 +18,9 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         val prefs = getSharedPreferences("onboarding_prefs", MODE_PRIVATE)
+        val progress = findViewById<ImageView>(R.id.ivProgressbar)
+        val rotate = AnimationUtils.loadAnimation(this, R.anim.rotate)
+        progress.startAnimation(rotate)
 
         Handler(Looper.getMainLooper()).postDelayed({
             when {
@@ -24,6 +30,6 @@ class SplashActivity : AppCompatActivity() {
                 else -> startActivity(Intent(this, HomeActivity::class.java))
             }
             finish()
-        }, 2000)
+        }, 4000)
     }
 }
