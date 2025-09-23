@@ -1,62 +1,240 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/timerLayout"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="horizontal"
-    android:padding="16dp">
-
-    <!-- Giờ -->
-
-    <!-- Phút -->
-
-    <NumberPicker
-        android:id="@+id/npHour"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <NumberPicker
-        android:id="@+id/npMinute"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-
-    <!-- Giây -->
-    <NumberPicker
-        android:id="@+id/npSecond"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-         />
-
-    <!-- Nút start -->
-
-    <!-- Keep screen on -->
-
-    <Button
-        android:id="@+id/btnStartTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Start timer" />
+    android:padding="24dp">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/timerRoot"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="24dp">
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
+        <!-- Title -->
         <TextView
-            android:text="Keep my screen on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <Switch
-            android:id="@+id/switchKeepScreen"
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="false"
-            android:layout_marginStart="16dp"/>
+            android:text="Timer"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:layout_marginBottom="18dp" />
+
+        <!-- ========== STATE 1: PICKERS ========== -->
+        <LinearLayout
+            android:id="@+id/layoutPickers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <NumberPicker
+                    android:id="@+id/npHour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <NumberPicker
+                    android:id="@+id/npMinute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <NumberPicker
+                    android:id="@+id/npSecond"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnStartTimer"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="Start Timer"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="#76E0C1"
+                android:textColor="#FFFFFF" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Keep my screen on" />
+
+                <Switch
+                    android:id="@+id/switchKeepScreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ========== STATE 2: RUNNING ========== -->
+        <LinearLayout
+            android:id="@+id/layoutRunning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:layout_width="300dp"
+                android:layout_height="300dp">
+
+                <net.android.lastversion.view.CircleCountdownView
+                    android:id="@+id/progressRing"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:id="@+id/layoutTimerText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <!-- Hours -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="14dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hours"
+                            android:textColor="#999999"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tvRH"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="00"
+                            android:textStyle="bold"
+                            android:textSize="22sp" />
+                    </LinearLayout>
+
+                    <!-- Minutes -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginHorizontal="14dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Minutes"
+                            android:textColor="#999999"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tvRM"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="00"
+                            android:textStyle="bold"
+                            android:textSize="22sp" />
+                    </LinearLayout>
+
+                    <!-- Seconds -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="14dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Seconds"
+                            android:textColor="#999999"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tvRS"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="00"
+                            android:textStyle="bold"
+                            android:textSize="22sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="Stop"
+                android:layout_marginTop="18dp"
+                android:backgroundTint="#76E0C1"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/btnRestart"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="Restart"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="#D8F6F0"
+                android:textColor="#555555" />
+        </LinearLayout>
+
+        <!-- ========== STATE 3: TIME'S UP ========== -->
+        <LinearLayout
+            android:id="@+id/layoutTimesUp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="60dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvTimesUpTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time’s up!"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTimesUpSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5 seconds"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/btnStopTimesUp"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="Stop"
+                android:layout_marginTop="18dp"
+                android:backgroundTint="#76E0C1"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</ScrollView>

@@ -7,11 +7,13 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
-
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- (Khuyến nghị) cho Alarm exact khi máy Doze / service bị kill -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -22,6 +24,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Lastversion"
         tools:targetApi="31">
+        <!-- Foreground Service để chạy timer -->
+        <service
+            android:name=".service.TimerService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+        <!-- mediaPlayback: hợp lý nếu phát âm báo khi hết giờ -->
+
+        <!-- Receiver bắn khi hết giờ (AlarmManager fallback) -->
+        <receiver
+            android:name=".receiver.TimeUpReceiver"
+            android:exported="false" />
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
