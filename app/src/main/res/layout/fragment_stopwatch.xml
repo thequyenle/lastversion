@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
     android:padding="24dp"
     android:background="#F8FFFD">
 
+    <!-- Tiêu đề -->
     <TextView
         android:id="@+id/tvStopwatchTitle"
         android:layout_width="wrap_content"
@@ -14,89 +13,156 @@
         android:text="Stopwatch"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="32dp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
 
-    <!-- Thời gian hiển thị -->
+    <!-- Đồng hồ nền -->
+    <ImageView
+        android:id="@+id/imgStopwatch"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@id/tvStopwatchTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/img_stopwatch" />
+
+    <!-- Thời gian chồng lên giữa đồng hồ -->
     <LinearLayout
+        android:id="@+id/layoutTimerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:layout_below="@id/imgStopwatch"
+        android:layout_marginTop="-160dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:visibility="gone">
 
-        <TextView
-            android:id="@+id/tvHour"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-
-            android:text="00"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            android:layout_marginHorizontal="8dp"/>
-
-        <TextView
-            android:text=":"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:textSize="32sp"
-            android:textStyle="bold" />
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/tvMinute"
-            android:text="00"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            android:layout_marginHorizontal="8dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hours"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:layout_gravity="center" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvHour"
+                android:text="00"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="16dp"
+                android:layout_gravity="end" />
+        </LinearLayout>
 
-        <TextView
-            android:text=":"
-            android:textSize="32sp"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content"
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/tvSecond"
-            android:text="00"
-            android:layout_height="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Minutes"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:layout_gravity="center" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvMinute"
+                android:text="00"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginHorizontal="16dp"
+                android:layout_gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            android:layout_marginHorizontal="8dp"/>
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seconds"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:layout_gravity="center" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvSecond"
+                android:text="00"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_gravity="start" />
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- Nút Start / Stop / Reset -->
+    <!-- Nút Start -->
+    <Button
+        android:id="@+id/btnStart"
+        android:text="Start"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#76E0C1"
+        android:textColor="#FFFFFF"
+        android:layout_below="@id/imgStopwatch"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:visibility="visible" />
+
+    <!-- Nút Stop -->
+    <Button
+        android:id="@+id/btnStop"
+        android:text="Stop"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#76E0C1"
+        android:textColor="#FFFFFF"
+        android:layout_below="@id/imgStopwatch"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:visibility="gone" />
+
+    <!-- Nút Continue + Restart -->
     <LinearLayout
+        android:id="@+id/layoutContinueRestart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="32dp">
+        android:layout_below="@id/imgStopwatch"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <Button
-            android:id="@+id/btnStart"
-            android:text="Start"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnContinue"
+            android:text="Continue"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:backgroundTint="#76E0C1"
             android:textColor="#FFFFFF"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginBottom="12dp" />
 
         <Button
-            android:id="@+id/btnStop"
-            android:text="Stop"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnRestart"
+            android:text="Restart"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#FFA726"
-            android:textColor="#FFFFFF"
-            android:layout_marginEnd="16dp"/>
-
-        <Button
-            android:id="@+id/btnReset"
-            android:text="Reset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#EF5350"
-            android:textColor="#FFFFFF"/>
+            android:backgroundTint="#D8F6F0"
+            android:textColor="#555555" />
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

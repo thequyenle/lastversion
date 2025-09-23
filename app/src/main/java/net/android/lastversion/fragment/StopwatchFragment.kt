@@ -16,7 +16,10 @@ class StopwatchFragment : Fragment() {
     private lateinit var tvSecond: TextView
     private lateinit var btnStart: Button
     private lateinit var btnStop: Button
-    private lateinit var btnReset: Button
+    private lateinit var btnContinue: Button
+    private lateinit var btnRestart: Button
+    private lateinit var layoutContinueRestart: View
+    private lateinit var layoutTimerText: View
 
     private var seconds = 0
     private var isRunning = false
@@ -38,30 +41,46 @@ class StopwatchFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_stopwatch, container, false)
 
+        // TextViews
         tvHour = view.findViewById(R.id.tvHour)
         tvMinute = view.findViewById(R.id.tvMinute)
         tvSecond = view.findViewById(R.id.tvSecond)
+
+        // Buttons
         btnStart = view.findViewById(R.id.btnStart)
         btnStop = view.findViewById(R.id.btnStop)
-        btnReset = view.findViewById(R.id.btnReset)
-
+        btnContinue = view.findViewById(R.id.btnContinue)
+        btnRestart = view.findViewById(R.id.btnRestart)
+        layoutContinueRestart = view.findViewById(R.id.layoutContinueRestart)
+        layoutTimerText = view.findViewById(R.id.layoutTimerText)
         btnStart.setOnClickListener {
-            if (!isRunning) {
-                isRunning = true
-                handler.post(runnable)
-            }
+            isRunning = true
+            handler.post(runnable)
+            switchToStopUI()
+            layoutTimerText.visibility = View.VISIBLE
+
         }
 
         btnStop.setOnClickListener {
             isRunning = false
+            switchToContinueRestartUI()
         }
 
-        btnReset.setOnClickListener {
+        btnContinue.setOnClickListener {
+            isRunning = true
+            handler.post(runnable)
+            switchToStopUI()
+        }
+
+        btnRestart.setOnClickListener {
             isRunning = false
             seconds = 0
             updateTimerText()
+            switchToStartUI()
+
         }
 
+        updateTimerText()
         return view
     }
 
@@ -75,8 +94,28 @@ class StopwatchFragment : Fragment() {
         tvSecond.text = String.format("%02d", secs)
     }
 
+    private fun switchToStartUI() {
+        btnStart.visibility = View.VISIBLE
+        btnStop.visibility = View.GONE
+        layoutContinueRestart.visibility = View.GONE
+        layoutTimerText.visibility = View.GONE
+    }
+
+    private fun switchToStopUI() {
+        btnStart.visibility = View.GONE
+        btnStop.visibility = View.VISIBLE
+        layoutContinueRestart.visibility = View.GONE
+    }
+
+    private fun switchToContinueRestartUI() {
+        btnStart.visibility = View.GONE
+        btnStop.visibility = View.GONE
+        layoutContinueRestart.visibility = View.VISIBLE
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         handler.removeCallbacks(runnable)
     }
 }
+
