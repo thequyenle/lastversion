@@ -1,12 +1,19 @@
 package net.android.lastversion
 
 import android.view.*
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import net.android.lastversion.data.IntroPage
 
 
-class TutorialAdapter(private val items: List<String>) :
-    RecyclerView.Adapter<TutorialAdapter.TutorialViewHolder>() {
+class TutorialAdapter(private val pages: List<IntroPage>) : RecyclerView.Adapter<TutorialAdapter.TutorialViewHolder>() {
+
+    inner class TutorialViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imgIntro: ImageView = itemView.findViewById(R.id.imgIntro)
+        val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
+        val tvDescription: TextView = itemView.findViewById(R.id.tvContent)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TutorialViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_tutorial, parent, false)
@@ -14,15 +21,11 @@ class TutorialAdapter(private val items: List<String>) :
     }
 
     override fun onBindViewHolder(holder: TutorialViewHolder, position: Int) {
-        holder.bind(items[position])
+        val page = pages[position]
+        holder.imgIntro.setImageResource(page.imageResId)
+        holder.tvTitle.text = page.title
+        holder.tvDescription.text = page.description
     }
 
-    override fun getItemCount(): Int = items.size
-
-    class TutorialViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvContent = itemView.findViewById<TextView>(R.id.tvContent)
-        fun bind(text: String) {
-            tvContent.text = text
-        }
-    }
+    override fun getItemCount(): Int = pages.size
 }

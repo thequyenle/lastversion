@@ -2,22 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/alarmFragment"
-
+        android:icon="@drawable/ic_alarm_selector"
         android:title="Alarm"/>
     <item
         android:id="@+id/clockFragment"
-
+        android:icon="@drawable/ic_clock_selector"
         android:title="Clock"/>
     <item
         android:id="@+id/stopwatchFragment"
-
+        android:icon="@drawable/ic_stopwatch_selector"
         android:title="Stopwatch"/>
     <item
         android:id="@+id/timerFragment"
-
+        android:icon="@drawable/ic_timer_selector"
         android:title="Timer"/>
     <item
         android:id="@+id/settingsFragment"
-
+        android:icon="@drawable/ic_setting_selector"
         android:title="Settings"/>
 </menu>
