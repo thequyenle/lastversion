@@ -1,187 +1,198 @@
-package net.android.lastversion.service
+package net.android.last.service
 
-// app/src/main/java/…/service/TimerService.kt
-
-
-import android.app.*
-import android.content.Context
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Intent
-import android.graphics.Color
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.*
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import net.android.lastversion.R
-import net.android.lastversion.receiver.TimeUpReceiver
-import java.util.concurrent.TimeUnit
 
-/**
- * Foreground Service chạy timer:
- * - Hiển thị notification đang chạy (không bị hệ thống dọn dễ dàng).
- * - Cập nhật mỗi giây số còn lại trên notification.
- * - Đến giờ: phát thông báo Time’s up, kêu/rung.
- * - Kèm AlarmManager fallback: nếu service bị kill, Alarm vẫn bắn Time’s up.
- */
 class TimerService : Service() {
 
     companion object {
-        const val CHANNEL_ID = "timer_channel"
-        const val NOTI_ID = 1001
+        // Actions
+        const val ACTION_START = "ACTION_START"
+        const val ACTION_STOP = "ACTION_STOP"
+        const val ACTION_CONTINUE = "ACTION_CONTINUE"
+        const val ACTION_RESTART = "ACTION_RESTART"
+        const val ACTION_STOP_SOUND = "ACTION_STOP_SOUND"
 
-        const val ACTION_START = "TimerService.ACTION_START"
-        const val ACTION_STOP = "TimerService.ACTION_STOP"
+        // Extras
+        const val EXTRA_SECONDS = "EXTRA_SECONDS"
+        const val EXTRA_SOUND_URI = "EXTRA_SOUND_URI"
+        const val EXTRA_SOUND_RES_ID = "EXTRA_SOUND_RES_ID"
 
-        const val EXTRA_DURATION_MS = "duration_ms"
+        // Messenger messages
+        const val MSG_REGISTER_CLIENT = 100
+        const val MSG_UNREGISTER_CLIENT = 101
+        const val MSG_TICK = 102
+        const val MSG_FINISHED = 103
     }
 
-    private var endAtElapsed: Long = 0L            // mốc kết thúc theo elapsedRealtime
-    private var countDown: CountDownTimer? = null  // cập nhật mỗi giây
+    // ===== State
+    private var totalSeconds = 0
+    private var currentSeconds = 0
+    private var isPaused = false
 
-    override fun onBind(intent: Intent?) = null
+    // ===== Sound
+    private var soundUri: Uri? = null
+    private var soundResId: Int? = null
+    private var mediaPlayer: MediaPlayer? = null
 
-    override fun onCreate() {
-        super.onCreate()
-        createNotificationChannel() // Bắt buộc Android 8+
-    }
+    // ===== Timer loop
+    private var handler: Handler? = null
+    private var runnable: Runnable? = null
+
+    // ===== IPC
+    private var clientMessenger: Messenger? = null
+    private val messenger = Messenger(object : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                MSG_REGISTER_CLIENT -> {
+                    clientMessenger = msg.replyTo
+                    // Gửi tick đầu để Fragment cập nhật ngay
+                    sendTick()
+                }
+                MSG_UNREGISTER_CLIENT -> if (clientMessenger == msg.replyTo) {
+                    clientMessenger = null
+                }
+            }
+        }
+    })
+
+    override fun onBind(intent: Intent?): IBinder = messenger.binder
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START -> {
-                val duration = intent.getLongExtra(EXTRA_DURATION_MS, 0L)
-                if (duration > 0L) startTimer(duration)
+                totalSeconds = intent.getIntExtra(EXTRA_SECONDS, 0)
+                currentSeconds = totalSeconds
+
+                // Nhạc: nhận cả Uri hoặc resId
+                val uriStr = intent.getStringExtra(EXTRA_SOUND_URI)
+                val resId = intent.getIntExtra(EXTRA_SOUND_RES_ID, -1)
+                soundUri = uriStr?.let { Uri.parse(it) }
+                soundResId = if (resId != -1) resId else null
+
+                startForegroundWithNotification()
+                startCountdown()
             }
-            ACTION_STOP -> {
-                stopSelfSafely()
+            ACTION_STOP -> isPaused = true
+            ACTION_CONTINUE -> {
+                isPaused = false
+                handler?.post(runnable!!)
+            }
+            ACTION_RESTART, ACTION_STOP_SOUND -> {
+                stopSound()
+                stopSelf()
             }
         }
-        // START_STICKY: nếu hệ thống kill vì thiếu RAM, service có thể được tạo lại.
         return START_STICKY
     }
 
-    /** Bắt đầu timer + vào foreground + set Alarm fallback */
-    private fun startTimer(durationMs: Long) {
-        // Tính mốc kết thúc theo elapsedRealtime (không lệch khi người dùng đổi giờ hệ thống)
-        endAtElapsed = SystemClock.elapsedRealtime() + durationMs
-
-        // Vào foreground với notification ban đầu
-        startForeground(NOTI_ID, buildNotification(durationMs))
-
-        // Hẹn Alarm bắn đúng lúc hết giờ (fallback khi service bị kill)
-        scheduleAlarm(endAtElapsed)
-
-        // Huỷ timer cũ nếu có
-        countDown?.cancel()
-        // Tạo CountDownTimer để tự update notification mỗi giây
-        countDown = object : CountDownTimer(durationMs, 1000L) {
-            override fun onTick(msLeft: Long) {
-                // Cập nhật notification hiển thị thời gian còn lại
-                val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                nm.notify(NOTI_ID, buildNotification(msLeft))
+    private fun startCountdown() {
+        handler = Handler(Looper.getMainLooper())
+        runnable = object : Runnable {
+            override fun run() {
+                when {
+                    !isPaused && currentSeconds > 0 -> {
+                        currentSeconds--
+                        sendTick()
+                        handler?.postDelayed(this, 1000)
+                    }
+                    currentSeconds == 0 -> {
+                        sendTick()              // tick cuối (0)
+                        notifyFinished()
+                        playSound(soundUri, soundResId)
+                        // dừng loop — chờ người dùng bấm Stop/Restart
+                    }
+                    else -> {
+                        // đang pause → kiểm tra lại sau
+                        handler?.postDelayed(this, 250)
+                    }
+                }
             }
-
-            override fun onFinish() {
-                // Đích đến: hiển thị thông báo "Time’s up!" + âm/rung (do Receiver phụ trách)
-                triggerTimeUpNow()
-                stopSelfSafely()
-            }
-        }.start()
+        }
+        handler?.post(runnable!!)
     }
 
-    /** Tạo/Update notification đếm ngược */
-    private fun buildNotification(msLeft: Long): Notification {
-        val remaining = format(msLeft)
-
-        // PendingIntent mở app (hoặc activity chính) khi chạm
-        val contentIntent = PendingIntent.getActivity(
-            this, 0,
-            packageManager.getLaunchIntentForPackage(packageName),
-            PendingIntent.FLAG_UPDATE_CURRENT or pendingMutable()
-        )
-
-        // PendingIntent cho nút STOP ngay trên notification
-        val stopIntent = Intent(this, TimerService::class.java).apply { action = ACTION_STOP }
-        val stopPI = PendingIntent.getService(
-            this, 1, stopIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or pendingMutable()
-        )
-
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_timer_enable)           // TODO: icon của bạn
-            .setContentTitle(getString(R.string.app_name))
-            .setContentText("Time remaining: $remaining")
-            .setOngoing(true)                            // Không cho vuốt tắt
-            .setOnlyAlertOnce(true)                      // Update êm
-            .setContentIntent(contentIntent)
-            .addAction(R.drawable.ic_stopwatch_enable, "Stop", stopPI)
-            .setColor(Color.parseColor("#76E0C1"))
-            .build()
-    }
-
-    /** Channel cho Android 8+ */
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val ch = NotificationChannel(
-                CHANNEL_ID, "Timer",
-                NotificationManager.IMPORTANCE_LOW  // thấp để không kêu mỗi lần update
-            )
-            ch.description = "Foreground timer channel"
-            val nm = getSystemService(NotificationManager::class.java)
-            nm.createNotificationChannel(ch)
+    private fun sendTick() {
+        try {
+            clientMessenger?.send(Message.obtain(null, MSG_TICK, currentSeconds, totalSeconds))
+        } catch (e: RemoteException) {
+            Log.w("TimerService", "sendTick failed; clearing client", e)
+            clientMessenger = null
         }
     }
 
-    /** Hẹn Alarm đúng lúc hết giờ (fallback nếu service bị kill/Doze) */
-    private fun scheduleAlarm(endAtElapsed: Long) {
-        val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, TimeUpReceiver::class.java)
-        val pi = PendingIntent.getBroadcast(
-            this, 100, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or pendingImmutable()
-        )
-        am.setExactAndAllowWhileIdle(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            endAtElapsed,
-            pi
-        )
+    private fun notifyFinished() {
+        try {
+            clientMessenger?.send(Message.obtain(null, MSG_FINISHED, 0, totalSeconds))
+        } catch (_: Exception) {}
     }
 
-    /** Gửi broadcast ngay lập tức để TimeUpReceiver hiển thị cảnh báo */
-    private fun triggerTimeUpNow() {
-        sendBroadcast(Intent(this, TimeUpReceiver::class.java))
+    private fun playSound(uri: Uri? = null, resId: Int? = null) {
+        try {
+            if (mediaPlayer != null) return
+            mediaPlayer = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build()
+                )
+                when {
+                    uri != null -> setDataSource(applicationContext, uri)
+                    resId != null -> {
+                        val afd = resources.openRawResourceFd(resId) ?: return
+                        setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                        afd.close()
+                    }
+                    else -> return
+                }
+                isLooping = true
+                setAudioStreamType(AudioManager.STREAM_MUSIC)
+                prepare()
+                start()
+            }
+        } catch (e: Exception) {
+            Log.e("TimerService", "Error playing sound", e)
+        }
     }
 
-    /** Dừng service gọn gàng */
-    private fun stopSelfSafely() {
-        countDown?.cancel()
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        stopSelf()
-        // Huỷ alarm fallback (khỏi bắn trễ)
-        cancelAlarm()
+    private fun stopSound() {
+        try {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+        } catch (_: Exception) {}
+        mediaPlayer = null
     }
 
-    private fun cancelAlarm() {
-        val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, TimeUpReceiver::class.java)
-        val pi = PendingIntent.getBroadcast(
-            this, 100, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or pendingImmutable()
-        )
-        am.cancel(pi)
+    private fun startForegroundWithNotification() {
+        val channelId = "timer_channel"
+        val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(channelId, "Timer Channel", NotificationManager.IMPORTANCE_LOW)
+            )
+        }
+        val notif = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("Timer Running")
+            .setContentText("Countdown in progress")
+            .setSmallIcon(R.drawable.ic_timer_enable)
+            .build()
+        startForeground(1, notif)
     }
 
-    /** Định dạng mm:ss / hh:mm:ss tuỳ độ dài */
-    private fun format(ms: Long): String {
-        var sec = TimeUnit.MILLISECONDS.toSeconds(ms)
-        val h = sec / 3600
-        sec %= 3600
-        val m = sec / 60
-        val s = sec % 60
-        return if (h > 0) String.format("%02d:%02d:%02d", h, m, s)
-        else       String.format("%02d:%02d", m, s)
+    override fun onDestroy() {
+        handler?.removeCallbacks(runnable ?: return)
+        stopSound()
+        super.onDestroy()
     }
-
-    /** Flags PendingIntent tuỳ API */
-    private fun pendingMutable(): Int =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
-
-    private fun pendingImmutable(): Int =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
 }

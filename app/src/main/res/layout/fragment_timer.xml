@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="24dp">
 
     <LinearLayout
@@ -72,7 +73,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Keep my screen on" />
+                    android:text="Keep my screen on"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000"/>
 
                 <Switch
                     android:id="@+id/switchKeepScreen"
@@ -81,7 +85,45 @@
                     android:layout_marginStart="10dp"
                     tools:ignore="TouchTargetSizeCheck" />
             </LinearLayout>
+            <!-- Sound Picker -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:id="@+id/layoutSound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginBottom="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Sound"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:id="@+id/tvSoundValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Astro"
+                        android:textSize="14sp"
+                        android:textColor="#999999"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+            </LinearLayout>
         </LinearLayout>
+
+
 
         <!-- ========== STATE 2: RUNNING ========== -->
         <LinearLayout
@@ -96,10 +138,10 @@
                 android:layout_width="300dp"
                 android:layout_height="300dp">
 
-                <net.android.lastversion.view.CircleCountdownView
+                <net.android.lastversion.canvas.CircleCountdownView
                     android:id="@+id/progressRing"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_width="300dp"
+                    android:layout_height="300dp" />
 
                 <LinearLayout
                     android:id="@+id/layoutTimerText"
@@ -237,4 +279,4 @@
                 android:textColor="#FFFFFF" />
         </LinearLayout>
     </LinearLayout>
-</ScrollView>
+</LinearLayout>
