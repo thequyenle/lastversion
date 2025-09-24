@@ -12,172 +12,188 @@ import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import net.android.lastversion.R
+import net.android.lastversion.receiver.TimerBackupReceiver
 
+/**
+ * ForegroundService that handles timer countdown, notifications with controls, and sound playback
+ * Uses AlarmManager backup to guarantee timer completion even if service is killed
+ */
 class TimerService : Service() {
 
     companion object {
         const val CHANNEL_ID = "timer_channel"
-        const val RUNNING_NOTIFICATION_ID = 1001
-        const val FINISHED_NOTIFICATION_ID = 1002
+        const val NOTIFICATION_ID = 1001
 
-        const val ACTION_START = "ACTION_START"
-        const val ACTION_STOP = "ACTION_STOP"
-        const val ACTION_CONTINUE = "ACTION_CONTINUE"
-        const val ACTION_RESTART = "ACTION_RESTART"
-        const val ACTION_STOP_SOUND = "ACTION_STOP_SOUND"
+        // Actions
+        const val ACTION_START = "START"
+        const val ACTION_PAUSE = "PAUSE"
+        const val ACTION_RESUME = "RESUME"
+        const val ACTION_STOP = "STOP"
 
-        const val EXTRA_SECONDS = "EXTRA_SECONDS"
-        const val EXTRA_SOUND_URI = "EXTRA_SOUND_URI"
-        const val EXTRA_SOUND_RES_ID = "EXTRA_SOUND_RES_ID"
+        // Extras
+        const val EXTRA_SECONDS = "SECONDS"
+        const val EXTRA_SOUND_URI = "SOUND_URI"
+        const val EXTRA_SOUND_RES_ID = "SOUND_RES_ID"
 
-        const val MSG_REGISTER_CLIENT = 100
-        const val MSG_UNREGISTER_CLIENT = 101
-        const val MSG_TICK = 102
-        const val MSG_FINISHED = 103
+        private const val BACKUP_ALARM_ID = 1000
     }
 
+    // Timer state
     private var totalSeconds = 0
-    private var currentSeconds = 0
-    private var isPaused = false
+    private var remainingSeconds = 0
     private var isRunning = false
+    private var isPaused = false
 
+    // Sound config
     private var soundUri: Uri? = null
-    private var soundResId: Int = R.raw.astro
+    private var soundResId = R.raw.astro
     private var mediaPlayer: MediaPlayer? = null
 
-    private var handler: Handler? = null
-    private var runnable: Runnable? = null
+    // Timer components
+    private var countdownHandler: Handler? = null
+    private var countdownRunnable: Runnable? = null
     private var wakeLock: PowerManager.WakeLock? = null
 
-    private val messenger = Messenger(object : Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                MSG_REGISTER_CLIENT -> Log.d("TimerService", "Client registered")
-                MSG_UNREGISTER_CLIENT -> Log.d("TimerService", "Client unregistered")
-            }
-        }
-    })
-
-    override fun onBind(intent: Intent?): IBinder = messenger.binder
+    // AlarmManager backup
+    private var alarmManager: AlarmManager? = null
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
-        initWakeLock()
+        setupNotificationChannel()
+        initializeComponents()
         Log.d("TimerService", "Service created")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        handleAction(intent?.action, intent)
+        handleAction(intent)
         return START_STICKY
     }
 
-    private fun initWakeLock() {
-        try {
-            val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-            wakeLock = powerManager.newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK,
-                "TimerService::WakeLock"
-            )
-        } catch (e: Exception) {
-            Log.e("TimerService", "Failed to initialize wake lock", e)
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun setupNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Timer",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Timer countdown and controls"
+                enableLights(true)
+                lightColor = Color.parseColor("#76E0C1")
+                enableVibration(false) // We handle vibration manually
+                setBypassDnd(true)
+            }
+
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
         }
     }
 
-    private fun handleAction(action: String?, intent: Intent?) {
+    private fun initializeComponents() {
+        // WakeLock to prevent service from being killed
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "TimerService::WakeLock")
+
+        // AlarmManager for backup guarantee
+        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    }
+
+    private fun handleAction(intent: Intent?) {
+        val action = intent?.action ?: return
+
+        Log.d("TimerService", "Handling action: $action")
+
         when (action) {
             ACTION_START -> startTimer(intent)
-            ACTION_STOP -> pauseTimer()
-            ACTION_CONTINUE -> resumeTimer()
-            ACTION_RESTART, ACTION_STOP_SOUND -> stopAndExit()
+            ACTION_PAUSE -> pauseTimer()
+            ACTION_RESUME -> resumeTimer()
+            ACTION_STOP -> stopTimer()
         }
     }
 
-    private fun startTimer(intent: Intent?) {
-        if (isRunning) return
-
-        try {
-            totalSeconds = intent?.getIntExtra(EXTRA_SECONDS, 0) ?: 0
-            currentSeconds = totalSeconds
-
-            val uriStr = intent?.getStringExtra(EXTRA_SOUND_URI)
-            soundUri = if (!uriStr.isNullOrEmpty()) Uri.parse(uriStr) else null
-            soundResId = intent?.getIntExtra(EXTRA_SOUND_RES_ID, R.raw.astro) ?: R.raw.astro
-
-            if (totalSeconds > 0) {
-                isRunning = true
-                isPaused = false
-
-                acquireWakeLock()
-                startForeground(RUNNING_NOTIFICATION_ID, buildRunningNotification())
-                startCountdown()
-
-                Log.d("TimerService", "Timer started: $totalSeconds seconds")
-            } else {
-                stopSelf()
-            }
-        } catch (e: Exception) {
-            Log.e("TimerService", "Error starting timer", e)
-            stopSelf()
+    private fun startTimer(intent: Intent) {
+        if (isRunning) {
+            Log.w("TimerService", "Timer already running")
+            return
         }
+
+        // Get timer configuration
+        totalSeconds = intent.getIntExtra(EXTRA_SECONDS, 0)
+        remainingSeconds = totalSeconds
+
+        val uriString = intent.getStringExtra(EXTRA_SOUND_URI)
+        soundUri = if (!uriString.isNullOrEmpty()) Uri.parse(uriString) else null
+        soundResId = intent.getIntExtra(EXTRA_SOUND_RES_ID, R.raw.astro)
+
+        if (totalSeconds <= 0) {
+            Log.e("TimerService", "Invalid timer duration: $totalSeconds")
+            stopSelf()
+            return
+        }
+
+        // Initialize timer
+        isRunning = true
+        isPaused = false
+
+        // Acquire wake lock
+        acquireWakeLock()
+
+        // Setup AlarmManager backup
+        scheduleBackupAlarm()
+
+        // Start foreground
+        startForeground(NOTIFICATION_ID, buildNotification())
+
+        // Start countdown
+        startCountdown()
+
+        Log.d("TimerService", "Timer started: $totalSeconds seconds")
     }
 
     private fun pauseTimer() {
         if (!isRunning || isPaused) return
 
-        try {
-            isPaused = true
-            handler?.removeCallbacks(runnable!!)
-            updateNotification("Timer Paused", formatTime(currentSeconds))
-            Log.d("TimerService", "Timer paused")
-        } catch (e: Exception) {
-            Log.e("TimerService", "Error pausing timer", e)
-        }
+        isPaused = true
+        stopCountdown()
+        cancelBackupAlarm() // Cancel alarm during pause
+
+        updateNotification()
+        Log.d("TimerService", "Timer paused at $remainingSeconds seconds")
     }
 
     private fun resumeTimer() {
         if (!isRunning || !isPaused) return
 
-        try {
-            isPaused = false
-            startCountdown()
-            Log.d("TimerService", "Timer resumed")
-        } catch (e: Exception) {
-            Log.e("TimerService", "Error resuming timer", e)
-        }
-    }
+        isPaused = false
+        scheduleBackupAlarm() // Reschedule for remaining time
+        startCountdown()
 
-    private fun stopAndExit() {
-        try {
-            stopTimer()
-            stopSelf()
-        } catch (e: Exception) {
-            Log.e("TimerService", "Error stopping and exiting", e)
-        }
+        updateNotification()
+        Log.d("TimerService", "Timer resumed from $remainingSeconds seconds")
     }
 
     private fun stopTimer() {
         isRunning = false
         isPaused = false
 
-        try {
-            handler?.removeCallbacks(runnable!!)
-        } catch (e: Exception) {
-            Log.w("TimerService", "Error removing callbacks", e)
-        }
-
+        stopCountdown()
+        cancelBackupAlarm()
         stopSound()
-        stopForeground(STOP_FOREGROUND_REMOVE)
         releaseWakeLock()
+
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
 
         Log.d("TimerService", "Timer stopped")
     }
 
     private fun acquireWakeLock() {
         try {
-            wakeLock?.acquire((totalSeconds * 1000L) + 60000L)
+            wakeLock?.acquire((totalSeconds * 1000L) + 30000L) // 30s buffer
+            Log.d("TimerService", "WakeLock acquired")
         } catch (e: Exception) {
-            Log.e("TimerService", "Failed to acquire wake lock", e)
+            Log.e("TimerService", "Failed to acquire WakeLock", e)
         }
     }
 
@@ -185,82 +201,135 @@ class TimerService : Service() {
         try {
             if (wakeLock?.isHeld == true) {
                 wakeLock?.release()
+                Log.d("TimerService", "WakeLock released")
             }
         } catch (e: Exception) {
-            Log.e("TimerService", "Failed to release wake lock", e)
+            Log.e("TimerService", "Failed to release WakeLock", e)
+        }
+    }
+
+    private fun scheduleBackupAlarm() {
+        try {
+            val intent = Intent(this, TimerBackupReceiver::class.java).apply {
+                putExtra(EXTRA_SOUND_URI, soundUri?.toString())
+                putExtra(EXTRA_SOUND_RES_ID, soundResId)
+            }
+
+            val pendingIntent = PendingIntent.getBroadcast(
+                this, BACKUP_ALARM_ID, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
+            )
+
+            val triggerTime = System.currentTimeMillis() + (remainingSeconds * 1000L)
+
+            alarmManager?.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerTime,
+                pendingIntent
+            )
+
+            Log.d("TimerService", "Backup alarm scheduled for $remainingSeconds seconds")
+        } catch (e: Exception) {
+            Log.e("TimerService", "Failed to schedule backup alarm", e)
+        }
+    }
+
+    private fun cancelBackupAlarm() {
+        try {
+            val intent = Intent(this, TimerBackupReceiver::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(
+                this, BACKUP_ALARM_ID, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
+            )
+
+            alarmManager?.cancel(pendingIntent)
+            Log.d("TimerService", "Backup alarm cancelled")
+        } catch (e: Exception) {
+            Log.e("TimerService", "Failed to cancel backup alarm", e)
         }
     }
 
     private fun startCountdown() {
-        handler = Handler(Looper.getMainLooper())
-        runnable = object : Runnable {
+        countdownHandler = Handler(Looper.getMainLooper())
+        countdownRunnable = object : Runnable {
             override fun run() {
-                try {
-                    when {
-                        !isRunning -> return
-                        isPaused -> handler?.postDelayed(this, 250)
-                        currentSeconds > 0 -> {
-                            currentSeconds--
-                            updateNotification("Timer Running", "Time remaining: ${formatTime(currentSeconds)}")
-                            handler?.postDelayed(this, 1000)
-                        }
-                        else -> onTimerFinished()
+                when {
+                    !isRunning -> return
+                    isPaused -> countdownHandler?.postDelayed(this, 500) // Check again when paused
+                    remainingSeconds > 0 -> {
+                        remainingSeconds--
+                        updateNotification()
+                        countdownHandler?.postDelayed(this, 1000)
                     }
-                } catch (e: Exception) {
-                    Log.e("TimerService", "Error in countdown", e)
+                    else -> onTimerCompleted()
                 }
             }
         }
-        handler?.post(runnable!!)
+        countdownHandler?.post(countdownRunnable!!)
     }
 
-    private fun onTimerFinished() {
-        try {
-            isRunning = false
-            showFinishedNotification()
-            playSound()
-            Log.d("TimerService", "Timer finished")
-        } catch (e: Exception) {
-            Log.e("TimerService", "Error handling timer finish", e)
-        }
+    private fun stopCountdown() {
+        countdownRunnable?.let { countdownHandler?.removeCallbacks(it) }
     }
 
-    private fun playSound() {
+    private fun onTimerCompleted() {
+        Log.d("TimerService", "Timer completed!")
+
+        isRunning = false
+        cancelBackupAlarm() // We completed normally, no need for backup
+
+        // Update to completion notification
+        val completionNotification = buildCompletionNotification()
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(NOTIFICATION_ID, completionNotification)
+
+        // Start foreground with completion notification to keep service alive for sound
+        startForeground(NOTIFICATION_ID, completionNotification)
+
+        // Play completion sound
+        playCompletionSound()
+    }
+
+    private fun playCompletionSound() {
         try {
-            stopSound()
+            stopSound() // Clean up any existing player
 
             mediaPlayer = MediaPlayer().apply {
-                setAudioAttributes(createAudioAttributes())
-                setDataSourceSafely()
+                // Set for alarm playback
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .build()
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    setAudioStreamType(AudioManager.STREAM_ALARM)
+                }
+
+                // Set data source
+                setDataSource()
+
                 isLooping = true
                 prepare()
                 start()
-                Log.d("TimerService", "Sound started")
+
+                Log.d("TimerService", "Completion sound started")
             }
         } catch (e: Exception) {
-            Log.e("TimerService", "Error playing sound", e)
+            Log.e("TimerService", "Failed to play completion sound", e)
             playFallbackSound()
         }
     }
 
-    private fun createAudioAttributes(): AudioAttributes {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build()
-        } else {
-            AudioAttributes.Builder().build()
-        }
-    }
-
-    private fun MediaPlayer.setDataSourceSafely() {
+    private fun MediaPlayer.setDataSource() {
         when {
             soundUri != null -> {
                 try {
                     setDataSource(applicationContext, soundUri!!)
                 } catch (e: Exception) {
-                    Log.w("TimerService", "Custom URI failed, using built-in", e)
+                    Log.w("TimerService", "Custom URI failed, using built-in")
                     setBuiltInDataSource()
                 }
             }
@@ -284,7 +353,7 @@ class TimerService : Service() {
                 Log.d("TimerService", "Fallback sound started")
             }
         } catch (e: Exception) {
-            Log.e("TimerService", "Fallback sound failed", e)
+            Log.e("TimerService", "Fallback sound also failed", e)
         }
     }
 
@@ -300,110 +369,75 @@ class TimerService : Service() {
         }
     }
 
-    private fun buildRunningNotification(): Notification {
-        return buildNotification(
-            "Timer Running",
-            "Time remaining: ${formatTime(currentSeconds)}",
-            true
-        )
-    }
-
-    private fun buildNotification(title: String, content: String, ongoing: Boolean): Notification {
-        val contentIntent = createContentIntent()
-        val stopIntent = createStopIntent(ongoing)
-
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_timer_enable)
-            .setContentTitle(title)
-            .setContentText(content)
-            .setContentIntent(contentIntent)
-            .setColor(Color.parseColor("#76E0C1"))
-            .setOnlyAlertOnce(true)
-            .setShowWhen(false)
-            .apply {
-                if (ongoing) {
-                    setOngoing(true)
-                    setPriority(NotificationCompat.PRIORITY_HIGH)
-                    setCategory(NotificationCompat.CATEGORY_ALARM)
-                    addAction(R.drawable.ic_stopwatch_enable, "Stop", stopIntent)
-                } else {
-                    setAutoCancel(false)
-                    setPriority(NotificationCompat.PRIORITY_MAX)
-                    setCategory(NotificationCompat.CATEGORY_ALARM)
-                    setFullScreenIntent(contentIntent, true)
-                    setDefaults(NotificationCompat.DEFAULT_ALL)
-                    addAction(R.drawable.ic_stopwatch_enable, "Stop Sound", stopIntent)
-                }
-            }
-            .build()
-    }
-
-    private fun createContentIntent(): PendingIntent {
-        return PendingIntent.getActivity(
+    private fun buildNotification(): Notification {
+        val contentIntent = PendingIntent.getActivity(
             this, 0,
             packageManager.getLaunchIntentForPackage(packageName),
             PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
         )
-    }
 
-    private fun createStopIntent(ongoing: Boolean): PendingIntent {
-        val stopIntent = Intent(this, TimerService::class.java).apply {
-            action = if (ongoing) ACTION_RESTART else ACTION_STOP_SOUND
-        }
-        return PendingIntent.getService(
-            this, 1, stopIntent,
+        // Pause/Resume action
+        val pauseResumeAction = if (isPaused) ACTION_RESUME else ACTION_PAUSE
+        val pauseResumeText = if (isPaused) "Resume" else "Pause"
+        val pauseResumeIntent = PendingIntent.getService(
+            this, 1,
+            Intent(this, TimerService::class.java).apply { action = pauseResumeAction },
             PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
         )
+
+        // Stop action
+        val stopIntent = PendingIntent.getService(
+            this, 2,
+            Intent(this, TimerService::class.java).apply { action = ACTION_STOP },
+            PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
+        )
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_timer_enable)
+            .setContentTitle("Timer Running")
+            .setContentText("Time remaining: ${formatTime(remainingSeconds)}")
+            .setContentIntent(contentIntent)
+            .setColor(Color.parseColor("#76E0C1"))
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .addAction(R.drawable.ic_stopwatch_enable, pauseResumeText, pauseResumeIntent)
+            .addAction(R.drawable.ic_stopwatch_enable, "Stop", stopIntent)
+            .build()
     }
 
-    private fun updateNotification(title: String, content: String) {
-        try {
-            val notification = buildNotification(title, content, true)
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.notify(RUNNING_NOTIFICATION_ID, notification)
-        } catch (e: Exception) {
-            Log.e("TimerService", "Error updating notification", e)
-        }
+    private fun buildCompletionNotification(): Notification {
+        val contentIntent = PendingIntent.getActivity(
+            this, 0,
+            packageManager.getLaunchIntentForPackage(packageName),
+            PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
+        )
+
+        val stopSoundIntent = PendingIntent.getService(
+            this, 3,
+            Intent(this, TimerService::class.java).apply { action = ACTION_STOP },
+            PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
+        )
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_timer_enable)
+            .setContentTitle("Time's Up!")
+            .setContentText("Your ${formatTime(totalSeconds)} timer has finished")
+            .setContentIntent(stopSoundIntent) // Tap notification to stop sound
+            .setColor(Color.parseColor("#76E0C1"))
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+            .addAction(R.drawable.ic_stopwatch_enable, "Stop Sound", stopSoundIntent)
+            .addAction(R.drawable.ic_timer_enable, "Open App", contentIntent)
+            .build()
     }
 
-    private fun showFinishedNotification() {
-        try {
-            val notification = buildNotification(
-                "Time's Up!",
-                "Your ${formatTime(totalSeconds)} timer has finished",
-                false
-            )
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.notify(FINISHED_NOTIFICATION_ID, notification)
-
-            startForeground(FINISHED_NOTIFICATION_ID, notification)
-        } catch (e: Exception) {
-            Log.e("TimerService", "Error showing finished notification", e)
-        }
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try {
-                val channel = NotificationChannel(
-                    CHANNEL_ID,
-                    "Timer Channel",
-                    NotificationManager.IMPORTANCE_HIGH
-                ).apply {
-                    description = "Timer service notifications"
-                    enableLights(true)
-                    lightColor = Color.parseColor("#76E0C1")
-                    enableVibration(true)
-                    setBypassDnd(true)
-                    setShowBadge(true)
-                }
-
-                val notificationManager = getSystemService(NotificationManager::class.java)
-                notificationManager.createNotificationChannel(channel)
-            } catch (e: Exception) {
-                Log.e("TimerService", "Error creating notification channel", e)
-            }
-        }
+    private fun updateNotification() {
+        val notification = buildNotification()
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
     private fun formatTime(seconds: Int): String {
@@ -411,10 +445,9 @@ class TimerService : Service() {
         val minutes = (seconds % 3600) / 60
         val secs = seconds % 60
 
-        return if (hours > 0) {
-            String.format("%d:%02d:%02d", hours, minutes, secs)
-        } else {
-            String.format("%d:%02d", minutes, secs)
+        return when {
+            hours > 0 -> String.format("%d:%02d:%02d", hours, minutes, secs)
+            else -> String.format("%d:%02d", minutes, secs)
         }
     }
 
@@ -428,12 +461,16 @@ class TimerService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        stopTimer()
+        stopCountdown()
+        cancelBackupAlarm()
+        stopSound()
+        releaseWakeLock()
         Log.d("TimerService", "Service destroyed")
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        Log.d("TimerService", "Task removed, service continues")
+        // Don't stop service - let it continue in background with AlarmManager backup
+        Log.d("TimerService", "Task removed - service continues with alarm backup")
     }
 }
