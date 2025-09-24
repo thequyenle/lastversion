@@ -9,6 +9,11 @@ appcompat = "1.7.1"
 material = "1.13.0"
 activity = "1.8.2"
 constraintlayout = "2.2.1"
+# Đảm bảo Room version tương thích với Kotlin 1.9.24
+room = "2.6.1"
+sqlite = "2.6.0"
+# KSP version phải match với Kotlin version: Kotlin 1.9.24 -> KSP 1.9.24-1.0.20
+ksp = "1.9.24-1.0.20"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -20,7 +25,17 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
+# Room dependencies
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+# SQLite bundled để tránh lỗi driver OEM
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+# KSP plugin - quan trọng cho Room
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+# Loại bỏ androidx.room plugin để tránh conflict
