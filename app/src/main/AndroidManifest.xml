@@ -2,18 +2,45 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Basic permissions -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <!-- Notification permissions -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Foreground service permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Android 9+ requires specific foreground service types -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        tools:ignore="UnusedAttribute" />
+
+    <!-- Wake lock to keep service running -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Exact alarm permissions for reliable timer (Android 12+) -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        tools:ignore="UnusedAttribute" />
+    <uses-permission
+        android:name="android.permission.USE_EXACT_ALARM"
+        tools:ignore="UnusedAttribute" />
+
+    <!-- Battery optimization bypass (optional but recommended) -->
+    <uses-permission
+        android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+        tools:ignore="UnusedAttribute" />
+
+    <!-- Other existing permissions -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <!-- (Khuyến nghị) cho Alarm exact khi máy Doze / service bị kill -->
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -24,17 +51,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Lastversion"
         tools:targetApi="31">
-        <!-- Foreground Service để chạy timer -->
+
+        <!-- Timer Service - handles background timer execution -->
         <service
-            android:name=".service.TimerService"
+            android:name="net.android.last.service.TimerService"
+            android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />
-        <!-- mediaPlayback: hợp lý nếu phát âm báo khi hết giờ -->
 
-        <!-- Receiver bắn khi hết giờ (AlarmManager fallback) -->
+        <!-- Broadcast Receiver - handles timer completion when service might be killed -->
         <receiver
-            android:name=".receiver.TimeUpReceiver"
+            android:name="net.android.lastversion.receiver.TimeUpReceiver"
+            android:enabled="true"
             android:exported="false" />
+
+        <!-- Existing activities -->
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
@@ -52,13 +83,12 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
     </application>
 
 </manifest>

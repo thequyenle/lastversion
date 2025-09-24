@@ -138,7 +138,7 @@
                 android:layout_width="300dp"
                 android:layout_height="300dp">
 
-                <net.android.lastversion.canvas.CircleCountdownView
+                <net.android.lastversion.view.CircleCountdownView
                     android:id="@+id/progressRing"
                     android:layout_width="300dp"
                     android:layout_height="300dp" />
