@@ -8,3 +8,4 @@ class ToggleAlarmUseCase(private val repository: AlarmRepository) {
         val toggledAlarm = alarm.copy(isEnabled = !alarm.isEnabled)
         repository.updateAlarm(toggledAlarm)
     }
+}

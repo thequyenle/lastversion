@@ -1,9 +1,12 @@
 package net.android.lastversion.alarm.presentation.fragment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -13,10 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import net.android.lastversion.R
+import net.android.lastversion.alarm.activity.SetAlarmActivity
 import net.android.lastversion.alarm.presentation.adapter.AlarmAdapter
 import net.android.lastversion.alarm.data.database.AlarmDatabase
 import net.android.lastversion.alarm.domain.model.Alarm
-import net.android.lastversion.alarm.domain.repository.AlarmRepository
+import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
 import net.android.lastversion.alarm.presentation.viewmodel.AlarmViewModel
 import net.android.lastversion.alarm.presentation.viewmodel.AlarmViewModelFactory
 
@@ -26,14 +30,29 @@ class AlarmFragment : Fragment() {
     private lateinit var alarmAdapter: AlarmAdapter
     private lateinit var fabAddAlarm: FloatingActionButton
     private lateinit var emptyView: View
-
+    private val setAlarmLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        when (result.resultCode) {
+            Activity.RESULT_OK -> {
+                // Alarm được save thành công từ SetAlarmActivity
+                Snackbar.make(requireView(), "Alarm saved", Snackbar.LENGTH_SHORT).show()
+            }
+            SetAlarmActivity.RESULT_DELETED -> {
+                // Alarm bị delete từ edit mode (nếu có delete button trong SetAlarmActivity)
+                Snackbar.make(requireView(), "Alarm deleted", Snackbar.LENGTH_SHORT).show()
+            }
+        }
+    }
     private val alarmViewModel: AlarmViewModel by viewModels {
         AlarmViewModelFactory(
-            AlarmRepository(
+            AlarmRepositoryImpl(
                 AlarmDatabase.getDatabase(requireContext()).alarmDao()
             )
         )
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,11 +77,12 @@ class AlarmFragment : Fragment() {
         emptyView = view.findViewById(R.id.emptyView)
     }
 
+
     private fun setupRecyclerView() {
         alarmAdapter = AlarmAdapter(
             onItemClick = { alarm ->
-                // Handle item click - mở dialog edit alarm
-                showEditAlarmDialog(alarm)
+                // Mở SetAlarmActivity để edit
+                openSetAlarmActivity(alarm)
             },
             onSwitchToggle = { alarm ->
                 // Toggle alarm on/off
@@ -74,7 +94,7 @@ class AlarmFragment : Fragment() {
             adapter = alarmAdapter
             layoutManager = LinearLayoutManager(requireContext())
 
-            // Thêm swipe to delete
+            // Add swipe to delete
             val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback())
             itemTouchHelper.attachToRecyclerView(this)
         }
@@ -97,9 +117,41 @@ class AlarmFragment : Fragment() {
 
     private fun setupFab() {
         fabAddAlarm.setOnClickListener {
-            showAddAlarmDialog()
+            openSetAlarmActivity(null) // null = add new alarm mode
         }
     }
+    private fun openSetAlarmActivity(alarm: Alarm?) {
+        val intent = Intent(requireContext(), SetAlarmActivity::class.java)
+
+        // Nếu có alarm data, truyền vào intent để edit
+        alarm?.let {
+            intent.putExtra(SetAlarmActivity.EXTRA_ALARM_ID, it.id)
+            intent.putExtra(SetAlarmActivity.EXTRA_HOUR, it.hour)
+            intent.putExtra(SetAlarmActivity.EXTRA_MINUTE, it.minute)
+            intent.putExtra(SetAlarmActivity.EXTRA_AM_PM, it.amPm)
+            intent.putExtra(SetAlarmActivity.EXTRA_LABEL, it.label)
+            intent.putExtra(SetAlarmActivity.EXTRA_ACTIVE_DAYS, it.activeDays)
+            intent.putExtra(SetAlarmActivity.EXTRA_IS_SNOOZE_ENABLED, it.isSnoozeEnabled)
+            intent.putExtra(SetAlarmActivity.EXTRA_IS_VIBRATION_ENABLED, it.isVibrationEnabled)
+            intent.putExtra(SetAlarmActivity.EXTRA_IS_SOUND_ENABLED, it.isSoundEnabled)
+            intent.putExtra(SetAlarmActivity.EXTRA_IS_SILENT_MODE_ENABLED, it.isSilentModeEnabled)
+            intent.putExtra(SetAlarmActivity.EXTRA_NOTE, it.note)
+            intent.putExtra(SetAlarmActivity.EXTRA_IS_EDIT_MODE, true)
+        }
+
+        // Launch activity và đợi result
+        setAlarmLauncher.launch(intent)
+    }
+
+    /**
+     * Handle edit alarm - mở SetAlarmActivity với data có sẵn
+     */
+    private fun showEditAlarmDialog(alarm: Alarm) {
+        openSetAlarmActivity(alarm) // Truyền alarm data để edit
+    }
+
+    // Update setupRecyclerView() để use openSetAlarmActivity
+
 
     private fun showAddAlarmDialog() {
         // Tạo alarm mới với giá trị mặc định
@@ -129,11 +181,7 @@ class AlarmFragment : Fragment() {
         Snackbar.make(requireView(), "Alarm added", Snackbar.LENGTH_SHORT).show()
     }
 
-    private fun showEditAlarmDialog(alarm: Alarm) {
-        // TODO: Implement edit alarm dialog
-        // Bạn có thể tạo một dialog hoặc navigate đến một fragment khác để edit
-        Snackbar.make(requireView(), "Edit alarm: ${alarm.getTimeString()}", Snackbar.LENGTH_SHORT).show()
-    }
+
 
     // Inner class cho swipe to delete
     inner class SwipeToDeleteCallback : ItemTouchHelper.SimpleCallback(

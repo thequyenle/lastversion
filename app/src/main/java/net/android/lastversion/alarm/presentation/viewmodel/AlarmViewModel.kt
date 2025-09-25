@@ -1,14 +1,16 @@
 package net.android.lastversion.alarm.presentation.viewmodel
 
-import androidx.lifecycle.*
-import kotlinx.coroutines.flow.Flow
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import net.android.lastversion.alarm.data.database.AlarmEntity
 import net.android.lastversion.alarm.domain.model.Alarm
-import net.android.lastversion.alarm.domain.repository.AlarmRepository
+import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
 
-class AlarmViewModel(private val repository: AlarmRepository) : ViewModel() {
+class AlarmViewModel(private val repository: AlarmRepositoryImpl) : ViewModel() {
 
     // LiveData cho danh sách alarm
     val allAlarms: LiveData<List<Alarm>> = repository.getAllAlarms()
@@ -58,7 +60,7 @@ class AlarmViewModel(private val repository: AlarmRepository) : ViewModel() {
 }
 
 // ViewModelFactory
-class AlarmViewModelFactory(private val repository: AlarmRepository) : ViewModelProvider.Factory {
+class AlarmViewModelFactory(private val repository: AlarmRepositoryImpl) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AlarmViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

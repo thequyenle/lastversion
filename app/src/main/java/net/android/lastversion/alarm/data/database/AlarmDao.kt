@@ -3,6 +3,7 @@ package net.android.lastversion.alarm.data.database
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import net.android.lastversion.alarm.data.database.AlarmEntity
 
 @Dao
 interface AlarmDao {
