@@ -1,4 +1,4 @@
-package net.android.lastversion.alarm.adapter
+package net.android.lastversion.alarm.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import net.android.lastversion.R
-import net.android.lastversion.alarm.model.Alarm
+import net.android.lastversion.alarm.domain.model.Alarm
 
 class AlarmAdapter(
     private val onItemClick: (Alarm) -> Unit,

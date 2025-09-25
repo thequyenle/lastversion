@@ -1,8 +1,8 @@
-package net.android.lastversion.alarm.utils
+package net.android.lastversion.alarm.util
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import net.android.lastversion.alarm.adapter.AlarmAdapter
+import net.android.lastversion.alarm.presentation.adapter.AlarmAdapter
 
 class SwipeToDeleteCallback(
     private val adapter: AlarmAdapter,

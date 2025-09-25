@@ -1,16 +1,16 @@
-package net.android.lastversion.activity
+package net.android.lastversion.alarm.activity
 
 import android.os.Bundle
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import net.android.lastversion.R
-import net.android.lastversion.alarm.database.AlarmDatabase
+import net.android.lastversion.alarm.data.database.AlarmDatabase
 import net.android.lastversion.alarm.data..repository.AlarmRepositoryImpl
-import net.android.lastversion.alarm.model.Alarm
-import net.android.lastversion.alarm.viewmodel.AlarmViewModel
-import net.android.lastversion.alarm.viewmodel.AlarmViewModelFactory
-import net.android.lastversion.util.TimeUtils
+import net.android.lastversion.alarm.domain.model.Alarm
+import net.android.lastversion.alarm.presentation.viewmodel.AlarmViewModel
+import net.android.lastversion.alarm.presentation.viewmodel.AlarmViewModelFactory
+import net.android.lastversion.alarm.util.TimeUtils
 import java.util.*
 
 class SetAlarmActivity : AppCompatActivity() {

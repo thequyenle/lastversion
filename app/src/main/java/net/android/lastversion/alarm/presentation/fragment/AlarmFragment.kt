@@ -1,4 +1,4 @@
-package net.android.lastversion.fragment
+package net.android.lastversion.alarm.presentation.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,12 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import net.android.lastversion.R
-import net.android.lastversion.alarm.adapter.AlarmAdapter
-import net.android.lastversion.alarm.database.AlarmDatabase
-import net.android.lastversion.alarm.model.Alarm
-import net.android.lastversion.alarm.repository.AlarmRepository
-import net.android.lastversion.alarm.viewmodel.AlarmViewModel
-import net.android.lastversion.alarm.viewmodel.AlarmViewModelFactory
+import net.android.lastversion.alarm.presentation.adapter.AlarmAdapter
+import net.android.lastversion.alarm.data.database.AlarmDatabase
+import net.android.lastversion.alarm.domain.model.Alarm
+import net.android.lastversion.alarm.domain.repository.AlarmRepository
+import net.android.lastversion.alarm.presentation.viewmodel.AlarmViewModel
+import net.android.lastversion.alarm.presentation.viewmodel.AlarmViewModelFactory
 
 class AlarmFragment : Fragment() {
 

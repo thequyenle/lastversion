@@ -1,4 +1,4 @@
-package net.android.lastversion.alarm.model
+package net.android.lastversion.alarm.domain.model
 
 data class Alarm(
     val id: Int,

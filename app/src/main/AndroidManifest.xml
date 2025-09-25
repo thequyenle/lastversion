@@ -38,10 +38,10 @@
         android:theme="@style/Theme.Lastversion"
         tools:targetApi="31">
         <activity
-            android:name=".activity.EditAlarmActivity"
+            android:name=".alarm.activity.EditAlarmActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.SetAlarmActivity"
+            android:name=".alarm.activity.SetAlarmActivity"
             android:exported="false" /> <!-- Timer Service - handles background timer execution -->
         <service
             android:name="net.android.last.service.TimerService"

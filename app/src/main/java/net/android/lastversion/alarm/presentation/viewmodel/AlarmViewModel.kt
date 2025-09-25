@@ -1,12 +1,12 @@
-package net.android.lastversion.alarm.viewmodel
+package net.android.lastversion.alarm.presentation.viewmodel
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import net.android.lastversion.alarm.database.AlarmEntity
-import net.android.lastversion.alarm.model.Alarm
-import net.android.lastversion.alarm.repository.AlarmRepository
+import net.android.lastversion.alarm.data.database.AlarmEntity
+import net.android.lastversion.alarm.domain.model.Alarm
+import net.android.lastversion.alarm.domain.repository.AlarmRepository
 
 class AlarmViewModel(private val repository: AlarmRepository) : ViewModel() {
 

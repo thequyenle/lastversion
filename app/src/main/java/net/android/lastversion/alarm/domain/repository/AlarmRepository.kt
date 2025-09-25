@@ -1,11 +1,11 @@
-package net.android.lastversion.alarm.repository
+package net.android.lastversion.alarm.domain.repository
 
 
 
 import kotlinx.coroutines.flow.Flow
-import net.android.lastversion.alarm.database.AlarmDao
-import net.android.lastversion.alarm.database.AlarmEntity
-import net.android.lastversion.alarm.model.Alarm
+import net.android.lastversion.alarm.data.database.AlarmDao
+import net.android.lastversion.alarm.data.database.AlarmEntity
+import net.android.lastversion.alarm.domain.model.Alarm
 
 class AlarmRepository(private val alarmDao: AlarmDao) {
 

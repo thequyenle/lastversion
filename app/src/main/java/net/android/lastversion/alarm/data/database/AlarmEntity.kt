@@ -1,4 +1,4 @@
-package net.android.lastversion.alarm.database
+package net.android.lastversion.alarm.data.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

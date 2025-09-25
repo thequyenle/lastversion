@@ -1,4 +1,4 @@
-package net.android.lastversion.alarm.utils
+package net.android.lastversion.alarm.util
 
 import java.util.*
 

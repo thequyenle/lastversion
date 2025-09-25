@@ -1,4 +1,4 @@
-package net.android.lastversion.activity
+package net.android.lastversion.alarm.activity
 
 import android.os.Bundle
 import android.widget.*
