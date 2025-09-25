@@ -7,7 +7,7 @@ import net.android.lastversion.alarm.data.database.AlarmDao
 import net.android.lastversion.alarm.data.database.AlarmEntity
 import net.android.lastversion.alarm.domain.model.Alarm
 
-class AlarmRepositoryImpl(private val alarmDao: AlarmDao) {
+class AlarmRepositoryImpl(private val alarmDao: AlarmDao)  {
 
     fun getAllAlarms(): Flow<List<AlarmEntity>> = alarmDao.getAllAlarms()
 

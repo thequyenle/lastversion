@@ -1,4 +1,4 @@
-package net.android.lastversion.alarm.usecase
+package net.android.lastversion.alarm.presentation.usecase
 
 import kotlinx.coroutines.flow.Flow
 import net.android.lastversion.alarm.domain.model.Alarm
