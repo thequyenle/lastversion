@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="24dp"
     android:background="#F8FFFD">
 
@@ -122,6 +123,7 @@
         android:layout_below="@id/imgStopwatch"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
+        app:cornerRadius="24dp"
         android:visibility="visible" />
 
     <!-- Nút Stop -->
@@ -130,11 +132,12 @@
         android:text="Stop"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="#76E0C1"
+        android:backgroundTint="#FFA726"
         android:textColor="#FFFFFF"
         android:layout_below="@id/imgStopwatch"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
+        app:cornerRadius="24dp"
         android:visibility="gone" />
 
     <!-- Nút Continue + Restart -->
@@ -155,6 +158,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#76E0C1"
             android:textColor="#FFFFFF"
+            app:cornerRadius="24dp"
             android:layout_marginBottom="12dp" />
 
         <Button
@@ -163,6 +167,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:backgroundTint="#D8F6F0"
+            app:cornerRadius="24dp"
             android:textColor="#555555" />
     </LinearLayout>
 </RelativeLayout>

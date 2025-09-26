@@ -61,6 +61,7 @@ dependencies {
     implementation (libs.sqlite)
     implementation (libs.sqlite.ktx)
     implementation (libs.sqlite.framework)
+    implementation(libs.material)
     // Coroutines - Cần thiết cho Room
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")

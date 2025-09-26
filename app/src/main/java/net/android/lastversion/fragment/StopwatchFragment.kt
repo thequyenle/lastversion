@@ -53,31 +53,34 @@ class StopwatchFragment : Fragment() {
         btnRestart = view.findViewById(R.id.btnRestart)
         layoutContinueRestart = view.findViewById(R.id.layoutContinueRestart)
         layoutTimerText = view.findViewById(R.id.layoutTimerText)
+
         btnStart.setOnClickListener {
+            handler.removeCallbacks(runnable) // FIX: Clear trước khi start
             isRunning = true
-            handler.post(runnable)
+            handler.postDelayed(runnable, 1000) // FIX: Chờ 1 giây rồi mới bắt đầu đếm
             switchToStopUI()
             layoutTimerText.visibility = View.VISIBLE
-
         }
 
         btnStop.setOnClickListener {
             isRunning = false
+            handler.removeCallbacks(runnable) // FIX: Clear khi stop
             switchToContinueRestartUI()
         }
 
         btnContinue.setOnClickListener {
+            handler.removeCallbacks(runnable) // FIX: Clear trước khi continue
             isRunning = true
-            handler.post(runnable)
+            handler.postDelayed(runnable, 1000) // FIX: Chờ 1 giây rồi mới tiếp tục đếm
             switchToStopUI()
         }
 
         btnRestart.setOnClickListener {
             isRunning = false
+            handler.removeCallbacks(runnable) // FIX: Clear khi restart
             seconds = 0
             updateTimerText()
             switchToStartUI()
-
         }
 
         updateTimerText()
@@ -118,4 +121,3 @@ class StopwatchFragment : Fragment() {
         handler.removeCallbacks(runnable)
     }
 }
-

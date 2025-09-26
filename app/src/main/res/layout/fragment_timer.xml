@@ -61,6 +61,7 @@
                 android:text="Start Timer"
                 android:layout_marginTop="20dp"
                 android:backgroundTint="#76E0C1"
+                app:cornerRadius="24dp"
                 android:textColor="#FFFFFF" />
 
             <LinearLayout
@@ -232,6 +233,8 @@
                 android:text="Stop"
                 android:layout_marginTop="18dp"
                 android:backgroundTint="#76E0C1"
+                app:cornerRadius="24dp"
+
                 android:textColor="#FFFFFF" />
 
             <Button
@@ -241,6 +244,7 @@
                 android:text="Restart"
                 android:layout_marginTop="10dp"
                 android:backgroundTint="#D8F6F0"
+                app:cornerRadius="24dp"
                 android:textColor="#555555" />
         </LinearLayout>
 
@@ -276,6 +280,7 @@
                 android:text="Stop"
                 android:layout_marginTop="18dp"
                 android:backgroundTint="#76E0C1"
+                app:cornerRadius="24dp"
                 android:textColor="#FFFFFF" />
         </LinearLayout>
     </LinearLayout>
