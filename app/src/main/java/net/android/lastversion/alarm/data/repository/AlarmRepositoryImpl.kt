@@ -1,64 +1,54 @@
 package net.android.lastversion.alarm.data.repository
+
 import kotlinx.coroutines.flow.Flow
-import net.android.lastversion.alarm.data.database.AlarmDao
-import net.android.lastversion.alarm.data.database.AlarmEntity
+import kotlinx.coroutines.flow.map
+import net.android.lastversion.alarm.data.local.dao.AlarmDao
+import net.android.lastversion.alarm.data.mapper.AlarmMapper
 import net.android.lastversion.alarm.domain.model.Alarm
+import net.android.lastversion.alarm.domain.repository.AlarmRepository
 
-class AlarmRepositoryImpl(private val alarmDao: AlarmDao)  {
+class AlarmRepositoryImpl(
+    private val alarmDao: AlarmDao
+) : AlarmRepository {
 
-    fun getAllAlarms(): Flow<List<AlarmEntity>> = alarmDao.getAllAlarms()
-
-    suspend fun insertAlarm(alarm: AlarmEntity): Long = alarmDao.insertAlarm(alarm)
-
-    suspend fun updateAlarm(alarm: AlarmEntity) = alarmDao.updateAlarm(alarm)
-
-    suspend fun deleteAlarm(alarm: AlarmEntity) = alarmDao.deleteAlarm(alarm)
-
-    suspend fun deleteAlarmById(id: Int) = alarmDao.deleteAlarmById(id)
-
-    suspend fun getAlarmById(id: Int): AlarmEntity? = alarmDao.getAlarmById(id)
-
-    fun getEnabledAlarms(): Flow<List<AlarmEntity>> = alarmDao.getEnabledAlarms()
-
-    // Chuyển đổi từ AlarmEntity sang Alarm model
-    fun convertToAlarmModel(entity: AlarmEntity): Alarm {
-        val activeDaysArray = entity.activeDays.split(",").map { it.toBoolean() }.toBooleanArray()
-
-        return Alarm(
-            id = entity.id,
-            hour = entity.hour,
-            minute = entity.minute,
-            amPm = entity.amPm,
-            label = entity.label,
-            activeDays = activeDaysArray,
-            activeDaysText = entity.activeDaysText,
-            isEnabled = entity.isEnabled,
-            isSnoozeEnabled = entity.isSnoozeEnabled,
-            isVibrationEnabled = entity.isVibrationEnabled,
-            isSoundEnabled = entity.isSoundEnabled,
-            isSilentModeEnabled = entity.isSilentModeEnabled,
-            note = entity.note
-        )
+    override fun getAllAlarms(): Flow<List<Alarm>> {
+        return alarmDao.getAllAlarms().map { entities ->
+            AlarmMapper.entityListToDomain(entities)
+        }
     }
 
-    // Chuyển đổi từ Alarm model sang AlarmEntity
-    fun convertToAlarmEntity(alarm: Alarm): AlarmEntity {
-        val activeDaysString = alarm.activeDays.joinToString(",")
+    override fun getEnabledAlarms(): Flow<List<Alarm>> {
+        return alarmDao.getEnabledAlarms().map { entities ->
+            AlarmMapper.entityListToDomain(entities)
+        }
+    }
 
-        return AlarmEntity(
-            id = alarm.id,
-            hour = alarm.hour,
-            minute = alarm.minute,
-            amPm = alarm.amPm,
-            label = alarm.label,
-            activeDays = activeDaysString,
-            activeDaysText = alarm.activeDaysText,
-            isEnabled = alarm.isEnabled,
-            isSnoozeEnabled = alarm.isSnoozeEnabled,
-            isVibrationEnabled = alarm.isVibrationEnabled,
-            isSoundEnabled = alarm.isSoundEnabled,
-            isSilentModeEnabled = alarm.isSilentModeEnabled,
-            note = alarm.note
-        )
+    override suspend fun getAlarmById(id: Int): Alarm? {
+        return alarmDao.getAlarmById(id)?.let { entity ->
+            AlarmMapper.entityToDomain(entity)
+        }
+    }
+
+    override suspend fun insertAlarm(alarm: Alarm): Long {
+        val entity = AlarmMapper.domainToEntity(alarm)
+        return alarmDao.insertAlarm(entity)
+    }
+
+    override suspend fun updateAlarm(alarm: Alarm) {
+        val entity = AlarmMapper.domainToEntity(alarm)
+        alarmDao.updateAlarm(entity)
+    }
+
+    override suspend fun deleteAlarm(alarm: Alarm) {
+        val entity = AlarmMapper.domainToEntity(alarm)
+        alarmDao.deleteAlarm(entity)
+    }
+
+    override suspend fun deleteAlarmById(id: Int) {
+        alarmDao.deleteAlarmById(id)
+    }
+
+    override suspend fun toggleAlarm(alarmId: Int) {
+        alarmDao.toggleAlarm(alarmId)
     }
 }

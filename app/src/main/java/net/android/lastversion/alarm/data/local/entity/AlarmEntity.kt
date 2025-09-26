@@ -1,4 +1,4 @@
-package net.android.lastversion.alarm.data.database
+package net.android.lastversion.alarm.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,12 +11,14 @@ data class AlarmEntity(
     val minute: Int,
     val amPm: String,
     val label: String,
-    val activeDays: String, // Lưu như string "1,0,1,1,1,0,0" (Mon-Sun)
-    val activeDaysText: String,
+    val activeDays: String, // Stored as "1,0,1,1,1,0,0" format
     val isEnabled: Boolean,
     val isSnoozeEnabled: Boolean,
     val isVibrationEnabled: Boolean,
     val isSoundEnabled: Boolean,
     val isSilentModeEnabled: Boolean,
-    val note: String
+    val note: String,
+    val soundUri: String,
+    val createdAt: Long,
+    val updatedAt: Long
 )

@@ -1,4 +1,4 @@
-package net.android.lastversion.alarm.util
+package net.android.lastversion.alarm.presentation.utils
 
 import android.content.Context
 import android.widget.Toast

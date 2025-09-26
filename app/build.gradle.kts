@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    id ("kotlin-parcelize")
     // Loại bỏ androidx.room plugin vì có thể conflict với KSP
 }
 
@@ -80,6 +81,12 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // Parcelize
+    implementation ("org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

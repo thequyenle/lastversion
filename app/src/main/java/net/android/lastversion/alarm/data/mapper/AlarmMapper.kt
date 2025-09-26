@@ -1,62 +1,55 @@
-
 package net.android.lastversion.alarm.data.mapper
 
-import net.android.lastversion.alarm.data.database.AlarmEntity
+import net.android.lastversion.alarm.data.local.entity.AlarmEntity
 import net.android.lastversion.alarm.domain.model.Alarm
 
 object AlarmMapper {
 
     fun entityToDomain(entity: AlarmEntity): Alarm {
-        // Parse activeDays string thành BooleanArray
-        val activeDaysArray = entity.activeDays.split(",")
-            .map { it.toBoolean() }
-            .toBooleanArray()
-
         return Alarm(
             id = entity.id,
             hour = entity.hour,
             minute = entity.minute,
             amPm = entity.amPm,
             label = entity.label,
-            activeDays = activeDaysArray,
-            activeDaysText = entity.activeDaysText,
+            activeDays = entity.activeDays.split(",").map { it.toBoolean() }.toBooleanArray(),
             isEnabled = entity.isEnabled,
             isSnoozeEnabled = entity.isSnoozeEnabled,
             isVibrationEnabled = entity.isVibrationEnabled,
             isSoundEnabled = entity.isSoundEnabled,
             isSilentModeEnabled = entity.isSilentModeEnabled,
-            note = entity.note
+            note = entity.note,
+            soundUri = entity.soundUri,
+            createdAt = entity.createdAt,
+            updatedAt = entity.updatedAt
         )
     }
-    fun domainToEntity(alarm: Alarm): AlarmEntity {
-        // Convert BooleanArray thành string để lưu database
-        val activeDaysString = alarm.activeDays.joinToString(",")
 
+    fun domainToEntity(alarm: Alarm): AlarmEntity {
         return AlarmEntity(
             id = alarm.id,
             hour = alarm.hour,
             minute = alarm.minute,
             amPm = alarm.amPm,
             label = alarm.label,
-            activeDays = activeDaysString,
-            activeDaysText = alarm.activeDaysText,
+            activeDays = alarm.activeDays.joinToString(","),
             isEnabled = alarm.isEnabled,
             isSnoozeEnabled = alarm.isSnoozeEnabled,
             isVibrationEnabled = alarm.isVibrationEnabled,
             isSoundEnabled = alarm.isSoundEnabled,
             isSilentModeEnabled = alarm.isSilentModeEnabled,
-            note = alarm.note
+            note = alarm.note,
+            soundUri = alarm.soundUri,
+            createdAt = alarm.createdAt,
+            updatedAt = System.currentTimeMillis()
         )
     }
-    fun entityListToDomainList(entities: List<AlarmEntity>): List<Alarm> {
-        return entities.map { entity ->
-            entityToDomain(entity)
-        }
+
+    fun entityListToDomain(entities: List<AlarmEntity>): List<Alarm> {
+        return entities.map { entityToDomain(it) }
     }
 
-    fun domainListToEntityList(alarms: List<Alarm>): List<AlarmEntity> {
-        return alarms.map { alarm ->
-            domainToEntity(alarm)
-        }
+    fun domainListToEntity(alarms: List<Alarm>): List<AlarmEntity> {
+        return alarms.map { domainToEntity(it) }
     }
 }

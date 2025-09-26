@@ -6,7 +6,9 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryVariant">#3700B3</color>
     <color name="colorOnPrimary">#FFFFFF</color>
-
+    <color name="primary_color">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="accent_color">#FF4081</color>
     <!-- Nền -->
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorOnBackground">#000000</color>

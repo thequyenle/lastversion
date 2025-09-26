@@ -7,6 +7,13 @@
     <uses-permission android:name="android.permission.VIBRATE" /> <!-- Notification permissions -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Foreground service permissions -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- Android 9+ requires specific foreground service types -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission
         android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
         tools:ignore="UnusedAttribute" /> <!-- Wake lock to keep service running -->
@@ -40,27 +47,29 @@
         android:theme="@style/Theme.Lastversion"
         tools:targetApi="31">
         <activity
-            android:name=".alarm.activity.EditAlarmActivity"
+            android:name=".alarm.presentation.activity.EditAlarmActivity"
             android:exported="false" />
-        <!-- ⚠️ QUAN TRỌNG: Đăng ký receivers -->
+        <!--  QUAN TRỌNG: Đăng ký receivers -->
         <receiver android:name=".alarm.infrastructure.receiver.AlarmReceiver"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <receiver android:name=".alarm.infrastructure.receiver.AlarmActionReceiver"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
-        <receiver android:name=".alarm.infrastructure.receiver.BootReceiver"
+        <receiver
+            android:name=".alarm.infrastructure.receiver.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
         <activity
-            android:name=".alarm.activity.SetAlarmActivity"
+            android:name=".alarm.presentation.activity.SetAlarmActivity"
             android:exported="false" /> <!-- Timer Service - handles background timer execution -->
         <service
             android:name="net.android.last.service.TimerService"

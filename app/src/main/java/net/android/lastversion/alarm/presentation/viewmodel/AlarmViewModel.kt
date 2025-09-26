@@ -1,258 +1,119 @@
 package net.android.lastversion.alarm.presentation.viewmodel
 
-import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import net.android.lastversion.alarm.domain.model.Alarm
-import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
-import net.android.lastversion.alarm.infrastructure.scheduler.AlarmSchedulerImpl
-import java.util.Calendar
-import java.util.Date
+import net.android.lastversion.alarm.domain.usecase.DeleteAlarmUseCase
+import net.android.lastversion.alarm.domain.usecase.GetAlarmsUseCase
+import net.android.lastversion.alarm.domain.usecase.SaveAlarmUseCase
+import net.android.lastversion.alarm.domain.usecase.ToggleAlarmUseCase
+import net.android.lastversion.alarm.infrastructure.scheduler.AlarmScheduler
 
 class AlarmViewModel(
-    private val repository: AlarmRepositoryImpl,
-    private val context: Context // ← Add context for AlarmScheduler
+    private val getAlarmsUseCase: GetAlarmsUseCase,
+    private val saveAlarmUseCase: SaveAlarmUseCase,
+    private val deleteAlarmUseCase: DeleteAlarmUseCase,
+    private val toggleAlarmUseCase: ToggleAlarmUseCase,
+    private val alarmScheduler: AlarmScheduler
 ) : ViewModel() {
 
-    companion object {
-        private const val TAG = "AlarmViewModel"
+    private val _uiState = MutableStateFlow(AlarmUiState())
+    val uiState: StateFlow<AlarmUiState> = _uiState.asStateFlow()
+
+    init {
+        loadAlarms()
     }
 
-    private val alarmScheduler = AlarmSchedulerImpl(context)
+    private fun loadAlarms() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
 
-    // LiveData cho danh sách alarm
-    val allAlarms: LiveData<List<Alarm>> = repository.getAllAlarms()
-        .map { entities ->
-            entities.map { entity ->
-                repository.convertToAlarmModel(entity)
-            }
+            getAlarmsUseCase()
+                .catch { error ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = error.message
+                    )
+                }
+                .collect { alarms ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        alarms = alarms,
+                        error = null
+                    )
+                }
         }
-        .asLiveData()
+    }
 
-    // Thêm alarm mới
-    fun insertAlarm(alarm: Alarm) {
+    fun saveAlarm(alarm: Alarm) {
         viewModelScope.launch {
             try {
-                Log.d(TAG, "=== INSERTING ALARM ===")
-                Log.d(TAG, "Alarm: ${alarm.hour}:${alarm.minute} ${alarm.amPm}")
-                Log.d(TAG, "Enabled: ${alarm.isEnabled}")
+                saveAlarmUseCase(alarm)
 
-                // 1. Save to database first
-                val entity = repository.convertToAlarmEntity(alarm)
-                repository.insertAlarm(entity)
-                Log.d(TAG, "Alarm saved to database")
-
-                // 2. Schedule with AlarmManager if enabled
                 if (alarm.isEnabled) {
-                    scheduleAlarmWithManager(alarm)
-                } else {
-                    Log.d(TAG, "Alarm is disabled - not scheduling")
+                    alarmScheduler.scheduleAlarm(alarm)
                 }
 
-                Log.d(TAG, "=== INSERT ALARM COMPLETE ===")
+                Log.d(TAG, "Alarm saved successfully")
             } catch (e: Exception) {
-                Log.e(TAG, "Error inserting alarm", e)
+                _uiState.value = _uiState.value.copy(error = e.message)
+                Log.e(TAG, "Error saving alarm", e)
             }
         }
     }
 
-    // Cập nhật alarm
-    fun updateAlarm(alarm: Alarm) {
-        viewModelScope.launch {
-            try {
-                Log.d(TAG, "=== UPDATING ALARM ===")
-                Log.d(TAG, "Alarm ID: ${alarm.id}, Enabled: ${alarm.isEnabled}")
-
-                // 1. Update database
-                val entity = repository.convertToAlarmEntity(alarm)
-                repository.updateAlarm(entity)
-                Log.d(TAG, "Alarm updated in database")
-
-                // 2. Cancel existing alarm first
-                alarmScheduler.cancelAlarm(alarm.id)
-                Log.d(TAG, "Existing alarm cancelled")
-
-                // 3. Schedule new alarm if enabled
-                if (alarm.isEnabled) {
-                    scheduleAlarmWithManager(alarm)
-                } else {
-                    Log.d(TAG, "Alarm is disabled - not rescheduling")
-                }
-
-                Log.d(TAG, "=== UPDATE ALARM COMPLETE ===")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating alarm", e)
-            }
-        }
-    }
-
-    // Xóa alarm
     fun deleteAlarm(alarm: Alarm) {
         viewModelScope.launch {
             try {
-                Log.d(TAG, "=== DELETING ALARM ===")
-                Log.d(TAG, "Alarm ID: ${alarm.id}")
-
-                // 1. Cancel alarm from AlarmManager
                 alarmScheduler.cancelAlarm(alarm.id)
-                Log.d(TAG, "Alarm cancelled from AlarmManager")
-
-                // 2. Delete from database
-                val entity = repository.convertToAlarmEntity(alarm)
-                repository.deleteAlarm(entity)
-                Log.d(TAG, "Alarm deleted from database")
-
-                Log.d(TAG, "=== DELETE ALARM COMPLETE ===")
+                deleteAlarmUseCase(alarm)
+                Log.d(TAG, "Alarm deleted successfully")
             } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(error = e.message)
                 Log.e(TAG, "Error deleting alarm", e)
             }
         }
     }
 
-    // Xóa alarm theo ID
-    fun deleteAlarmById(id: Int) {
+    fun toggleAlarm(alarmId: Int) {
         viewModelScope.launch {
             try {
-                Log.d(TAG, "Deleting alarm by ID: $id")
+                val alarm = _uiState.value.alarms.find { it.id == alarmId }
+                if (alarm != null) {
+                    if (alarm.isEnabled) {
+                        alarmScheduler.cancelAlarm(alarmId)
+                    } else {
+                        alarmScheduler.scheduleAlarm(alarm.copy(isEnabled = true))
+                    }
+                }
 
-                // Cancel from AlarmManager first
-                alarmScheduler.cancelAlarm(id)
-
-                // Then delete from database
-                repository.deleteAlarmById(id)
-
-                Log.d(TAG, "Alarm $id deleted completely")
+                toggleAlarmUseCase(alarmId)
+                Log.d(TAG, "Alarm toggled successfully")
             } catch (e: Exception) {
-                Log.e(TAG, "Error deleting alarm by ID", e)
-            }
-        }
-    }
-
-    // Toggle trạng thái alarm
-    fun toggleAlarm(alarm: Alarm) {
-        viewModelScope.launch {
-            try {
-                Log.d(TAG, "=== TOGGLING ALARM ===")
-                Log.d(TAG, "Alarm ID: ${alarm.id}")
-                Log.d(TAG, "Current state: ${alarm.isEnabled} -> New state: ${!alarm.isEnabled}")
-
-                val updatedAlarm = alarm.copy(isEnabled = !alarm.isEnabled)
-
-                // Update in database
-                updateAlarm(updatedAlarm)
-
-                Log.d(TAG, "=== TOGGLE ALARM COMPLETE ===")
-            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(error = e.message)
                 Log.e(TAG, "Error toggling alarm", e)
             }
         }
     }
 
-    /**
-     * Schedule alarm with AlarmManager
-     */
-    private fun scheduleAlarmWithManager(alarm: Alarm) {
-        try {
-            Log.d(TAG, "Scheduling alarm ${alarm.id} with AlarmManager...")
-
-            val triggerTime = calculateAlarmTime(alarm)
-            if (triggerTime != null && triggerTime > System.currentTimeMillis()) {
-                Log.d(TAG, "Calculated trigger time: ${Date(triggerTime)}")
-                alarmScheduler.scheduleAlarm(alarm.id, triggerTime, alarm)
-                Log.d(TAG, "Alarm ${alarm.id} scheduled successfully")
-            } else {
-                Log.w(TAG, "Invalid trigger time calculated: $triggerTime")
-                // If time is in the past, schedule for next occurrence
-                val nextTriggerTime = calculateNextAlarmTime(alarm)
-                if (nextTriggerTime != null) {
-                    Log.d(TAG, "Scheduling for next occurrence: ${Date(nextTriggerTime)}")
-                    alarmScheduler.scheduleAlarm(alarm.id, nextTriggerTime, alarm)
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error scheduling alarm with manager", e)
-        }
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
     }
 
-    /**
-     * Calculate alarm trigger time
-     */
-    private fun calculateAlarmTime(alarm: Alarm): Long? {
-        try {
-            val calendar = Calendar.getInstance()
-
-            // Convert 12-hour to 24-hour format
-            val hour24 = when {
-                alarm.amPm == "AM" && alarm.hour == 12 -> 0
-                alarm.amPm == "AM" -> alarm.hour
-                alarm.amPm == "PM" && alarm.hour == 12 -> 12
-                else -> alarm.hour + 12
-            }
-
-            calendar.apply {
-                set(Calendar.HOUR_OF_DAY, hour24)
-                set(Calendar.MINUTE, alarm.minute)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-
-            Log.d(TAG, "Calculated 24-hour time: $hour24:${alarm.minute}")
-            Log.d(TAG, "Target time: ${Date(calendar.timeInMillis)}")
-            Log.d(TAG, "Current time: ${Date(System.currentTimeMillis())}")
-
-            return calendar.timeInMillis
-        } catch (e: Exception) {
-            Log.e(TAG, "Error calculating alarm time", e)
-            return null
-        }
-    }
-
-    /**
-     * Calculate next alarm time (if current time is in the past)
-     */
-    private fun calculateNextAlarmTime(alarm: Alarm): Long? {
-        val calendar = Calendar.getInstance()
-
-        // Convert to 24-hour format
-        val hour24 = when {
-            alarm.amPm == "AM" && alarm.hour == 12 -> 0
-            alarm.amPm == "AM" -> alarm.hour
-            alarm.amPm == "PM" && alarm.hour == 12 -> 12
-            else -> alarm.hour + 12
-        }
-
-        calendar.apply {
-            set(Calendar.HOUR_OF_DAY, hour24)
-            set(Calendar.MINUTE, alarm.minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-
-        // If time has passed today, schedule for tomorrow
-        if (calendar.timeInMillis <= System.currentTimeMillis()) {
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-        }
-
-        return calendar.timeInMillis
+    companion object {
+        private const val TAG = "AlarmViewModel"
     }
 }
 
-// Updated ViewModelFactory with Context
-class AlarmViewModelFactory(
-    private val repository: AlarmRepositoryImpl,
-    private val context: Context // ← Add context parameter
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AlarmViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return AlarmViewModel(repository, context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+data class AlarmUiState(
+    val isLoading: Boolean = false,
+    val alarms: List<Alarm> = emptyList(),
+    val error: String? = null
+)
