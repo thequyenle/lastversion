@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import net.android.lastversion.databinding.FragmentTimerBinding
 import net.android.last.service.TimerService
 import net.android.lastversion.R
-import net.android.lastversion.receiver.TimeUpReceiver.Companion.stopSound
 
 class TimerFragment : Fragment() {
 
@@ -29,12 +28,11 @@ class TimerFragment : Fragment() {
     private var selectedResId: Int = R.raw.astro
     private var totalSeconds = 0
     private var currentSeconds = 0
-
-    // Thêm biến để track trạng thái pause
     private var isPaused = false
 
-    // UI-only timer for display updates - NO SOUND HANDLING
-    private var uiTimer: CountDownTimer? = null
+    // Handler để sync với Service
+    private var syncHandler: Handler? = null
+    private var syncRunnable: Runnable? = null
 
     private val availableSounds = listOf(
         "Astro" to R.raw.astro,
@@ -65,6 +63,22 @@ class TimerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
+
+        // Check if timer is already running
+        if (TimerService.isServiceRunning) {
+            currentSeconds = TimerService.currentRemainingSeconds
+            totalSeconds = TimerService.currentTotalSeconds
+            isPaused = TimerService.isCurrentlyPaused
+
+            if (currentSeconds > 0) {
+                // Timer still running
+                switchToRunningState()
+                startSyncTimer()
+            } else {
+                // Timer completed (currentSeconds = 0)
+                switchToTimesUpState()
+            }
+        }
     }
 
     private fun setupUI() {
@@ -124,68 +138,49 @@ class TimerFragment : Fragment() {
         binding.btnRestart.setOnClickListener { goBackToPicker() }
         binding.btnStopTimesUp.setOnClickListener { goBackToPicker() }
 
-        // Thêm click listener cho btnStop để pause/resume
+        // Pause/Resume button with debounce
         var lastClickTime = 0L
-        val debounceDelay = 1000L //
+        val debounceDelay = 500L
         binding.btnStop.setOnClickListener {
-
             val current = System.currentTimeMillis()
             if (current - lastClickTime < debounceDelay) return@setOnClickListener
             lastClickTime = current
-            togglePauseResume() }
+            togglePauseResume()
+        }
     }
 
     private fun togglePauseResume() {
         if (isPaused) {
-            // Đang pause, bây giờ resume
             resumeTimer()
         } else {
-            // Đang chạy, bây giờ pause
             pauseTimer()
         }
     }
-    private fun stopTimerCompletely() {
-        // Dừng UI timer
-        // Gửi STOP đến TimerService
-        val intent = Intent(requireContext(), TimerService::class.java).apply {
-            action = TimerService.ACTION_STOP
-        }
-        requireContext().startService(intent)
-        Log.d("TimerFragment", "Timer stopped completely by user")
-    }
+
     private fun pauseTimer() {
         isPaused = true
 
-        // Dừng UI timer
-        uiTimer?.cancel()
-
-        // Gửi pause command cho service
+        // Send pause command to service
         val intent = Intent(requireContext(), TimerService::class.java).apply {
             action = TimerService.ACTION_PAUSE
         }
         requireContext().startService(intent)
 
-        // Cập nhật button text
         binding.btnStop.text = "Continue"
-        Log.d("TimerFragment", "Timer paused at $currentSeconds seconds")
+        Log.d("TimerFragment", "Timer paused")
     }
 
     private fun resumeTimer() {
         isPaused = false
 
-        // Gửi resume command cho service
+        // Send resume command to service
         val intent = Intent(requireContext(), TimerService::class.java).apply {
             action = TimerService.ACTION_RESUME
         }
         requireContext().startService(intent)
 
-        // Resume UI timer từ vị trí hiện tại
-        startUITimerFromCurrent()
-
-        // Cập nhật button text
         binding.btnStop.text = "Stop"
-
-        Log.d("TimerFragment", "Timer resumed from $currentSeconds seconds")
+        Log.d("TimerFragment", "Timer resumed")
     }
 
     private fun startTimer() {
@@ -211,54 +206,56 @@ class TimerFragment : Fragment() {
         }
         ContextCompat.startForegroundService(requireContext(), intent)
 
-        // Start UI timer for display only
+        // Start syncing with service
         currentSeconds = totalSeconds
-        startUITimer()
         switchToRunningState()
+        startSyncTimer()
 
         Log.d("TimerFragment", "Timer started: $totalSeconds seconds")
     }
 
-    private fun startUITimer() {
-        uiTimer?.cancel()
+    private fun startSyncTimer() {
+        stopSyncTimer()
 
-        uiTimer = object : CountDownTimer(currentSeconds * 1000L, 1000L) {
-            override fun onTick(millisUntilFinished: Long) {
-                if (!isPaused) {
-                    currentSeconds = (millisUntilFinished / 1000).toInt() + 1
+        syncHandler = Handler(Looper.getMainLooper())
+        syncRunnable = object : Runnable {
+            override fun run() {
+                // Read from Service's static variables
+                if (TimerService.isServiceRunning) {
+                    currentSeconds = TimerService.currentRemainingSeconds
+                    isPaused = TimerService.isCurrentlyPaused
+
                     updateUI(currentSeconds, totalSeconds)
+
+                    // Update button text based on pause state
+                    binding.btnStop.text = if (isPaused) "Continue" else "Stop"
+
+                    if (currentSeconds == 0 && !isPaused) {
+                        // Timer completed
+                        switchToTimesUpState()
+                        stopSyncTimer()
+                    } else {
+                        // Continue syncing
+                        syncHandler?.postDelayed(this, 100) // Check every 100ms for smooth UI
+                    }
+                } else {
+                    // Service stopped
+                    if (binding.layoutRunning.visibility == View.VISIBLE) {
+                        switchToPickerState()
+                    }
+                    stopSyncTimer()
                 }
             }
-
-            override fun onFinish() {
-                if (!isPaused) {
-                    currentSeconds = 0
-                    updateUI(0, totalSeconds)
-                    switchToTimesUpState()
-                }
-            }
-        }.start()
-
-        updateUI(currentSeconds, totalSeconds)
+        }
+        syncHandler?.post(syncRunnable!!)
     }
 
-    private fun startUITimerFromCurrent() {
-        uiTimer?.cancel()
-
-        uiTimer = object : CountDownTimer(currentSeconds * 1000L, 1000L) {
-            override fun onTick(millisUntilFinished: Long) {
-                currentSeconds = (millisUntilFinished / 1000).toInt() + 1
-                updateUI(currentSeconds, totalSeconds)
-            }
-
-            override fun onFinish() {
-                currentSeconds = 0
-                updateUI(0, totalSeconds)
-                switchToTimesUpState()
-            }
-        }.start()
-
-        updateUI(currentSeconds, totalSeconds)
+    private fun stopSyncTimer() {
+        syncRunnable?.let {
+            syncHandler?.removeCallbacks(it)
+            syncRunnable = null
+        }
+        syncHandler = null
     }
 
     private fun updateUI(remaining: Int, total: Int) {
@@ -281,8 +278,8 @@ class TimerFragment : Fragment() {
         }
         requireContext().startService(intent)
 
-        // Stop UI timer và reset state
-        uiTimer?.cancel()
+        // Stop syncing and reset state
+        stopSyncTimer()
         isPaused = false
 
         // Reset UI
@@ -296,7 +293,7 @@ class TimerFragment : Fragment() {
         binding.layoutTimesUp.visibility = View.GONE
 
         // Reset button text
-        binding.btnStop.text = "Stop"
+        binding.btnStop.text = if (isPaused) "Continue" else "Stop"
     }
 
     private fun switchToPickerState() {
@@ -341,9 +338,32 @@ class TimerFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Check service state when fragment resumes
+        if (TimerService.isServiceRunning && binding.layoutRunning.visibility != View.VISIBLE) {
+            currentSeconds = TimerService.currentRemainingSeconds
+            totalSeconds = TimerService.currentTotalSeconds
+            isPaused = TimerService.isCurrentlyPaused
+
+            if (currentSeconds > 0) {
+                switchToRunningState()
+                startSyncTimer()
+            } else if (currentSeconds == 0) {
+                switchToTimesUpState()
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Stop syncing when app goes to background to save battery
+        stopSyncTimer()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        uiTimer?.cancel()
+        stopSyncTimer()
         _binding = null
     }
 }

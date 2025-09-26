@@ -32,6 +32,23 @@ class TimerService : Service() {
         const val EXTRA_SOUND_RES_ID = "SOUND_RES_ID"
 
         private const val BACKUP_ALARM_ID = 1000
+
+        // Static state for Fragment to read
+        @JvmStatic
+        var currentRemainingSeconds: Int = 0
+            private set
+
+        @JvmStatic
+        var currentTotalSeconds: Int = 0
+            private set
+
+        @JvmStatic
+        var isCurrentlyPaused: Boolean = false
+            private set
+
+        @JvmStatic
+        var isServiceRunning: Boolean = false
+            private set
     }
 
     // Timer state
@@ -40,9 +57,6 @@ class TimerService : Service() {
     private var isRunning = false
     private var isPaused = false
     private var isCompleted = false
-    private var hasTimerEnded = false
-    // Timing precision
-    private var lastUpdateTime = 0L
 
     // Sound config
     private var soundUri: Uri? = null
@@ -53,9 +67,6 @@ class TimerService : Service() {
     private var countdownHandler: Handler? = null
     private var countdownRunnable: Runnable? = null
     private var wakeLock: PowerManager.WakeLock? = null
-
-
-    // AlarmManager backup - CHỈ MỘT ALARM DUY NHẤT
     private var alarmManager: AlarmManager? = null
 
     override fun onCreate() {
@@ -77,12 +88,13 @@ class TimerService : Service() {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Timer",
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_LOW  // Đổi từ HIGH → LOW để không phát âm thanh
             ).apply {
                 description = "Timer countdown and controls"
                 enableLights(true)
                 lightColor = Color.parseColor("#76E0C1")
-                enableVibration(false)
+                enableVibration(false)  // Tắt rung
+                setSound(null, null)  // Tắt âm thanh notification
                 setBypassDnd(true)
             }
             val notificationManager = getSystemService(NotificationManager::class.java)
@@ -98,7 +110,7 @@ class TimerService : Service() {
 
     private fun handleAction(intent: Intent?) {
         val action = intent?.action ?: return
-        Log.d("TimerService", "Action: $action, State: running=$isRunning, paused=$isPaused, completed=$isCompleted, remaining=$remainingSeconds")
+        Log.d("TimerService", "Action: $action")
 
         when (action) {
             ACTION_START -> startTimer(intent)
@@ -109,13 +121,7 @@ class TimerService : Service() {
     }
 
     private fun startTimer(intent: Intent) {
-        hasTimerEnded = false
-        if (isRunning && !isCompleted) {
-            Log.w("TimerService", "Timer already running")
-            return
-        }
-
-        // RESET HOÀN TOÀN
+        // Reset everything first
         cleanupEverything()
 
         totalSeconds = intent.getIntExtra(EXTRA_SECONDS, 0)
@@ -131,11 +137,16 @@ class TimerService : Service() {
             return
         }
 
-        // Initialize
+        // Initialize state
         isRunning = true
         isPaused = false
         isCompleted = false
-        lastUpdateTime = System.currentTimeMillis()
+
+        // Update static vars for Fragment
+        currentRemainingSeconds = remainingSeconds
+        currentTotalSeconds = totalSeconds
+        isCurrentlyPaused = false
+        isServiceRunning = true
 
         // Setup
         acquireWakeLock()
@@ -147,46 +158,54 @@ class TimerService : Service() {
     }
 
     private fun pauseTimer() {
-        hasTimerEnded = true
-
         if (!isRunning || isPaused || isCompleted) {
             Log.w("TimerService", "Cannot pause - invalid state")
             return
         }
+
         isPaused = true
-        // Update remaining time accurately
-        updateRemainingTime()
-        // Stop countdown và cancel alarm
+        isCurrentlyPaused = true
+
         stopCountdown()
-        cancelAllAlarms() // QUAN TRỌNG
+        cancelAllAlarms()
         updateNotification()
         stopSound()
+
         Log.d("TimerService", "Timer paused at $remainingSeconds seconds")
     }
 
     private fun resumeTimer() {
-        hasTimerEnded = false
-        isPaused = false
-        lastUpdateTime = System.currentTimeMillis()
+        if (!isRunning || !isPaused || isCompleted) {
+            Log.w("TimerService", "Cannot resume - invalid state")
+            return
+        }
 
-        // VALIDATE remaining time
+        isPaused = false
+        isCurrentlyPaused = false
+
         if (remainingSeconds <= 0) {
             Log.w("TimerService", "No time left to resume")
             onTimerCompleted()
             return
         }
 
-        // Reschedule alarm và start countdown
         scheduleBackupAlarm()
         startCountdown()
-
         updateNotification()
+
         Log.d("TimerService", "Timer resumed from $remainingSeconds seconds")
     }
 
     private fun stopTimer() {
         Log.d("TimerService", "Stopping timer...")
         cleanupEverything()
+
+        // Reset static vars
+        currentRemainingSeconds = 0
+        currentTotalSeconds = 0
+        isCurrentlyPaused = false
+        isServiceRunning = false
+
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
         Log.d("TimerService", "Timer stopped")
@@ -201,17 +220,6 @@ class TimerService : Service() {
         cancelAllAlarms()
         stopSound()
         releaseWakeLock()
-    }
-
-    private fun updateRemainingTime() {
-        if (isPaused || !isRunning) return
-
-        val currentTime = System.currentTimeMillis()
-        val elapsedSeconds = ((currentTime - lastUpdateTime) / 1000).toInt()
-        remainingSeconds = maxOf(0, remainingSeconds - elapsedSeconds)
-        lastUpdateTime = currentTime
-
-        Log.d("TimerService", "Time updated: remaining=$remainingSeconds")
     }
 
     private fun acquireWakeLock() {
@@ -235,10 +243,8 @@ class TimerService : Service() {
     }
 
     private fun scheduleBackupAlarm() {
-        // ALWAYS cancel first
         cancelAllAlarms()
 
-        // Validate remaining time
         if (remainingSeconds <= 0) {
             Log.w("TimerService", "Not scheduling alarm - no time remaining")
             return
@@ -246,8 +252,8 @@ class TimerService : Service() {
 
         try {
             val intent = Intent(this, TimerBackupReceiver::class.java).apply {
-                putExtra(EXTRA_SOUND_URI, soundUri?.toString())
-                putExtra(EXTRA_SOUND_RES_ID, soundResId)
+                putExtra("SOUND_URI", soundUri?.toString())
+                putExtra("SOUND_RES_ID", soundResId)
             }
 
             val pendingIntent = PendingIntent.getBroadcast(
@@ -257,20 +263,13 @@ class TimerService : Service() {
 
             val triggerTime = System.currentTimeMillis() + (remainingSeconds * 1000L)
 
-            // VALIDATION - đảm bảo trigger time trong tương lai
-            if (triggerTime <= System.currentTimeMillis() + 1000) {
-                Log.w("TimerService", "Alarm trigger time too close, completing now")
-                onTimerCompleted()
-                return
-            }
-
             alarmManager?.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 triggerTime,
                 pendingIntent
             )
 
-            Log.d("TimerService", "Backup alarm scheduled for $remainingSeconds seconds (at $triggerTime)")
+            Log.d("TimerService", "Backup alarm scheduled for $remainingSeconds seconds")
         } catch (e: Exception) {
             Log.e("TimerService", "Failed to schedule backup alarm", e)
         }
@@ -291,7 +290,7 @@ class TimerService : Service() {
     }
 
     private fun startCountdown() {
-        stopCountdown() // Ensure no duplicate
+        stopCountdown()
 
         countdownHandler = Handler(Looper.getMainLooper())
         countdownRunnable = object : Runnable {
@@ -302,12 +301,12 @@ class TimerService : Service() {
                         return
                     }
                     isPaused -> {
-                        // Khi pause, chỉ check lại
-                        countdownHandler?.postDelayed(this, 1000)
+                        // Don't decrement when paused, just check again later
+                        countdownHandler?.postDelayed(this, 100) // Check more frequently when paused
                     }
                     remainingSeconds > 0 -> {
                         remainingSeconds--
-                        lastUpdateTime = System.currentTimeMillis()
+                        currentRemainingSeconds = remainingSeconds // Update static var
                         updateNotification()
                         countdownHandler?.postDelayed(this, 1000)
                     }
@@ -328,20 +327,18 @@ class TimerService : Service() {
     }
 
     private fun onTimerCompleted() {
-        if (hasTimerEnded) {
-            Log.d("TimerService", "Timer was manually paused/stopped — skip onTimerCompleted()")
-            return
-        }
         if (isCompleted) {
             Log.w("TimerService", "Already completed, ignoring")
             return
         }
 
         Log.d("TimerService", "Timer completed!")
-        hasTimerEnded = true
         isCompleted = true
         isRunning = false
-        cancelAllAlarms() // No more backup needed
+        isServiceRunning = false
+        currentRemainingSeconds = 0
+
+        cancelAllAlarms()
 
         // Show completion notification
         val completionNotification = buildCompletionNotification()
@@ -421,19 +418,14 @@ class TimerService : Service() {
             mediaPlayer?.let { player ->
                 if (player.isPlaying) {
                     player.stop()
-                    Log.d("TimerService", "Sound stopped")
                 }
                 player.release()
-                Log.d("TimerService", "MediaPlayer released")
                 mediaPlayer = null
-            } ?: run {
-                Log.d("TimerService", "No mediaPlayer to stop")
             }
         } catch (e: Exception) {
             Log.w("TimerService", "Error stopping sound", e)
         }
     }
-
 
     private fun buildNotification(): Notification {
         val contentIntent = PendingIntent.getActivity(
@@ -460,8 +452,10 @@ class TimerService : Service() {
             .setContentIntent(contentIntent)
             .setColor(Color.parseColor("#76E0C1"))
             .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setSilent(true)  // Quan trọng: Tắt âm thanh khi update
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)  // Dùng DEFAULT thay vì LOW để hiện buttons
             .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)  // Hiện đầy đủ trên lock screen
             .addAction(R.drawable.ic_stopwatch_enable, pauseResumeText, pauseResumeIntent)
             .addAction(R.drawable.ic_stopwatch_enable, "Stop", stopIntent)
             .build()
@@ -521,6 +515,13 @@ class TimerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         cleanupEverything()
+
+        // Reset static vars
+        currentRemainingSeconds = 0
+        currentTotalSeconds = 0
+        isCurrentlyPaused = false
+        isServiceRunning = false
+
         Log.d("TimerService", "Service destroyed")
     }
 
