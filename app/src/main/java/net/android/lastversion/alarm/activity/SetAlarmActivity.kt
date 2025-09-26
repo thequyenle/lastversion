@@ -28,7 +28,7 @@ class SetAlarmActivity : AppCompatActivity() {
         const val EXTRA_IS_SILENT_MODE_ENABLED = "extra_is_silent_mode_enabled"
         const val EXTRA_NOTE = "extra_note"
         const val EXTRA_IS_EDIT_MODE = "extra_is_edit_mode"
-        const val RESULT_DELETED = 100
+        const val RESULT_DELETED = 100 // If user deletes alarm in edit mode
     }
 
     private lateinit var hourPicker: NumberPicker
@@ -37,7 +37,7 @@ class SetAlarmActivity : AppCompatActivity() {
     private lateinit var btnSave: TextView
     private lateinit var btnBack: ImageView
 
-    // Active days checkboxes - Layout order: M, T, W, T, F, S, S
+    // Active days checkboxes
     private lateinit var cbMonday: CheckBox
     private lateinit var cbTuesday: CheckBox
     private lateinit var cbWednesday: CheckBox
@@ -45,7 +45,6 @@ class SetAlarmActivity : AppCompatActivity() {
     private lateinit var cbFriday: CheckBox
     private lateinit var cbSaturday: CheckBox
     private lateinit var cbSunday: CheckBox
-    // Domain model order: [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
     private lateinit var checkboxes: List<CheckBox>
 
     // Options switches
@@ -56,16 +55,20 @@ class SetAlarmActivity : AppCompatActivity() {
 
     // Other options
     private lateinit var etAlarmNote: EditText
+    private lateinit var etLabel: EditText
     private lateinit var tvPreview: TextView
 
     // ViewModel
+    // Fixed code
     private val alarmViewModel: AlarmViewModel by viewModels {
         AlarmViewModelFactory(
             AlarmRepositoryImpl(
                 AlarmDatabase.getDatabase(this).alarmDao()
-            )
+            ),
+            this.applicationContext // ← Use applicationContext instead
         )
     }
+
 
     // Variables for edit mode
     private var isEditMode = false
@@ -88,26 +91,16 @@ class SetAlarmActivity : AppCompatActivity() {
         btnSave = findViewById(R.id.btnSave)
         btnBack = findViewById(R.id.btnBack)
 
-        // Bind checkboxes theo đúng ID trong layout
+        cbSunday = findViewById(R.id.cbSunday)
         cbMonday = findViewById(R.id.cbMonday)
         cbTuesday = findViewById(R.id.cbTuesday)
         cbWednesday = findViewById(R.id.cbWednesday)
         cbThursday = findViewById(R.id.cbThursday)
         cbFriday = findViewById(R.id.cbFriday)
         cbSaturday = findViewById(R.id.cbSaturday)
-        cbSunday = findViewById(R.id.cbSunday)
 
-        // IMPORTANT: Order theo domain model [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
-        // để match với activeDays BooleanArray
-        checkboxes = listOf(
-            cbSunday,    // index 0 = Sunday
-            cbMonday,    // index 1 = Monday
-            cbTuesday,   // index 2 = Tuesday
-            cbWednesday, // index 3 = Wednesday
-            cbThursday,  // index 4 = Thursday
-            cbFriday,    // index 5 = Friday
-            cbSaturday   // index 6 = Saturday
-        )
+        // Tạo danh sách checkboxes theo thứ tự Sun, Mon, Tue, Wed, Thu, Fri, Sat
+        checkboxes = listOf(cbSunday, cbMonday, cbTuesday, cbWednesday, cbThursday, cbFriday, cbSaturday)
 
         switchSnooze = findViewById(R.id.switchSnooze)
         switchVibration = findViewById(R.id.switchVibration)
@@ -115,6 +108,7 @@ class SetAlarmActivity : AppCompatActivity() {
         switchSilentMode = findViewById(R.id.switchSilentMode)
 
         etAlarmNote = findViewById(R.id.etAlarmNote)
+        etLabel = findViewById(R.id.etLabel) // Thêm EditText cho label nếu có trong layout
         tvPreview = findViewById(R.id.tvPreview)
     }
 
@@ -133,18 +127,18 @@ class SetAlarmActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         amPmSpinner.adapter = adapter
 
-        // Set default values if not in edit mode
+        // Set default values nếu không phải edit mode
         if (!isEditMode) {
             val currentTime = TimeUtils.getCurrentTime12H()
             hourPicker.value = currentTime.first
             minutePicker.value = currentTime.second
             amPmSpinner.setSelection(if (currentTime.third == "AM") 0 else 1)
 
-            // Set default switches to match layout defaults
+            // Set default switches
             switchSnooze.isChecked = true
-            switchVibration.isChecked = false  // Layout default
+            switchVibration.isChecked = true
             switchSound.isChecked = true
-            switchSilentMode.isChecked = true  // Layout default
+            switchSilentMode.isChecked = false
         }
     }
 
@@ -161,10 +155,10 @@ class SetAlarmActivity : AppCompatActivity() {
             Toast.makeText(this, "Preview alarm sound", Toast.LENGTH_SHORT).show()
         }
 
-        // Add listener to checkboxes for future enhancements
+        // Add listener to update active days text when checkboxes change
         checkboxes.forEach { checkbox ->
             checkbox.setOnCheckedChangeListener { _, _ ->
-                // Could add real-time preview of active days text here
+                // Có thể thêm logic để update preview text ở đây
             }
         }
     }
@@ -173,7 +167,7 @@ class SetAlarmActivity : AppCompatActivity() {
         isEditMode = intent.getBooleanExtra(EXTRA_IS_EDIT_MODE, false)
 
         if (isEditMode) {
-            // Load existing alarm data for editing
+            // Load dữ liệu từ intent để edit
             alarmId = intent.getIntExtra(EXTRA_ALARM_ID, 0)
 
             hourPicker.value = intent.getIntExtra(EXTRA_HOUR, 6)
@@ -182,7 +176,10 @@ class SetAlarmActivity : AppCompatActivity() {
             val amPm = intent.getStringExtra(EXTRA_AM_PM) ?: "AM"
             amPmSpinner.setSelection(if (amPm == "AM") 0 else 1)
 
-            // Load active days - match với domain model order
+            val label = intent.getStringExtra(EXTRA_LABEL) ?: "Alarm"
+            etLabel?.setText(label)
+
+            // Load active days
             val activeDays = intent.getBooleanArrayExtra(EXTRA_ACTIVE_DAYS) ?: BooleanArray(7) { false }
             checkboxes.forEachIndexed { index, checkbox ->
                 checkbox.isChecked = activeDays[index]
@@ -190,17 +187,17 @@ class SetAlarmActivity : AppCompatActivity() {
 
             // Load switches
             switchSnooze.isChecked = intent.getBooleanExtra(EXTRA_IS_SNOOZE_ENABLED, true)
-            switchVibration.isChecked = intent.getBooleanExtra(EXTRA_IS_VIBRATION_ENABLED, false)
+            switchVibration.isChecked = intent.getBooleanExtra(EXTRA_IS_VIBRATION_ENABLED, true)
             switchSound.isChecked = intent.getBooleanExtra(EXTRA_IS_SOUND_ENABLED, true)
-            switchSilentMode.isChecked = intent.getBooleanExtra(EXTRA_IS_SILENT_MODE_ENABLED, true)
+            switchSilentMode.isChecked = intent.getBooleanExtra(EXTRA_IS_SILENT_MODE_ENABLED, false)
 
             val note = intent.getStringExtra(EXTRA_NOTE) ?: ""
             etAlarmNote.setText(note)
 
             // Update title
-            supportActionBar?.title = "Edit Alarm"
+            title = "Edit Alarm"
         } else {
-            supportActionBar?.title = "Set Alarm"
+            title = "Add Alarm"
         }
     }
 
@@ -209,7 +206,7 @@ class SetAlarmActivity : AppCompatActivity() {
         val minute = minutePicker.value
         val amPm = amPmSpinner.selectedItem.toString()
 
-        // Get active days - theo domain model order [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
+        // Get active days
         val activeDays = BooleanArray(7) { index ->
             checkboxes[index].isChecked
         }
@@ -217,8 +214,8 @@ class SetAlarmActivity : AppCompatActivity() {
         // Generate active days text
         val activeDaysText = TimeUtils.formatActiveDaysText(activeDays)
 
-        // Get label - default since layout không có label EditText
-        val label = "Alarm"
+        // Get label
+        val label = etLabel?.text?.toString()?.trim()?.takeIf { it.isNotEmpty() } ?: "Alarm"
 
         // Get options
         val isSnoozeEnabled = switchSnooze.isChecked
@@ -229,14 +226,14 @@ class SetAlarmActivity : AppCompatActivity() {
 
         // Create alarm object
         val alarm = Alarm(
-            id = if (isEditMode) alarmId else 0, // 0 for auto-generate
+            id = if (isEditMode) alarmId else 0, // 0 for new alarm (auto-generate)
             hour = hour,
             minute = minute,
             amPm = amPm,
             label = label,
             activeDays = activeDays,
             activeDaysText = activeDaysText,
-            isEnabled = true, // New/edited alarms enabled by default
+            isEnabled = true, // New/edited alarms are enabled by default
             isSnoozeEnabled = isSnoozeEnabled,
             isVibrationEnabled = isVibrationEnabled,
             isSoundEnabled = isSoundEnabled,
@@ -244,7 +241,7 @@ class SetAlarmActivity : AppCompatActivity() {
             note = alarmNote
         )
 
-        // Save to database via ViewModel
+        // Save to database
         if (isEditMode) {
             alarmViewModel.updateAlarm(alarm)
             Toast.makeText(this, "Alarm updated", Toast.LENGTH_SHORT).show()
@@ -253,8 +250,21 @@ class SetAlarmActivity : AppCompatActivity() {
             Toast.makeText(this, "Alarm added", Toast.LENGTH_SHORT).show()
         }
 
-        // Return success result
+        // Set result and finish
         setResult(RESULT_OK)
         finish()
+    }
+
+    private fun getActiveDaysList(): List<String> {
+        val activeDays = mutableListOf<String>()
+        val dayNames = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+
+        checkboxes.forEachIndexed { index, checkbox ->
+            if (checkbox.isChecked) {
+                activeDays.add(dayNames[index])
+            }
+        }
+
+        return activeDays
     }
 }

@@ -78,19 +78,29 @@ class NotificationManagerImpl(private val context: Context) : net.android.lastve
         isSoundEnabled: Boolean,
         isSnoozeEnabled: Boolean
     ) {
+        // Add entry log
+        Log.d(TAG, "=== SHOWING ALARM NOTIFICATION ===")
+        Log.d(TAG, "Alarm ID: $alarmId")
+        Log.d(TAG, "Title: $title")
+        Log.d(TAG, "Message: $message")
+        Log.d(TAG, "Vibration: $isVibrationEnabled, Sound: $isSoundEnabled, Snooze: $isSnoozeEnabled")
         // Early permission check
         if (!canShowNotifications()) {
+            Log.e(TAG, "Cannot show notifications - permission/settings issue")
             return
         }
+        Log.d(TAG, "Permission checks passed - building notification...")
 
         try {
             val notification = buildAlarmNotification(
                 alarmId, title, message,
                 isVibrationEnabled, isSoundEnabled, isSnoozeEnabled
             )
+            Log.d(TAG, "Notification built successfully - showing notification...")
 
             // Safe notification call with explicit permission check
             showNotificationSafely(alarmId, notification)
+            Log.d(TAG, "=== NOTIFICATION PROCESS COMPLETE ===")
 
         } catch (e: Exception) {
             Log.e(TAG, "Error showing alarm notification", e)
@@ -130,8 +140,11 @@ class NotificationManagerImpl(private val context: Context) : net.android.lastve
      * Check if we can show notifications (combines all permission checks)
      */
     private fun canShowNotifications(): Boolean {
+        Log.d(TAG, "Checking notification permissions...")
         val hasPermission = hasNotificationPermission()
         val isEnabled = notificationManager.areNotificationsEnabled()
+        Log.d(TAG, "Has notification permission: $hasPermission")
+        Log.d(TAG, "Notifications enabled: $isEnabled")
 
         if (!hasPermission) {
             Log.w(TAG, "Notification permission not granted")
@@ -152,19 +165,23 @@ class NotificationManagerImpl(private val context: Context) : net.android.lastve
      * Safely show notification with proper permission handling
      */
     private fun showNotificationSafely(notificationId: Int, notification: android.app.Notification) {
+
+        Log.d(TAG, "Attempting to show notification ID: $notificationId")
         try {
             // Double-check permission right before notify call to satisfy IDE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                     notificationManager.notify(notificationId, notification)
-                    Log.d(TAG, "Notification shown for ID: $notificationId")
+                    Log.d(TAG, "SUCCESS: Notification shown for ID: $notificationId")
                 } else {
-                    Log.w(TAG, "Cannot show notification - permission check failed at notify time")
+                    Log.e(TAG, "FAILED: Cannot show notification - permission check failed at notify time")
                 }
             } else {
                 // No runtime permission needed for older versions
+                Log.d(TAG, "Android < 13 - showing notification without runtime permission")
+
                 notificationManager.notify(notificationId, notification)
-                Log.d(TAG, "Notification shown for ID: $notificationId")
+                Log.d(TAG, "SUCCESS: Notification shown for ID: $notificationId")
             }
         } catch (e: SecurityException) {
             Log.e(TAG, "SecurityException when showing notification", e)

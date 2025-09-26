@@ -7,12 +7,12 @@ data class Alarm(
     val amPm: String,
     val label: String,
     val activeDays: BooleanArray,
-    val activeDaysText: String,
+    val activeDaysText: String = "Never", // ← Default value
     val isEnabled: Boolean,
     val isSnoozeEnabled: Boolean,
     val isVibrationEnabled: Boolean,
     val isSoundEnabled: Boolean,
-    val isSilentModeEnabled: Boolean,
+    val isSilentModeEnabled: Boolean = false, // ← Default value
     val note: String
 ) {
     fun getTimeString(): String {

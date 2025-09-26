@@ -64,6 +64,29 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <Button
+            android:id="@+id/btnTestAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test Alarm (30s)"
+            android:layout_margin="16dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+        <Button
+            android:id="@+id/btnTestBootReceiver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TEST BOOT RECEIVER"
+            android:layout_margin="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:backgroundTint="@android:color/holo_orange_light" />
         <com.google.android.material.floatingactionbutton.FloatingActionButton
          android:id="@+id/fabAddAlarm"
          android:layout_width="wrap_content"
