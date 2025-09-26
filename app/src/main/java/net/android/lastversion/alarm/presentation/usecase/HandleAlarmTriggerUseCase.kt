@@ -1,28 +1,24 @@
 // alarm/presentation/usecase/HandleAlarmTriggerUseCase.kt
 package net.android.lastversion.alarm.presentation.usecase
 
-import net.android.lastversion.alarm.domain.repository.AlarmRepository
+import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
+import net.android.lastversion.alarm.domain.model.Alarm
 import net.android.lastversion.alarm.infrastructure.notification.NotificationManager
 import net.android.lastversion.alarm.infrastructure.scheduler.AlarmScheduler
 
 /**
- * HandleAlarmTriggerUseCase - Business logic khi alarm được trigger bởi Android system
+ * HandleAlarmTriggerUseCase - Business logic khi alarm được trigger
  *
- * Responsibilities:
- * - Show notification với proper settings (sound, vibration, snooze)
- * - Reschedule recurring alarms cho lần kêu tiếp theo
- * - Handle one-time alarms (disable after trigger)
- * - Log alarm trigger for analytics (optional)
+ * Works directly với AlarmRepositoryImpl methods hiện tại
  */
 class HandleAlarmTriggerUseCase(
-    private val repository: AlarmRepository,
+    private val repository: AlarmRepositoryImpl, // Concrete implementation
     private val notificationManager: NotificationManager,
     private val alarmScheduler: AlarmScheduler
 ) {
 
     /**
      * Handle alarm trigger với alarm data từ intent
-     * Used khi AlarmReceiver trigger và chúng ta có basic alarm info
      */
     suspend operator fun invoke(
         alarmId: Int,
@@ -42,18 +38,18 @@ class HandleAlarmTriggerUseCase(
             isSnoozeEnabled = isSnoozeEnabled
         )
 
-        // Get full alarm data từ database để handle recurring logic
-        val alarm = repository.getAlarmById(alarmId)
-        if (alarm != null) {
+        // Get full alarm data từ database - use existing methods
+        val alarmEntity = repository.getAlarmById(alarmId)
+        if (alarmEntity != null) {
+            val alarm = repository.convertToAlarmModel(alarmEntity)
             handleAlarmAfterTrigger(alarm)
         }
     }
 
     /**
      * Handle alarm trigger với full Alarm object
-     * Used khi chúng ta có complete alarm data
      */
-    suspend operator fun invoke(alarm: net.android.lastversion.alarm.domain.model.Alarm) {
+    suspend operator fun invoke(alarm: Alarm) {
         // Show notification
         notificationManager.showAlarmNotification(
             alarmId = alarm.id,
@@ -70,10 +66,8 @@ class HandleAlarmTriggerUseCase(
 
     /**
      * Handle logic sau khi alarm đã trigger và notification đã show
-     *
-     * @param alarm Complete alarm object từ database
      */
-    private suspend fun handleAlarmAfterTrigger(alarm: net.android.lastversion.alarm.domain.model.Alarm) {
+    private suspend fun handleAlarmAfterTrigger(alarm: Alarm) {
         val hasRecurringDays = alarm.activeDays.any { it }
 
         if (hasRecurringDays) {
@@ -91,43 +85,66 @@ class HandleAlarmTriggerUseCase(
     /**
      * Schedule next occurrence cho recurring alarm
      */
-    private suspend fun scheduleNextRecurrence(alarm: net.android.lastversion.alarm.domain.model.Alarm) {
+    private suspend fun scheduleNextRecurrence(alarm: Alarm) {
         try {
-            // Use ScheduleAlarmUseCase để tính và schedule next occurrence
-            val scheduleAlarmUseCase = ScheduleAlarmUseCase(repository, alarmScheduler)
-            scheduleAlarmUseCase(alarm)
+            // Simple next day scheduling - can be improved later
+            val nextTime = calculateSimpleNextTime(alarm)
+            if (nextTime != null) {
+                alarmScheduler.scheduleAlarm(alarm.id, nextTime, alarm)
+            }
         } catch (e: Exception) {
-            // Log error nhưng không crash app
             e.printStackTrace()
         }
     }
 
     /**
+     * Calculate next occurrence time (simplified)
+     */
+    private fun calculateSimpleNextTime(alarm: Alarm): Long? {
+        val calendar = java.util.Calendar.getInstance()
+
+        val hour24 = when {
+            alarm.amPm == "AM" && alarm.hour == 12 -> 0
+            alarm.amPm == "AM" -> alarm.hour
+            alarm.amPm == "PM" && alarm.hour == 12 -> 12
+            else -> alarm.hour + 12
+        }
+
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, hour24)
+        calendar.set(java.util.Calendar.MINUTE, alarm.minute)
+        calendar.set(java.util.Calendar.SECOND, 0)
+        calendar.set(java.util.Calendar.MILLISECOND, 0)
+
+        // Schedule for next day (simplified logic)
+        calendar.add(java.util.Calendar.DAY_OF_MONTH, 1)
+
+        return calendar.timeInMillis
+    }
+
+    /**
      * Disable one-time alarm sau khi đã trigger
      */
-    private suspend fun disableOneTimeAlarm(alarm: net.android.lastversion.alarm.domain.model.Alarm) {
+    private suspend fun disableOneTimeAlarm(alarm: Alarm) {
         try {
             val disabledAlarm = alarm.copy(isEnabled = false)
-            repository.updateAlarm(disabledAlarm)
+            val disabledEntity = repository.convertToAlarmEntity(disabledAlarm)
+            repository.updateAlarm(disabledEntity)
         } catch (e: Exception) {
-            // Log error nhưng không crash app
             e.printStackTrace()
         }
     }
 
     /**
      * Handle snooze action từ notification
-     *
-     * @param alarmId ID của alarm được snooze
-     * @param snoozeMinutes Số phút để snooze (default 5 minutes)
      */
     suspend fun handleSnoozeAction(alarmId: Int, snoozeMinutes: Int = 5) {
         try {
             // Cancel current notification
             notificationManager.cancelNotification(alarmId)
 
-            // Get alarm data
-            val alarm = repository.getAlarmById(alarmId) ?: return
+            // Get alarm data - use existing methods
+            val alarmEntity = repository.getAlarmById(alarmId) ?: return
+            val alarm = repository.convertToAlarmModel(alarmEntity)
 
             // Calculate snooze time
             val snoozeTime = System.currentTimeMillis() + (snoozeMinutes * 60 * 1000)
@@ -139,9 +156,9 @@ class HandleAlarmTriggerUseCase(
                 snoozeTime = snoozeTime
             )
 
-            // Schedule snooze alarm
+            // Schedule snooze alarm with different ID to avoid conflicts
             alarmScheduler.scheduleAlarm(
-                alarmId = alarmId + 10000, // Different ID cho snooze để avoid conflict
+                alarmId = alarmId + 10000,
                 triggerTime = snoozeTime,
                 alarm = alarm
             )
@@ -153,8 +170,6 @@ class HandleAlarmTriggerUseCase(
 
     /**
      * Handle dismiss action từ notification
-     *
-     * @param alarmId ID của alarm được dismiss
      */
     suspend fun handleDismissAction(alarmId: Int) {
         try {
@@ -162,8 +177,9 @@ class HandleAlarmTriggerUseCase(
             notificationManager.cancelNotification(alarmId)
 
             // Get alarm để check nếu cần reschedule recurring
-            val alarm = repository.getAlarmById(alarmId)
-            if (alarm != null) {
+            val alarmEntity = repository.getAlarmById(alarmId)
+            if (alarmEntity != null) {
+                val alarm = repository.convertToAlarmModel(alarmEntity)
                 handleAlarmAfterTrigger(alarm)
             }
 
@@ -175,9 +191,7 @@ class HandleAlarmTriggerUseCase(
     /**
      * Optional: Log alarm trigger event cho analytics
      */
-    private fun logAlarmTrigger(alarm: net.android.lastversion.alarm.domain.model.Alarm) {
-        // Implementation tùy theo analytics platform bạn dùng
-        // Ví dụ: Firebase Analytics, Crashlytics, etc.
+    private fun logAlarmTrigger(alarm: Alarm) {
         try {
             val logData = mapOf(
                 "alarm_id" to alarm.id,
@@ -187,7 +201,7 @@ class HandleAlarmTriggerUseCase(
                 "trigger_timestamp" to System.currentTimeMillis()
             )
 
-            // Log event
+            // Log event (implement based on your analytics platform)
             // Analytics.logEvent("alarm_triggered", logData)
 
         } catch (e: Exception) {
@@ -198,9 +212,8 @@ class HandleAlarmTriggerUseCase(
 
     /**
      * Get readable description của alarm trigger
-     * Useful cho debugging hoặc logging
      */
-    fun getAlarmTriggerDescription(alarm: net.android.lastversion.alarm.domain.model.Alarm): String {
+    fun getAlarmTriggerDescription(alarm: Alarm): String {
         val recurringInfo = if (alarm.activeDays.any { it }) {
             "recurring (${alarm.activeDaysText})"
         } else {

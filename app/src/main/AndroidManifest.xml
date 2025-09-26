@@ -40,6 +40,23 @@
         <activity
             android:name=".alarm.activity.EditAlarmActivity"
             android:exported="false" />
+        <!-- ⚠️ QUAN TRỌNG: Đăng ký receivers -->
+        <receiver android:name=".alarm.infrastructure.receiver.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver android:name=".alarm.infrastructure.receiver.AlarmActionReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver android:name=".alarm.infrastructure.receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".alarm.activity.SetAlarmActivity"
             android:exported="false" /> <!-- Timer Service - handles background timer execution -->
