@@ -24,7 +24,7 @@ class BootReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "🔥 BootReceiver.onReceive() ENTRY POINT")
+        Log.d(TAG, " BootReceiver.onReceive() ENTRY POINT")
         Log.d(TAG, "Context: $context")
         Log.d(TAG, "Intent: $intent")
         Log.d(TAG, "Action: ${intent.action}")

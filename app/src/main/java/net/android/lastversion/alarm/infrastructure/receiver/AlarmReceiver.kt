@@ -16,13 +16,13 @@ import net.android.lastversion.alarm.presentation.usecase.HandleAlarmTriggerUseC
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        // ✅ Thêm log debug đầu tiên
-        Log.d("AlarmReceiver", "🔔 AlarmReceiver.onReceive() called!")
-        Log.d("AlarmReceiver", "📱 Intent action: ${intent.action}")
-        Log.d("AlarmReceiver", "📦 Intent extras: ${intent.extras?.keySet()}")
+        //  Thêm log debug đầu tiên
+        Log.d("AlarmReceiver", " AlarmReceiver.onReceive() called!")
+        Log.d("AlarmReceiver", " Intent action: ${intent.action}")
+        Log.d("AlarmReceiver", " Intent extras: ${intent.extras?.keySet()}")
 
         val alarmId = intent.getIntExtra("alarm_id", -1)
-        Log.d("AlarmReceiver", "🆔 Alarm ID: $alarmId")
+        Log.d("AlarmReceiver", " Alarm ID: $alarmId")
 
         if (alarmId == -1) {
             Log.e("AlarmReceiver", "❌ Invalid alarm ID: $alarmId")
@@ -38,9 +38,9 @@ class AlarmReceiver : BroadcastReceiver() {
         val isSoundEnabled = intent.getBooleanExtra("is_sound_enabled", true)
         val isSnoozeEnabled = intent.getBooleanExtra("is_snooze_enabled", true)
 
-        Log.d("AlarmReceiver", "⏰ Alarm time: $alarmHour:$alarmMinute")
-        Log.d("AlarmReceiver", "🏷️ Label: $alarmLabel")
-        Log.d("AlarmReceiver", "🔊 Sound: $isSoundEnabled, Vibration: $isVibrationEnabled, Snooze: $isSnoozeEnabled")
+        Log.d("AlarmReceiver", " Alarm time: $alarmHour:$alarmMinute")
+        Log.d("AlarmReceiver", "🏷 Label: $alarmLabel")
+        Log.d("AlarmReceiver", " Sound: $isSoundEnabled, Vibration: $isVibrationEnabled, Snooze: $isSnoozeEnabled")
 
         // Handle alarm trigger
         CoroutineScope(Dispatchers.IO).launch {
@@ -70,10 +70,10 @@ class AlarmReceiver : BroadcastReceiver() {
                     isSnoozeEnabled = isSnoozeEnabled
                 )
 
-                Log.d("AlarmReceiver", "✅ HandleAlarmTriggerUseCase completed!")
+                Log.d("AlarmReceiver", " HandleAlarmTriggerUseCase completed!")
 
             } catch (e: Exception) {
-                Log.e("AlarmReceiver", "❌ Error in alarm trigger handling", e)
+                Log.e("AlarmReceiver", " Error in alarm trigger handling", e)
             }
         }
     }
