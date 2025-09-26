@@ -15,12 +15,12 @@
 
     <fragment
         android:id="@+id/stopwatchFragment"
-        android:name="net.android.lastversion.fragment.StopwatchFragment"
+        android:name="net.android.lastversion.stopwatch.StopwatchFragment"
         android:label="Stopwatch" />
 
     <fragment
         android:id="@+id/timerFragment"
-        android:name="net.android.lastversion.fragment.TimerFragment"
+        android:name="net.android.lastversion.timer.TimerFragment"
         android:label="Timer" />
 
     <fragment

@@ -12,7 +12,7 @@ import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import net.android.lastversion.R
-import net.android.lastversion.receiver.TimerBackupReceiver
+import net.android.lastversion.timer.receiver.TimerBackupReceiver
 
 class TimerService : Service() {
 

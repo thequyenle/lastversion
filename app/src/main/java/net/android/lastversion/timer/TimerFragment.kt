@@ -1,4 +1,4 @@
-package net.android.lastversion.fragment
+package net.android.lastversion.timer
 
 import android.content.Intent
 import android.net.Uri

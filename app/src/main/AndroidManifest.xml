@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Basic permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" /> <!-- Notification permissions -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Foreground service permissions -->
@@ -65,9 +66,15 @@
             android:name="net.android.last.service.TimerService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback" /> <!-- Broadcast Receiver - handles timer completion when service might be killed -->
+            android:foregroundServiceType="mediaPlayback" />
+        <!-- Broadcast Receiver - handles timer completion when service might be killed -->
+        <service
+            android:name=".stopwatch.StopwatchService"
+            android:exported="false"
+            android:enabled="true"
+            android:foregroundServiceType="specialUse"/>
         <receiver
-            android:name=".receiver.TimeUpReceiver"
+            android:name=".timer.receiver.TimeUpReceiver"
             android:enabled="true"
             android:exported="false" /> <!-- Existing activities -->
         <activity

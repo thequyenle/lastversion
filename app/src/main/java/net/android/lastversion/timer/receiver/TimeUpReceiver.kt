@@ -1,4 +1,4 @@
-package net.android.lastversion.receiver
+package net.android.lastversion.timer.receiver
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
