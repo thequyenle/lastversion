@@ -12,7 +12,8 @@ import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
 import net.android.lastversion.alarm.domain.model.Alarm
 import net.android.lastversion.alarm.infrastructure.scheduler.AlarmSchedulerImpl
 import java.util.Calendar
-
+import java.util.Date
+import java.io.File
 /**
  * BootReceiver - Reschedule all enabled alarms after device restart
  */
@@ -27,6 +28,10 @@ class BootReceiver : BroadcastReceiver() {
         Log.d(TAG, "Context: $context")
         Log.d(TAG, "Intent: $intent")
         Log.d(TAG, "Action: ${intent.action}")
+        //Log to both Logcat and file
+        val message = "BootReceiver triggered at ${Date()}"
+        Log.d(TAG, message)
+        writeToFile(context, message)
         if (intent.action == Intent.ACTION_BOOT_COMPLETED ||
             intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
 
@@ -39,6 +44,27 @@ class BootReceiver : BroadcastReceiver() {
             }
         }
     }
+
+    private fun writeToFile(context: Context, message: String) {
+        try {
+            val file = File(context.getExternalFilesDir(null), "boot_log.txt")
+            file.appendText("${Date()}: $message\n")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to write to file", e)
+        }
+    }
+
+    private fun logToPersistentStorage(context: Context, message: String) {
+        val prefs = context.getSharedPreferences("boot_logs", Context.MODE_PRIVATE)
+        val existingLogs = prefs.getString("logs", "")
+        val newLog = "${Date()}: $message\n$existingLogs"
+
+        prefs.edit()
+            .putString("logs", newLog)
+            .putLong("last_boot", System.currentTimeMillis())
+            .apply()
+    }
+
 
     private suspend fun rescheduleAllAlarms(context: Context) {
         try {
