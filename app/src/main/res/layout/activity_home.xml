@@ -6,29 +6,239 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:defaultNavHost="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintBottom_toTopOf="@id/custom_bottom_navigation"
         app:layout_constraintStart_toStartOf="parent"
         app:navGraph="@navigation/nav_graph" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/bottom_navigation"
+    <LinearLayout
+        android:id="@+id/custom_bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
         android:background="#76E0C1"
-        app:itemBackground="@drawable/nav_item_pill_white"
-        app:itemIconTint="@color/nav_icon_tint"
-        app:itemTextColor="@color/nav_text_tint"
-        app:menu="@menu/bottom_nav_menu"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        />
+        <LinearLayout
+            android:id="@+id/nav_alarm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="12dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/alarm_icon_container"
+                android:layout_width="48dp"
+                android:layout_height="26dp"
+                android:background="@drawable/selected_nav_background">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_alarm_selector"
+                    android:contentDescription="Alarm"
+                    app:tint="#FFFFFF"
+                    android:layout_gravity="center"
+                    android:layout_margin="8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alarm"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_clock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="12dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clock_icon_container"
+                android:layout_width="48dp"
+                android:layout_height="26dp"
+                android:background="@drawable/selected_nav_background">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_clock_selector"
+                    android:contentDescription="Clock"
+                    android:layout_gravity="center"
+                    app:tint="#FFFFFF"
+                    android:layout_margin="8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clock"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_stopwatch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="12dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/stopwatch_icon_container"
+                android:layout_width="48dp"
+                android:layout_height="26dp"
+                android:background="@drawable/selected_nav_background">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_stopwatch_selector"
+                    android:contentDescription="Stopwatch"
+                    app:tint="#FFFFFF"
+                    android:layout_gravity="center"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_margin="8dp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stopwatch"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_timer"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+       >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/timerIconContainer"
+                android:layout_width="48dp"
+                android:layout_height="26dp"
+                android:background="@drawable/selected_nav_background">
+
+                <ImageView
+                    android:id="@+id/timer_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="Timer"
+                    android:src="@drawable/ic_timer_selector"
+                    app:tint="#76E0C1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Timer"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_settings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/settings_icon_container"
+                android:layout_width="48dp"
+                android:layout_height="26dp"
+                android:background="@drawable/selected_nav_background">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_setting_selector"
+                    android:contentDescription="Settings"
+                    app:tint="#FFFFFF"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_margin="8dp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Settings"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
