@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import net.android.lastversion.HomeActivity
 import net.android.lastversion.R
 import net.android.lastversion.alarm.data.local.database.AlarmDatabase
 import net.android.lastversion.alarm.data.preferences.AlarmPreferences
@@ -31,6 +33,8 @@ import net.android.lastversion.alarm.presentation.viewmodel.AlarmViewModelFactor
 import net.android.lastversion.alarm.presentation.utils.SwipeToDeleteCallback
 import net.android.lastversion.alarm.presentation.utils.PermissionHelper
 import net.android.lastversion.alarm.presentation.viewmodel.AlarmUiState
+import net.android.lastversion.utils.showSystemUI
+
 
 class AlarmFragment : Fragment() {
 
@@ -68,12 +72,14 @@ class AlarmFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         return inflater.inflate(R.layout.fragment_alarm, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.showSystemUI(white = false)
         initViews(view)
         permissionHelper = PermissionHelper(this)
         setupRecyclerView()
@@ -168,5 +174,15 @@ class AlarmFragment : Fragment() {
             snackbar.setAction("UNDO") { it() }
         }
         snackbar.show()
+    }
+    // Copy hàm extension đơn giản vào fragment
+    private fun Activity.showSystemUI(white: Boolean = false) {
+        if (white) {
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        } else {
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        }
     }
 }

@@ -204,6 +204,7 @@
 
                 <!-- Snooze -->
                 <LinearLayout
+                    android:id="@+id/layoutSnooze"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:orientation="horizontal"
@@ -231,6 +232,7 @@
                             android:textSize="16sp" />
 
                         <TextView
+                            android:id="@+id/textSnoozeValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="5 minutes"
@@ -239,16 +241,11 @@
 
                     </LinearLayout>
 
-                    <Switch
-                        android:id="@+id/switchSnooze"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true" />
-
                 </LinearLayout>
 
                 <!-- Vibration -->
                 <LinearLayout
+                    android:id="@+id/layoutVibration"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:orientation="horizontal"
@@ -276,6 +273,7 @@
                             android:textSize="16sp" />
 
                         <TextView
+                            android:id="@+id/textVibrationValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Vibration"
@@ -284,16 +282,12 @@
 
                     </LinearLayout>
 
-                    <Switch
-                        android:id="@+id/switchVibration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="false" />
 
                 </LinearLayout>
 
                 <!-- Sound -->
                 <LinearLayout
+                    android:id="@+id/layoutSound"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:orientation="horizontal"
@@ -321,6 +315,7 @@
                             android:textSize="16sp" />
 
                         <TextView
+                            android:id="@+id/textSoundValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Basic bell"
@@ -329,11 +324,6 @@
 
                     </LinearLayout>
 
-                    <Switch
-                        android:id="@+id/switchSound"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true" />
 
                 </LinearLayout>
 

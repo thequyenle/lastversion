@@ -36,9 +36,9 @@ class SetAlarmViewModel(
             hour = if (hour == 0) 12 else hour,
             minute = minute,
             amPm = amPm,
-            isSnoozeEnabled = preferences.defaultSnoozeMinutes > 0,
-            isVibrationEnabled = preferences.defaultVibration,
-            isSoundEnabled = preferences.defaultSound,
+            snoozeMinutes = preferences.defaultSnoozeMinutes,
+            vibrationPattern = if (preferences.defaultVibration) "default" else "off",
+            soundType = if (preferences.defaultSound) "default" else "off",
             isSilentModeEnabled = preferences.defaultSilentMode,
             soundUri = preferences.defaultSoundUri
         )
@@ -52,9 +52,9 @@ class SetAlarmViewModel(
             amPm = alarm.amPm,
             label = alarm.label,
             activeDays = alarm.activeDays.clone(),
-            isSnoozeEnabled = alarm.isSnoozeEnabled,
-            isVibrationEnabled = alarm.isVibrationEnabled,
-            isSoundEnabled = alarm.isSoundEnabled,
+            snoozeMinutes = alarm.snoozeMinutes,
+            vibrationPattern = alarm.vibrationPattern,
+            soundType = alarm.soundType,
             isSilentModeEnabled = alarm.isSilentModeEnabled,
             note = alarm.note,
             soundUri = alarm.soundUri,
@@ -84,16 +84,16 @@ class SetAlarmViewModel(
         _uiState.value = _uiState.value.copy(activeDays = newActiveDays)
     }
 
-    fun updateSnoozeEnabled(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(isSnoozeEnabled = enabled)
+    fun updateSnoozeMinutes(minutes: Int) {
+        _uiState.value = _uiState.value.copy(snoozeMinutes = minutes)
     }
 
-    fun updateVibrationEnabled(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(isVibrationEnabled = enabled)
+    fun updateVibrationPattern(pattern: String) {
+        _uiState.value = _uiState.value.copy(vibrationPattern = pattern)
     }
 
-    fun updateSoundEnabled(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(isSoundEnabled = enabled)
+    fun updateSoundType(type: String) {
+        _uiState.value = _uiState.value.copy(soundType = type)
     }
 
     fun updateSilentModeEnabled(enabled: Boolean) {
@@ -116,9 +116,9 @@ class SetAlarmViewModel(
                     label = state.label.ifEmpty { "Alarm" },
                     activeDays = state.activeDays,
                     isEnabled = true,
-                    isSnoozeEnabled = state.isSnoozeEnabled,
-                    isVibrationEnabled = state.isVibrationEnabled,
-                    isSoundEnabled = state.isSoundEnabled,
+                    snoozeMinutes = state.snoozeMinutes,
+                    vibrationPattern = state.vibrationPattern,
+                    soundType = state.soundType,
                     isSilentModeEnabled = state.isSilentModeEnabled,
                     note = state.note,
                     soundUri = state.soundUri
@@ -143,9 +143,9 @@ class SetAlarmViewModel(
 
         val dayNames = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
         return days.indices
-            .asSequence()                  // 0..6
-            .filter { days[it] }           // lấy index đang bật
-            .map { dayNames[it] }          // map sang tên ngày
+            .asSequence()
+            .filter { days[it] }
+            .map { dayNames[it] }
             .joinToString(", ")
     }
 }
@@ -157,9 +157,12 @@ data class SetAlarmUiState(
     val amPm: String = "AM",
     val label: String = "Alarm",
     val activeDays: BooleanArray = BooleanArray(7) { false },
-    val isSnoozeEnabled: Boolean = true,
-    val isVibrationEnabled: Boolean = true,
-    val isSoundEnabled: Boolean = true,
+
+    // THAY ĐỔI: Từ Boolean sang giá trị cụ thể
+    val snoozeMinutes: Int = 5,
+    val vibrationPattern: String = "default",
+    val soundType: String = "default",
+
     val isSilentModeEnabled: Boolean = false,
     val note: String = "",
     val soundUri: String = "",
@@ -179,9 +182,9 @@ data class SetAlarmUiState(
                 amPm == other.amPm &&
                 label == other.label &&
                 activeDays.contentEquals(other.activeDays) &&
-                isSnoozeEnabled == other.isSnoozeEnabled &&
-                isVibrationEnabled == other.isVibrationEnabled &&
-                isSoundEnabled == other.isSoundEnabled &&
+                snoozeMinutes == other.snoozeMinutes &&
+                vibrationPattern == other.vibrationPattern &&
+                soundType == other.soundType &&
                 isSilentModeEnabled == other.isSilentModeEnabled &&
                 note == other.note &&
                 soundUri == other.soundUri &&
@@ -197,9 +200,9 @@ data class SetAlarmUiState(
         result = 31 * result + amPm.hashCode()
         result = 31 * result + label.hashCode()
         result = 31 * result + activeDays.contentHashCode()
-        result = 31 * result + isSnoozeEnabled.hashCode()
-        result = 31 * result + isVibrationEnabled.hashCode()
-        result = 31 * result + isSoundEnabled.hashCode()
+        result = 31 * result + snoozeMinutes
+        result = 31 * result + vibrationPattern.hashCode()
+        result = 31 * result + soundType.hashCode()
         result = 31 * result + isSilentModeEnabled.hashCode()
         result = 31 * result + note.hashCode()
         result = 31 * result + soundUri.hashCode()

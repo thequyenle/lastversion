@@ -6,29 +6,33 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 
-    <ImageView
+    <TextView
         android:id="@+id/ivLanguage"
-        android:layout_width="157dp"
+        android:layout_width="wrap_content"
+        android:text="Language"
+        android:textSize="24sp"
+        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:src="@drawable/img_language"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginEnd="48dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginStart="36dp"/>
+        android:layout_marginTop="53dp"
+        android:layout_marginStart="16dp"/>
 
     <ImageButton
         android:id="@+id/btnDone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="61dp"
+        android:layout_marginEnd="19dp"
+        android:backgroundTint="@android:color/transparent"
         android:src="@drawable/ic_checked"
         android:text="Done"
         android:contentDescription="done button desc"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias=".8"
-        app:layout_constraintStart_toEndOf="@id/ivLanguage"
         app:layout_constraintTop_toTopOf="parent"
+
         tools:ignore="TouchTargetSizeCheck" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -38,13 +42,10 @@
         tools:listitem="@layout/item_language"
         app:layout_constraintTop_toBottomOf="@id/ivLanguage"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ad_language"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

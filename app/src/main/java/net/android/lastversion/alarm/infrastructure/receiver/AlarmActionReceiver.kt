@@ -21,13 +21,17 @@ class AlarmActionReceiver : BroadcastReceiver() {
         val notificationManager = AlarmNotificationManager(context)
 
         when (intent.action) {
-            "ACTION_DISMISS" -> {
+            AlarmNotificationManager.ACTION_DISMISS -> {
                 notificationManager.cancelNotification(alarmId)
                 Log.d(TAG, "Alarm $alarmId dismissed")
             }
 
-            "ACTION_SNOOZE" -> {
+            AlarmNotificationManager.ACTION_SNOOZE -> {
                 handleSnooze(context, alarmId, intent)
+            }
+
+            AlarmNotificationManager.ACTION_CANCEL_SNOOZE -> {
+                handleCancelSnooze(context, alarmId)
             }
         }
     }
@@ -37,7 +41,12 @@ class AlarmActionReceiver : BroadcastReceiver() {
         notificationManager.cancelNotification(alarmId)
 
         val title = intent.getStringExtra("alarm_title") ?: "Alarm"
-        val snoozeTime = System.currentTimeMillis() + (5 * 60 * 1000) // 5 minutes
+        // THAY ĐỔI: Đọc snoozeMinutes từ intent thay vì hardcode
+        val snoozeMinutes = intent.getIntExtra("snooze_minutes", 5)
+        val snoozeTime = System.currentTimeMillis() + (snoozeMinutes * 60 * 1000L)
+
+        // Show snooze notification
+        notificationManager.showSnoozeNotification(alarmId, title, snoozeTime)
 
         // Schedule snooze alarm
         CoroutineScope(Dispatchers.IO).launch {
@@ -55,14 +64,29 @@ class AlarmActionReceiver : BroadcastReceiver() {
                         activeDays = BooleanArray(7) { false } // One-time alarm
                     )
                     scheduler.scheduleAlarm(snoozeAlarm)
+                    Log.d(TAG, "Alarm $alarmId snoozed for $snoozeMinutes minutes until ${java.util.Date(snoozeTime)}")
                 }
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error scheduling snooze", e)
             }
         }
+    }
 
-        Log.d(TAG, "Alarm $alarmId snoozed until ${java.util.Date(snoozeTime)}")
+    private fun handleCancelSnooze(context: Context, alarmId: Int) {
+        val notificationManager = AlarmNotificationManager(context)
+        notificationManager.cancelNotification(alarmId)
+
+        // Cancel the snooze alarm
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val scheduler = AlarmSchedulerImpl(context)
+                scheduler.cancelAlarm(alarmId + 50000)
+                Log.d(TAG, "Snooze cancelled for alarm $alarmId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error cancelling snooze", e)
+            }
+        }
     }
 
     companion object {

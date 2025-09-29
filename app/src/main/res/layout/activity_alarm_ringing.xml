@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_preview">
+
+    <!-- Alarm Icon -->
+    <ImageView
+        android:id="@+id/ivAlarmIcon"
+        android:layout_width="33.3dp"
+        android:layout_height="33.3dp"
+        android:src="@drawable/ic_alarm_enable"
+        app:tint="#666666"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="178dp" />
+
+    <!-- Time Display -->
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="06:00 AM"
+        android:textColor="#2C3E50"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif"
+        app:layout_constraintTop_toBottomOf="@id/ivAlarmIcon"
+        android:layout_marginTop="28dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Label -->
+    <TextView
+        android:id="@+id/tvLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wake up!!!"
+        android:textColor="#5A6C7D"
+        android:textSize="24sp"
+        android:fontFamily="sans-serif"
+        app:layout_constraintTop_toBottomOf="@id/tvTime"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Note (optional) -->
+    <TextView
+        android:id="@+id/tvNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#7F8C8D"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tvLabel"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Snooze Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSnooze"
+        android:layout_width="195dp"
+        android:layout_height="47dp"
+        android:text="Snooze"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:backgroundTint="@null"
+        app:backgroundTint="#84DCC6"
+        app:layout_constraintTop_toBottomOf="@id/tvLabel"
+        android:layout_marginTop="36dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Stop Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDismiss"
+        android:layout_width="154dp"
+        android:layout_height="43dp"
+        android:text="Stop"
+        android:textColor="#5A6C7D"
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:background="@drawable/btn_stop_rounded"
+        app:backgroundTint="#E5FFF9"
+        app:layout_constraintTop_toBottomOf="@id/btnSnooze"
+        android:layout_marginTop="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,7 +11,7 @@ import net.android.lastversion.alarm.data.local.entity.AlarmEntity
 
 @Database(
     entities = [AlarmEntity::class],
-    version = 2,
+    version = 3, // THAY ĐỔI: version 2 → 3
     exportSchema = false
 )
 abstract class AlarmDatabase : RoomDatabase() {
@@ -36,6 +36,82 @@ abstract class AlarmDatabase : RoomDatabase() {
             }
         }
 
+        // THÊM: Migration 2 → 3
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Bước 1: Thêm các cột mới
+                database.execSQL(
+                    "ALTER TABLE alarms ADD COLUMN snoozeMinutes INTEGER NOT NULL DEFAULT 5"
+                )
+                database.execSQL(
+                    "ALTER TABLE alarms ADD COLUMN vibrationPattern TEXT NOT NULL DEFAULT 'default'"
+                )
+                database.execSQL(
+                    "ALTER TABLE alarms ADD COLUMN soundType TEXT NOT NULL DEFAULT 'default'"
+                )
+
+                // Bước 2: Convert dữ liệu cũ
+                database.execSQL(
+                    """
+                    UPDATE alarms 
+                    SET snoozeMinutes = CASE 
+                            WHEN isSnoozeEnabled = 1 THEN 5 
+                            ELSE 0 
+                        END,
+                        vibrationPattern = CASE 
+                            WHEN isVibrationEnabled = 1 THEN 'default' 
+                            ELSE 'off' 
+                        END,
+                        soundType = CASE 
+                            WHEN isSoundEnabled = 1 THEN 'default' 
+                            ELSE 'off' 
+                        END
+                    """.trimIndent()
+                )
+
+                // Bước 3: Tạo bảng mới (bỏ các cột Boolean cũ)
+                database.execSQL(
+                    """
+                    CREATE TABLE alarms_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        hour INTEGER NOT NULL,
+                        minute INTEGER NOT NULL,
+                        amPm TEXT NOT NULL,
+                        label TEXT NOT NULL,
+                        activeDays TEXT NOT NULL,
+                        isEnabled INTEGER NOT NULL,
+                        snoozeMinutes INTEGER NOT NULL,
+                        vibrationPattern TEXT NOT NULL,
+                        soundType TEXT NOT NULL,
+                        isSilentModeEnabled INTEGER NOT NULL,
+                        note TEXT NOT NULL,
+                        soundUri TEXT NOT NULL,
+                        createdAt INTEGER NOT NULL,
+                        updatedAt INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+
+                // Bước 4: Copy dữ liệu (BỎ 3 cột Boolean cũ)
+                database.execSQL(
+                    """
+                    INSERT INTO alarms_new 
+                    SELECT 
+                        id, hour, minute, amPm, label, activeDays, isEnabled,
+                        snoozeMinutes, vibrationPattern, soundType,
+                        isSilentModeEnabled, note, soundUri, createdAt, updatedAt
+                    FROM alarms
+                    """.trimIndent()
+                )
+
+                // Bước 5: Xóa bảng cũ
+                database.execSQL("DROP TABLE alarms")
+
+                // Bước 6: Đổi tên bảng mới
+                database.execSQL("ALTER TABLE alarms_new RENAME TO alarms")
+            }
+        }
+
         fun getDatabase(context: Context): AlarmDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -43,7 +119,7 @@ abstract class AlarmDatabase : RoomDatabase() {
                     AlarmDatabase::class.java,
                     "alarm_database"
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3) // THÊM migration mới
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

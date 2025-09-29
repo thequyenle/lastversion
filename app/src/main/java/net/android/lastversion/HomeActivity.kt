@@ -1,7 +1,14 @@
 package net.android.lastversion
 
+import android.app.Activity
+import android.content.res.Configuration
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -10,17 +17,15 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import net.android.lastversion.utils.showSystemUI
+
 
 class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContentView(R.layout.activity_home)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -81,7 +86,7 @@ class HomeActivity : AppCompatActivity() {
             findViewById<ConstraintLayout>(R.id.alarm_icon_container),
             findViewById<ConstraintLayout>(R.id.clock_icon_container),
             findViewById<ConstraintLayout>(R.id.stopwatch_icon_container),
-            findViewById<ConstraintLayout>(R.id.timerIconContainer),
+            findViewById<ConstraintLayout>(R.id.timer_icon_container),
             findViewById<ConstraintLayout>(R.id.settings_icon_container)
         )
 
@@ -156,4 +161,23 @@ class HomeActivity : AppCompatActivity() {
             tv.setTypeface(null, android.graphics.Typeface.BOLD)
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        showSystemUI(white = false)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+    }
+
+
 }

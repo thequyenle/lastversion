@@ -54,9 +54,10 @@ dependencies {
     // Room - Sử dụng KSP thay vì kapt
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.databinding.runtime)
     ksp(libs.androidx.room.compiler)
 
-
+    implementation ("io.github.ShawnLin013:number-picker:2.4.13")
     // SQLite bundled để tránh lỗi OEM driver
    // implementation(libs.androidx.sqlite.bundled)
     implementation (libs.sqlite)

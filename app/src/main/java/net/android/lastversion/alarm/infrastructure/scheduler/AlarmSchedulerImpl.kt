@@ -89,10 +89,13 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
             putExtra(EXTRA_ALARM_AM_PM, alarm.amPm)
             putExtra(EXTRA_ALARM_LABEL, alarm.label)
             putExtra(EXTRA_ALARM_NOTE, alarm.note)
-            putExtra(EXTRA_IS_SNOOZE_ENABLED, alarm.isSnoozeEnabled)
-            putExtra(EXTRA_IS_VIBRATION_ENABLED, alarm.isVibrationEnabled)
-            putExtra(EXTRA_IS_SOUND_ENABLED, alarm.isSoundEnabled)
+
+            // THAY ĐỔI: Từ Boolean sang giá trị cụ thể
+            putExtra(EXTRA_SNOOZE_MINUTES, alarm.snoozeMinutes)
+            putExtra(EXTRA_VIBRATION_PATTERN, alarm.vibrationPattern)
+            putExtra(EXTRA_SOUND_TYPE, alarm.soundType)
             putExtra(EXTRA_IS_SILENT_MODE_ENABLED, alarm.isSilentModeEnabled)
+
             putExtra(EXTRA_SOUND_URI, alarm.soundUri)
         }
     }
@@ -105,10 +108,13 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
         const val EXTRA_ALARM_AM_PM = "alarm_am_pm"
         const val EXTRA_ALARM_LABEL = "alarm_label"
         const val EXTRA_ALARM_NOTE = "alarm_note"
-        const val EXTRA_IS_SNOOZE_ENABLED = "is_snooze_enabled"
-        const val EXTRA_IS_VIBRATION_ENABLED = "is_vibration_enabled"
-        const val EXTRA_IS_SOUND_ENABLED = "is_sound_enabled"
-        const val EXTRA_IS_SILENT_MODE_ENABLED = "is_silent_mode_enabled"
+        const val EXTRA_IS_SILENT_MODE_ENABLED = "is_silent_mode_enabled"  // ← THÊM DÒNG NÀY
+
+        // THAY ĐỔI: Đổi tên constant
+        const val EXTRA_SNOOZE_MINUTES = "snooze_minutes"
+        const val EXTRA_VIBRATION_PATTERN = "vibration_pattern"
+        const val EXTRA_SOUND_TYPE = "sound_type"
+
         const val EXTRA_SOUND_URI = "sound_uri"
     }
 }

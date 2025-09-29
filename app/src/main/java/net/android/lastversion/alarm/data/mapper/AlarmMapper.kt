@@ -14,9 +14,12 @@ object AlarmMapper {
             label = entity.label,
             activeDays = entity.activeDays.split(",").map { it.toBoolean() }.toBooleanArray(),
             isEnabled = entity.isEnabled,
-            isSnoozeEnabled = entity.isSnoozeEnabled,
-            isVibrationEnabled = entity.isVibrationEnabled,
-            isSoundEnabled = entity.isSoundEnabled,
+
+            // THAY ĐỔI: isSnoozeEnabled → snoozeMinutes
+            // THAY ĐỔI: Map 3 thuộc tính mới
+            snoozeMinutes = entity.snoozeMinutes,
+            vibrationPattern = entity.vibrationPattern,
+            soundType = entity.soundType,
             isSilentModeEnabled = entity.isSilentModeEnabled,
             note = entity.note,
             soundUri = entity.soundUri,
@@ -34,9 +37,11 @@ object AlarmMapper {
             label = alarm.label,
             activeDays = alarm.activeDays.joinToString(","),
             isEnabled = alarm.isEnabled,
-            isSnoozeEnabled = alarm.isSnoozeEnabled,
-            isVibrationEnabled = alarm.isVibrationEnabled,
-            isSoundEnabled = alarm.isSoundEnabled,
+
+            // THAY ĐỔI: isSnoozeEnabled → snoozeMinutes
+            snoozeMinutes = alarm.snoozeMinutes,
+            vibrationPattern = alarm.vibrationPattern,
+            soundType = alarm.soundType,
             isSilentModeEnabled = alarm.isSilentModeEnabled,
             note = alarm.note,
             soundUri = alarm.soundUri,

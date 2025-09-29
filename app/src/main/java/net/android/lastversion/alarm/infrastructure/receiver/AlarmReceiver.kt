@@ -11,6 +11,8 @@ import net.android.lastversion.alarm.data.local.database.AlarmDatabase
 import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
 import net.android.lastversion.alarm.infrastructure.scheduler.AlarmSchedulerImpl
+import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
+
 
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -25,16 +27,45 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val title = intent.getStringExtra("alarm_label") ?: "Alarm"
         val note = intent.getStringExtra("alarm_note") ?: ""
-        val isVibrationEnabled = intent.getBooleanExtra("is_vibration_enabled", true)
-        val isSoundEnabled = intent.getBooleanExtra("is_sound_enabled", true)
-        val isSnoozeEnabled = intent.getBooleanExtra("is_snooze_enabled", true)
-        val soundUri = intent.getStringExtra("sound_uri") ?: ""
 
-        // Show notification
+        // THAY ĐỔI: Đọc giá trị mới thay vì Boolean
+        val snoozeMinutes = intent.getIntExtra("snooze_minutes", 5)
+        val vibrationPattern = intent.getStringExtra("vibration_pattern") ?: "default"
+        val soundType = intent.getStringExtra("sound_type") ?: "default"
+        val isSilentModeEnabled = intent.getBooleanExtra("is_silent_mode_enabled", false)
+        val soundUri = intent.getStringExtra("sound_uri") ?: ""
+        val hour = intent.getIntExtra("alarm_hour", 0)
+        val minute = intent.getIntExtra("alarm_minute", 0)
+        val amPm = intent.getStringExtra("alarm_am_pm") ?: "AM"
+
+        // Open AlarmRingingActivity
+        val alarmIntent = Intent(context, AlarmRingingActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("alarm_id", alarmId)
+            putExtra("alarm_hour", hour)
+            putExtra("alarm_minute", minute)
+            putExtra("alarm_am_pm", amPm)
+            putExtra("alarm_label", title)
+            putExtra("alarm_note", note)
+            putExtra("snooze_minutes", snoozeMinutes)
+            putExtra("vibration_pattern", vibrationPattern)
+            putExtra("sound_type", soundType)
+            putExtra("is_silent_mode_enabled", isSilentModeEnabled)
+            putExtra("sound_uri", soundUri)
+        }
+        context.startActivity(alarmIntent)
+
+        // Show notification as backup
         val notificationManager = AlarmNotificationManager(context)
         notificationManager.showAlarmNotification(
-            alarmId, title, note, isVibrationEnabled,
-            isSoundEnabled, isSnoozeEnabled, soundUri
+            alarmId = alarmId,
+            title = title,
+            note = note,
+            snoozeMinutes = snoozeMinutes,
+            vibrationPattern = vibrationPattern,
+            soundType = soundType,
+            soundUri = soundUri,
+            isSilentModeEnabled = isSilentModeEnabled
         )
 
         // Handle post-trigger logic

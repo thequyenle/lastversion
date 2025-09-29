@@ -9,7 +9,7 @@
         android:id="@+id/ivPer"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="117dp"
         android:src="@drawable/ic_permission"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,69 +33,148 @@
         android:layout_height="wrap_content"
         android:text="Go"
         android:visibility="gone"
-        android:backgroundTint="@color/white"
+        android:background="@android:color/transparent"
         android:textColor="@color/blue"
         app:layout_constraintTop_toTopOf="parent"
-        android:textSize="24sp"
+        android:textSize="20sp"
+        android:layout_marginTop="14dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"/>
+        android:layout_marginEnd="5dp"/>
+
     <TextView
         android:id="@+id/tvPer1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Alarm Clock requires permission to use"
+        android:textSize="14dp"
+        android:gravity="center"
+        android:text="@string/permission_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivPer"/>
-    <TextView
-        android:id="@+id/tvPer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=" the Camera and Photos"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvPer1"/>
+        app:layout_constraintTop_toBottomOf="@id/ivPer"
+        android:layout_marginTop="8dp"/>
 
-
-    <Switch
-        android:id="@+id/switchStorage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:checked="false"
-        android:minHeight="48dp"
-        android:text="Storage Permission"
+    <!-- Camera Permission Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ctr1"
+        android:layout_width="328dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvPer" />
+        app:layout_constraintTop_toBottomOf="@id/tvPer1"
+        android:background="@drawable/bg_rounded_gray">
 
-    <Switch
-        android:id="@+id/switchCamera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:checked="false"
-        android:minHeight="48dp"
-        android:text="Camera Permission"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switchStorage" />
+        <TextView
+            android:id="@+id/tvCameraPermission"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Camera Permission"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnCameraToggle" />
 
-    <Switch
-        android:id="@+id/switchNotification"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="false"
-        android:minHeight="48dp"
-        android:text="Notification Permission"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        <ImageButton
+            android:id="@+id/btnCameraToggle"
+            android:layout_width="56dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_switch_off"
+            android:contentDescription="Toggle camera permission"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="16dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Storage Permission Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ctr2"
+        android:layout_width="328dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switchCamera"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintTop_toBottomOf="@id/ctr1"
+        android:background="@drawable/bg_rounded_gray">
+
+        <TextView
+            android:id="@+id/tvStoragePermission"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Storage Permission"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnStorageToggle"
+            android:layout_marginStart="8dp" />
+
+        <ImageButton
+            android:id="@+id/btnStorageToggle"
+            android:layout_width="56dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_switch_off"
+            android:contentDescription="Toggle storage permission"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="16dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Notification Permission Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ctr3"
+        android:layout_width="328dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ctr2"
+        android:background="@drawable/bg_rounded_gray"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvNotificationPermission"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Notification Permission"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnNotificationToggle"
+            android:layout_marginStart="16dp" />
+
+        <ImageButton
+            android:id="@+id/btnNotificationToggle"
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_switch_off"
+            android:contentDescription="Toggle notification permission"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="16dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

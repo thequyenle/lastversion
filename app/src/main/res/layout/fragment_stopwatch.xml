@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="24dp"
-    android:background="#F8FFFD">
+    android:background="#00789876">
 
     <!-- Tiêu đề -->
     <TextView
@@ -14,18 +14,22 @@
         android:text="Stopwatch"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="57dp"
+        />
 
     <!-- Đồng hồ nền -->
     <ImageView
         android:id="@+id/imgStopwatch"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:layout_below="@id/tvStopwatchTitle"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
-        android:src="@drawable/img_stopwatch" />
+        android:layout_marginTop="32dp"
+        android:src="@drawable/img_stopwatch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvStopwatchTitle" />
 
     <!-- Thời gian chồng lên giữa đồng hồ -->
     <LinearLayout
@@ -33,11 +37,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/imgStopwatch"
-        android:layout_marginTop="-160dp"
-        android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/imgStopwatch"
+        app:layout_constraintEnd_toEndOf="@id/imgStopwatch"
+        app:layout_constraintStart_toStartOf="@id/imgStopwatch"
+        app:layout_constraintTop_toTopOf="@id/imgStopwatch">
 
         <LinearLayout
             android:orientation="vertical"
@@ -115,59 +120,63 @@
     <!-- Nút Start -->
     <Button
         android:id="@+id/btnStart"
-        android:text="Start"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:backgroundTint="#76E0C1"
+        android:text="Start"
         android:textColor="#FFFFFF"
-        android:layout_below="@id/imgStopwatch"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
+        android:visibility="visible"
         app:cornerRadius="24dp"
-        android:visibility="visible" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgStopwatch" />
 
     <!-- Nút Stop -->
     <Button
         android:id="@+id/btnStop"
-        android:text="Stop"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="#FFA726"
-        android:textColor="#FFFFFF"
-        android:layout_below="@id/imgStopwatch"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
+        android:backgroundTint="#FFA726"
+        android:text="Stop"
+        android:textColor="#FFFFFF"
+        android:visibility="gone"
         app:cornerRadius="24dp"
-        android:visibility="gone" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgStopwatch" />
 
     <!-- Nút Continue + Restart -->
     <LinearLayout
         android:id="@+id/layoutContinueRestart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/imgStopwatch"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgStopwatch">
 
         <Button
             android:id="@+id/btnContinue"
-            android:text="Continue"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
             android:backgroundTint="#76E0C1"
+            android:text="Continue"
             android:textColor="#FFFFFF"
-            app:cornerRadius="24dp"
-            android:layout_marginBottom="12dp" />
+            app:cornerRadius="24dp" />
 
         <Button
             android:id="@+id/btnRestart"
-            android:text="Restart"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:backgroundTint="#D8F6F0"
-            app:cornerRadius="24dp"
-            android:textColor="#555555" />
+            android:text="Restart"
+            android:textColor="#555555"
+            app:cornerRadius="24dp" />
     </LinearLayout>
-</RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

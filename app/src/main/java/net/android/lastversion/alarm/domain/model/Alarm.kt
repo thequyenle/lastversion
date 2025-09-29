@@ -11,11 +11,14 @@ data class Alarm(
     val minute: Int,
     val amPm: String,
     val label: String = "Alarm",
-    val activeDays: BooleanArray = BooleanArray(7) { false }, // Sun, Mon, Tue, Wed, Thu, Fri, Sat
+    val activeDays: BooleanArray = BooleanArray(7) { false },
     val isEnabled: Boolean = true,
-    val isSnoozeEnabled: Boolean = true,
-    val isVibrationEnabled: Boolean = true,
-    val isSoundEnabled: Boolean = true,
+
+    // THAY ĐỔI: 3 thuộc tính mới
+    val snoozeMinutes: Int = 5,
+    val vibrationPattern: String = "default",
+    val soundType: String = "default",
+
     val isSilentModeEnabled: Boolean = false,
     val note: String = "",
     val soundUri: String = "",
@@ -31,15 +34,14 @@ data class Alarm(
         if (activeDays.none { it }) return "Never"
         if (activeDays.all { it }) return "Every day"
 
-        val weekdays = activeDays.slice(1..5).all { it } // Mon-Fri
-        val weekends = activeDays[0] && activeDays[6] // Sun, Sat
+        val weekdays = activeDays.slice(1..5).all { it }
+        val weekends = activeDays[0] && activeDays[6]
 
         return when {
             weekdays && !weekends -> "Weekdays"
             weekends && !weekdays -> "Weekends"
             else -> {
                 val dayNames = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
-                // Fix: Convert BooleanArray to List first
                 activeDays.toList().mapIndexedNotNull { index, active ->
                     if (active) dayNames[index] else null
                 }.joinToString(", ")
@@ -58,7 +60,6 @@ data class Alarm(
         val calendar = Calendar.getInstance()
         val targetCalendar = Calendar.getInstance()
 
-        // Convert to 24-hour format
         val hour24 = when {
             amPm == "AM" && hour == 12 -> 0
             amPm == "AM" -> hour
@@ -73,7 +74,6 @@ data class Alarm(
             set(Calendar.MILLISECOND, 0)
         }
 
-        // If no recurring days, schedule for today or tomorrow
         if (!hasRecurringDays()) {
             if (targetCalendar.timeInMillis <= calendar.timeInMillis) {
                 targetCalendar.add(Calendar.DAY_OF_MONTH, 1)
@@ -81,7 +81,6 @@ data class Alarm(
             return targetCalendar.timeInMillis
         }
 
-        // Find next active day
         for (i in 0..7) {
             val dayOfWeek = targetCalendar.get(Calendar.DAY_OF_WEEK) - 1
 
@@ -93,6 +92,31 @@ data class Alarm(
         }
 
         return targetCalendar.timeInMillis
+    }
+
+    // THÊM: Helper functions để hiển thị
+    fun getSnoozeDisplayText(): String = when (snoozeMinutes) {
+        0 -> "Tắt"
+        else -> "$snoozeMinutes phút"
+    }
+
+    fun getVibrationDisplayText(): String = when (vibrationPattern) {
+        "off" -> "Tắt"
+        "default" -> "Mặc định"
+        "short" -> "Ngắn"
+        "long" -> "Dài"
+        "double" -> "Rung đôi"
+        else -> "Mặc định"
+    }
+
+    fun getSoundDisplayText(): String = when (soundType) {
+        "off" -> "Tắt"
+        "default" -> "Mặc định"
+        "gentle" -> "Nhẹ nhàng"
+        "loud" -> "Lớn"
+        "progressive" -> "Tăng dần"
+        "custom" -> "Tùy chỉnh"
+        else -> "Mặc định"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -108,9 +132,9 @@ data class Alarm(
                 label == other.label &&
                 activeDays.contentEquals(other.activeDays) &&
                 isEnabled == other.isEnabled &&
-                isSnoozeEnabled == other.isSnoozeEnabled &&
-                isVibrationEnabled == other.isVibrationEnabled &&
-                isSoundEnabled == other.isSoundEnabled &&
+                snoozeMinutes == other.snoozeMinutes &&
+                vibrationPattern == other.vibrationPattern &&
+                soundType == other.soundType &&
                 isSilentModeEnabled == other.isSilentModeEnabled &&
                 note == other.note
     }
@@ -123,9 +147,9 @@ data class Alarm(
         result = 31 * result + label.hashCode()
         result = 31 * result + activeDays.contentHashCode()
         result = 31 * result + isEnabled.hashCode()
-        result = 31 * result + isSnoozeEnabled.hashCode()
-        result = 31 * result + isVibrationEnabled.hashCode()
-        result = 31 * result + isSoundEnabled.hashCode()
+        result = 31 * result + snoozeMinutes.hashCode()
+        result = 31 * result + vibrationPattern.hashCode()
+        result = 31 * result + soundType.hashCode()
         result = 31 * result + isSilentModeEnabled.hashCode()
         result = 31 * result + note.hashCode()
         return result

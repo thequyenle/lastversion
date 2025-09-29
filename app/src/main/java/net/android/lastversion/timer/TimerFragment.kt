@@ -1,6 +1,7 @@
 package net.android.lastversion.timer
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.*
 import android.provider.OpenableColumns
@@ -18,6 +19,9 @@ import androidx.fragment.app.Fragment
 import net.android.lastversion.databinding.FragmentTimerBinding
 import net.android.last.service.TimerService
 import net.android.lastversion.R
+import net.android.lastversion.utils.showSystemUI
+import android.widget.EditText
+
 
 class TimerFragment : Fragment() {
 
@@ -29,7 +33,9 @@ class TimerFragment : Fragment() {
     private var totalSeconds = 0
     private var currentSeconds = 0
     private var isPaused = false
-
+    private lateinit var npHour: com.shawnlin.numberpicker.NumberPicker
+    private lateinit var npMinute: com.shawnlin.numberpicker.NumberPicker
+    private lateinit var npSecond: com.shawnlin.numberpicker.NumberPicker
     // Handler để sync với Service
     private var syncHandler: Handler? = null
     private var syncRunnable: Runnable? = null
@@ -63,7 +69,11 @@ class TimerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
-
+        npHour = view.findViewById<com.shawnlin.numberpicker.NumberPicker>(R.id.npHour)
+        npMinute = view.findViewById(R.id.npMinute)
+        npSecond = view.findViewById(R.id.npSecond)
+//        removeNumberPickerDivider(npMinute)
+//        removeNumberPickerDivider(npSecond)
         // Check if timer is already running
         if (TimerService.isServiceRunning) {
             currentSeconds = TimerService.currentRemainingSeconds
@@ -81,6 +91,17 @@ class TimerFragment : Fragment() {
         }
     }
 
+
+
+//    private fun removeNumberPickerDivider(numberPicker: NumberPicker) {
+//        try {
+//            val dividerField = NumberPicker::class.java.getDeclaredField("mSelectionDivider")
+//            dividerField.isAccessible = true
+//            dividerField.set(numberPicker, null)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//    }
     private fun setupUI() {
         setupPickers()
         setupSoundPicker()
@@ -93,12 +114,6 @@ class TimerFragment : Fragment() {
         npHour.minValue = 0; npHour.maxValue = 23
         npMinute.minValue = 0; npMinute.maxValue = 59
         npSecond.minValue = 0; npSecond.maxValue = 59
-
-        val formatter = NumberPicker.Formatter { "%02d".format(it) }
-        npHour.setFormatter(formatter)
-        npMinute.setFormatter(formatter)
-        npSecond.setFormatter(formatter)
-
         npHour.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
         npMinute.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
         npSecond.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
@@ -213,7 +228,15 @@ class TimerFragment : Fragment() {
 
         Log.d("TimerFragment", "Timer started: $totalSeconds seconds")
     }
-
+    private fun setNumberPickerTextSize(numberPicker: NumberPicker, textSize: Float) {
+        for (i in 0 until numberPicker.childCount) {
+            val child = numberPicker.getChildAt(i)
+            if (child is EditText) {
+                child.textSize = textSize
+                child.setTextColor(Color.BLACK)
+            }
+        }
+    }
     private fun startSyncTimer() {
         stopSyncTimer()
 
@@ -340,6 +363,7 @@ class TimerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        activity?.showSystemUI(white = false)
         // Check service state when fragment resumes
         if (TimerService.isServiceRunning && binding.layoutRunning.visibility != View.VISIBLE) {
             currentSeconds = TimerService.currentRemainingSeconds
@@ -353,6 +377,7 @@ class TimerFragment : Fragment() {
                 switchToTimesUpState()
             }
         }
+
     }
 
     override fun onPause() {

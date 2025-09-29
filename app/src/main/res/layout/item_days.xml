@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_marginEnd="4dp"
+    android:padding="5dp"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imgDays"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_bg_days_check_off"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvDays"
+        android:layout_width="0dp"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="sunday"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toBottomOf="@+id/imgDays"
+        app:layout_constraintEnd_toEndOf="@+id/imgDays"
+        app:layout_constraintStart_toStartOf="@+id/imgDays"
+        app:layout_constraintTop_toTopOf="@+id/imgDays" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

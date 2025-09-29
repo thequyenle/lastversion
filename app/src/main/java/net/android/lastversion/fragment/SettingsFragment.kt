@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import net.android.lastversion.R
+import net.android.lastversion.utils.showSystemUI
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,8 +37,18 @@ class SettingsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false)
+
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Đặt ở đây - timing chính xác
+        activity?.showSystemUI(white = false)
+    }
+    override fun onResume() {
+        super.onResume()
+        activity?.showSystemUI(white = false)
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of

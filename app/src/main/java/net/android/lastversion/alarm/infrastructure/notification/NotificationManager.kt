@@ -26,13 +26,15 @@ class AlarmNotificationManager(private val context: Context) {
         createNotificationChannels()
     }
 
+    // THAY ĐỔI: Signature method mới
     fun showAlarmNotification(
         alarmId: Int,
         title: String,
-        message: String,
-        isVibrationEnabled: Boolean,
-        isSoundEnabled: Boolean,
-        isSnoozeEnabled: Boolean,
+        note: String,
+        snoozeMinutes: Int,
+        vibrationPattern: String,
+        soundType: String,
+        isSilentModeEnabled: Boolean,
         soundUri: String = ""
     ) {
         if (!hasNotificationPermission()) {
@@ -42,8 +44,8 @@ class AlarmNotificationManager(private val context: Context) {
 
         try {
             val notification = buildAlarmNotification(
-                alarmId, title, message, isVibrationEnabled,
-                isSoundEnabled, isSnoozeEnabled, soundUri
+                alarmId, title, note, snoozeMinutes,
+                vibrationPattern, soundType, isSilentModeEnabled, soundUri
             )
 
             if (ActivityCompat.checkSelfPermission(
@@ -51,13 +53,6 @@ class AlarmNotificationManager(private val context: Context) {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
                 return
             }
             notificationManager.notify(alarmId, notification)
@@ -78,13 +73,6 @@ class AlarmNotificationManager(private val context: Context) {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
                 return
             }
             notificationManager.notify(alarmId + SNOOZE_ID_OFFSET, notification)
@@ -137,13 +125,15 @@ class AlarmNotificationManager(private val context: Context) {
         }
     }
 
+    // THAY ĐỔI: Parameters mới
     private fun buildAlarmNotification(
         alarmId: Int,
         title: String,
         message: String,
-        isVibrationEnabled: Boolean,
-        isSoundEnabled: Boolean,
-        isSnoozeEnabled: Boolean,
+        snoozeMinutes: Int,
+        vibrationPattern: String,
+        soundType: String,
+        isSilentModeEnabled: Boolean,
         soundUri: String
     ): android.app.Notification {
 
@@ -182,34 +172,51 @@ class AlarmNotificationManager(private val context: Context) {
             .addAction(R.drawable.ic_clock_disable, "Dismiss", dismissPendingIntent)
             .setDefaults(0)
 
-        // Snooze action
-        if (isSnoozeEnabled) {
+        // Snooze action - chỉ thêm nếu snoozeMinutes > 0
+        if (snoozeMinutes > 0) {
             val snoozeIntent = Intent(context, AlarmActionReceiver::class.java).apply {
                 action = ACTION_SNOOZE
                 putExtra("alarm_id", alarmId)
                 putExtra("alarm_title", title)
+                putExtra("snooze_minutes", snoozeMinutes)
             }
             val snoozePendingIntent = PendingIntent.getBroadcast(
                 context, alarmId * 10 + 1, snoozeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            builder.addAction(R.drawable.ic_snooze, "Snooze", snoozePendingIntent)
+            builder.addAction(R.drawable.ic_snooze, "Snooze $snoozeMinutes min", snoozePendingIntent)
         }
 
-        // Sound
-        if (isSoundEnabled) {
-            val alarmUri = if (soundUri.isNotEmpty()) {
-                Uri.parse(soundUri)
-            } else {
-                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        // Sound - dựa vào soundType
+        if (soundType != "off") {
+            val alarmUri = when {
+                soundType == "custom" && soundUri.isNotEmpty() -> Uri.parse(soundUri)
+                else -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
                     ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             }
-            builder.setSound(alarmUri)
+
+            // Nếu silent mode enabled, vẫn phát âm thanh
+            if (soundType != "off") {
+                val alarmUri = when {
+                    soundType == "custom" && soundUri.isNotEmpty() -> Uri.parse(soundUri)
+                    else -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                }
+
+                builder.setSound(alarmUri)
+                // Note: isSilentModeEnabled chỉ xử lý trong AlarmRingingActivity
+            }
         }
 
-        // Vibration
-        if (isVibrationEnabled) {
-            builder.setVibrate(longArrayOf(0, 1000, 500, 1000, 500, 1000))
+        // Vibration - dựa vào vibrationPattern
+        when (vibrationPattern) {
+            "off" -> {
+                // Không rung
+            }
+            "short" -> builder.setVibrate(longArrayOf(0, 300, 200, 300))
+            "long" -> builder.setVibrate(longArrayOf(0, 1000, 500, 1000))
+            "double" -> builder.setVibrate(longArrayOf(0, 500, 200, 500, 200, 500))
+            "default" -> builder.setVibrate(longArrayOf(0, 1000, 500, 1000, 500, 1000))
         }
 
         return builder.build()

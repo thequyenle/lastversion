@@ -25,4 +25,5 @@
     <string name="pause">pause</string>
     <string name="resume">resume</string>
     <string name="stop">stop</string>
+    <string name="permission_text">\"Alarm Clock\" requires permission to use\nthe Camera and Photos</string>
 </resources>

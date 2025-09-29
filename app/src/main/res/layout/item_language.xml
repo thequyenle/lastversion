@@ -4,50 +4,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/itemLanguage"
     android:layout_width="match_parent"
-    android:layout_height="96dp"
-    android:padding="16dp">
+    android:layout_height="48dp"
+    android:background="@drawable/frame_language">
 
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="75dp"
-        android:background="@drawable/fr_language"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
     <ImageView
         android:id="@+id/ivLanguage"
         android:src="@drawable/flag_english"
-        android:layout_width="36dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="24dp"
-        android:layout_height="36dp"
-        android:textSize="18sp" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"/>
     <TextView
         android:id="@+id/tvLanguage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Language"
-        android:textSize="24sp"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ivLanguage"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="64dp"
         app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintEnd_toStartOf="@id/radio"
         />
     <ImageButton
         android:id="@+id/radio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:src="@drawable/ic_select_unchecked"
+        android:backgroundTint="@android:color/transparent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:contentDescription="@string/select_language"
         android:focusableInTouchMode="false"
         android:clickable="false"
-        android:layout_marginEnd="24dp"/>
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="12dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

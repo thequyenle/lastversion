@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 
 import net.android.lastversion.R
+import net.android.lastversion.utils.showSystemUI
 
 class StopwatchFragment : Fragment() {
 
@@ -32,32 +33,7 @@ class StopwatchFragment : Fragment() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == StopwatchConst.ACTION_TICK) {
                 seconds = intent.getIntExtra(StopwatchConst.EXTRA_ELAPSED, 0)
-                val serviceRunning = intent.getBooleanExtra("isRunning", false)
-                val state = intent.getStringExtra("state")
-
                 updateTimerText()
-
-                // Sync UI state với service state
-                when {
-                    state == "STOPPED" -> {
-                        isServiceRunning = false
-                        switchToStartUI()
-                    }
-                    state == "PAUSED" -> {
-                        layoutTimerText.visibility = View.VISIBLE
-                        switchToContinueRestartUI()
-                    }
-                    serviceRunning -> {
-                        isServiceRunning = true
-                        layoutTimerText.visibility = View.VISIBLE
-                        switchToStopUI()
-                    }
-                    seconds > 0 && !serviceRunning -> {
-                        // Service pause, hiển thị UI pause
-                        layoutTimerText.visibility = View.VISIBLE
-                        switchToContinueRestartUI()
-                    }
-                }
             }
         }
     }
@@ -105,26 +81,30 @@ class StopwatchFragment : Fragment() {
         }
 
         updateTimerText()
-
-        // Kiểm tra xem có service đang chạy không khi mở Fragment
-        checkServiceState()
-
         return view
+    }
+
+    // Thêm method này
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        activity?.showSystemUI(white = false)
     }
 
     override fun onResume() {
         super.onResume()
+        activity?.showSystemUI(white = false)
+
+        // Set SystemUI
+
         // Đăng ký nhận broadcast từ Service
         val filter = IntentFilter(StopwatchConst.ACTION_TICK)
 
-        // Từ Android 13+ cần flag RECEIVER_NOT_EXPORTED vì chỉ nhận broadcast nội bộ
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             requireContext().registerReceiver(tickReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
         } else {
-            requireContext().registerReceiver(tickReceiver, filter)
+            requireContext().registerReceiver(tickReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
         }
 
-        // Promote service lên foreground khi app ở background
         promoteServiceToForeground()
     }
 
@@ -183,14 +163,6 @@ class StopwatchFragment : Fragment() {
             }
             requireContext().startService(intent)
         }
-    }
-
-    private fun checkServiceState() {
-        // Request service gửi state hiện tại
-        val intent = Intent(requireContext(), StopwatchService::class.java).apply {
-            action = StopwatchConst.ACTION_GET_STATE
-        }
-        requireContext().startService(intent)
     }
 
     private fun updateTimerText() {

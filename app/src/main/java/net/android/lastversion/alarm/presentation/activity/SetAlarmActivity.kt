@@ -5,6 +5,7 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -16,10 +17,13 @@ import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
 import net.android.lastversion.alarm.domain.model.Alarm
 import net.android.lastversion.alarm.infrastructure.scheduler.AlarmSchedulerImpl
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
+import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
+
+
 
 class SetAlarmActivity : AppCompatActivity() {
 
-    // Views - using findViewById to match existing layout
+    // Views
     private lateinit var btnBack: ImageView
     private lateinit var btnSave: TextView
     private lateinit var etLabel: EditText
@@ -38,10 +42,15 @@ class SetAlarmActivity : AppCompatActivity() {
     private lateinit var cbSaturday: CheckBox
     private lateinit var cbSunday: CheckBox
 
-    // Switches
-    private lateinit var switchSnooze: Switch
-    private lateinit var switchVibration: Switch
-    private lateinit var switchSound: Switch
+    private lateinit var layoutSnooze: LinearLayout
+    private lateinit var textSnoozeValue: TextView
+
+    private lateinit var layoutVibration: LinearLayout
+    private lateinit var textVibrationValue: TextView
+
+    private lateinit var layoutSound: LinearLayout
+    private lateinit var textSoundValue: TextView
+
     private lateinit var switchSilentMode: Switch
 
     // Data
@@ -51,6 +60,11 @@ class SetAlarmActivity : AppCompatActivity() {
 
     private var currentAlarm: Alarm? = null
     private var isEditMode = false
+
+    // Alarm settings
+    private var snoozeMinutes = 5
+    private var vibrationPattern = "default"
+    private var soundType = "default"
     private var currentSoundUri = ""
 
     private val soundPickerLauncher = registerForActivityResult(
@@ -59,6 +73,8 @@ class SetAlarmActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)?.let { uri ->
                 currentSoundUri = uri.toString()
+                soundType = "custom"
+                textSoundValue.text = "Tùy chỉnh"
             }
         }
     }
@@ -89,7 +105,7 @@ class SetAlarmActivity : AppCompatActivity() {
         etAlarmNote = findViewById(R.id.etAlarmNote)
         tvPreview = findViewById(R.id.tvPreview)
 
-        // Day checkboxes - ORDER MATCHES LAYOUT
+        // Day checkboxes
         cbMonday = findViewById(R.id.cbMonday)
         cbTuesday = findViewById(R.id.cbTuesday)
         cbWednesday = findViewById(R.id.cbWednesday)
@@ -98,10 +114,15 @@ class SetAlarmActivity : AppCompatActivity() {
         cbSaturday = findViewById(R.id.cbSaturday)
         cbSunday = findViewById(R.id.cbSunday)
 
-        // Switches
-        switchSnooze = findViewById(R.id.switchSnooze)
-        switchVibration = findViewById(R.id.switchVibration)
-        switchSound = findViewById(R.id.switchSound)
+        layoutSnooze = findViewById(R.id.layoutSnooze)
+        textSnoozeValue = findViewById(R.id.textSnoozeValue)
+
+        layoutVibration = findViewById(R.id.layoutVibration)
+        textVibrationValue = findViewById(R.id.textVibrationValue)
+
+        layoutSound = findViewById(R.id.layoutSound)
+        textSoundValue = findViewById(R.id.textSoundValue)
+
         switchSilentMode = findViewById(R.id.switchSilentMode)
     }
 
@@ -112,19 +133,17 @@ class SetAlarmActivity : AppCompatActivity() {
     }
 
     private fun setupTimePickers() {
-        // Hour picker (1-12)
         hourPicker.apply {
             minValue = 1
             maxValue = 12
         }
 
-        // Minute picker (0-59)
         minutePicker.apply {
             minValue = 0
             maxValue = 59
+            setFormatter { i -> String.format("%02d", i) }
         }
 
-        // AM/PM Spinner
         val amPmAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, arrayOf("AM", "PM"))
         amPmAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         amPmSpinner.adapter = amPmAdapter
@@ -140,6 +159,18 @@ class SetAlarmActivity : AppCompatActivity() {
         tvPreview.setOnClickListener {
             playPreviewSound()
         }
+
+        layoutSnooze.setOnClickListener {
+            showSnoozeDialog()
+        }
+
+        layoutVibration.setOnClickListener {
+            showVibrationDialog()
+        }
+
+        layoutSound.setOnClickListener {
+            showSoundDialog()
+        }
     }
 
     private fun setDefaultValues() {
@@ -153,11 +184,13 @@ class SetAlarmActivity : AppCompatActivity() {
             minutePicker.value = minute
             amPmSpinner.setSelection(if (amPm == "AM") 0 else 1)
 
-            // Default switches
-            switchSnooze.isChecked = true
-            switchVibration.isChecked = true
-            switchSound.isChecked = true
+            // Default settings
+            snoozeMinutes = 5
+            vibrationPattern = "default"
+            soundType = "default"
             switchSilentMode.isChecked = false
+
+            updateDisplayTexts()
         }
     }
 
@@ -173,23 +206,54 @@ class SetAlarmActivity : AppCompatActivity() {
             etLabel.setText(alarm.label)
             etAlarmNote.setText(alarm.note)
 
-            // Load active days - FIXED MAPPING (Layout order: Mon-Sun, Domain: Sun-Sat)
+            // Load active days
             val layoutCheckboxes = listOf(cbMonday, cbTuesday, cbWednesday, cbThursday, cbFriday, cbSaturday, cbSunday)
             layoutCheckboxes.forEachIndexed { layoutIndex, checkbox ->
                 val domainIndex = toDomainIndex(layoutIndex)
                 checkbox.isChecked = alarm.activeDays[domainIndex]
             }
 
-            switchSnooze.isChecked = alarm.isSnoozeEnabled
-            switchVibration.isChecked = alarm.isVibrationEnabled
-            switchSound.isChecked = alarm.isSoundEnabled
+            // Load alarm settings
+            snoozeMinutes = alarm.snoozeMinutes
+            vibrationPattern = alarm.vibrationPattern
+            soundType = alarm.soundType
             switchSilentMode.isChecked = alarm.isSilentModeEnabled
-
             currentSoundUri = alarm.soundUri
+
+            updateDisplayTexts()
 
             title = "Edit Alarm"
         } ?: run {
             title = "Set Alarm"
+        }
+    }
+
+    private fun updateDisplayTexts() {
+        // Snooze
+        textSnoozeValue.text = when (snoozeMinutes) {
+            0 -> "Tắt"
+            else -> "$snoozeMinutes phút"
+        }
+
+        // Vibration
+        textVibrationValue.text = when (vibrationPattern) {
+            "off" -> "Tắt"
+            "default" -> "Mặc định"
+            "short" -> "Ngắn"
+            "long" -> "Dài"
+            "double" -> "Rung đôi"
+            else -> "Mặc định"
+        }
+
+        // Sound
+        textSoundValue.text = when (soundType) {
+            "off" -> "Tắt"
+            "default" -> "Mặc định"
+            "gentle" -> "Nhẹ nhàng"
+            "loud" -> "Lớn"
+            "progressive" -> "Tăng dần"
+            "custom" -> "Tùy chỉnh"
+            else -> "Mặc định"
         }
     }
 
@@ -202,7 +266,7 @@ class SetAlarmActivity : AppCompatActivity() {
                 val label = etLabel.text.toString().trim().ifEmpty { "Alarm" }
                 val note = etAlarmNote.text.toString().trim()
 
-                // Get active days - FIXED MAPPING
+                // Get active days
                 val activeDays = BooleanArray(7) { false }
                 val layoutCheckboxes = listOf(cbMonday, cbTuesday, cbWednesday, cbThursday, cbFriday, cbSaturday, cbSunday)
                 layoutCheckboxes.forEachIndexed { layoutIndex, checkbox ->
@@ -220,9 +284,9 @@ class SetAlarmActivity : AppCompatActivity() {
                     label = label,
                     activeDays = activeDays,
                     isEnabled = true,
-                    isSnoozeEnabled = switchSnooze.isChecked,
-                    isVibrationEnabled = switchVibration.isChecked,
-                    isSoundEnabled = switchSound.isChecked,
+                    snoozeMinutes = snoozeMinutes,
+                    vibrationPattern = vibrationPattern,
+                    soundType = soundType,
                     isSilentModeEnabled = switchSilentMode.isChecked,
                     note = note,
                     soundUri = currentSoundUri
@@ -247,34 +311,114 @@ class SetAlarmActivity : AppCompatActivity() {
     }
 
     private fun playPreviewSound() {
-        try {
-            val soundUri = if (currentSoundUri.isNotEmpty()) {
-                Uri.parse(currentSoundUri)
-            } else {
-                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            }
-            val ringtone = RingtoneManager.getRingtone(this, soundUri)
-            ringtone?.play()
-
-            // Stop after 3 seconds
-            android.os.Handler(mainLooper).postDelayed({
-                try {
-                    ringtone?.stop()
-                } catch (e: Exception) {
-                    // Ignore
-                }
-            }, 3000)
-
-        } catch (e: Exception) {
-            Toast.makeText(this, "Could not play preview", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, AlarmRingingActivity::class.java).apply {
+            putExtra("alarm_id", 0) // Preview mode
+            putExtra("alarm_hour", hourPicker.value)
+            putExtra("alarm_minute", minutePicker.value)
+            putExtra("alarm_am_pm", amPmSpinner.selectedItem.toString())
+            putExtra("alarm_label", etLabel.text.toString().ifEmpty { "Preview" })
+            putExtra("alarm_note", etAlarmNote.text.toString())
+            putExtra("snooze_minutes", snoozeMinutes)
+            putExtra("vibration_pattern", vibrationPattern)
+            putExtra("sound_type", soundType)
+            putExtra("is_silent_mode_enabled", switchSilentMode.isChecked)
+            putExtra("sound_uri", currentSoundUri)
         }
+        startActivity(intent)
     }
 
-    // Fixed day mapping: Layout index (Mon=0...Sun=6) to Domain index (Sun=0...Sat=6)
+    private fun showSnoozeDialog() {
+        val options = arrayOf("Tắt", "5 phút", "10 phút", "15 phút", "20 phút", "30 phút")
+        val values = arrayOf(0, 5, 10, 15, 20, 30)
+
+        val currentIndex = values.indexOf(snoozeMinutes).takeIf { it >= 0 } ?: 1
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Chọn thời gian báo lại")
+            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
+                snoozeMinutes = values[which]
+                updateDisplayTexts()
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun showVibrationDialog() {
+        val options = arrayOf("Tắt", "Mặc định", "Ngắn", "Dài", "Rung đôi")
+        val values = arrayOf("off", "default", "short", "long", "double")
+
+        val currentIndex = values.indexOf(vibrationPattern).takeIf { it >= 0 } ?: 1
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Chọn kiểu rung")
+            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
+                vibrationPattern = values[which]
+                updateDisplayTexts()
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun showSoundDialog() {
+        val options = arrayOf("Tắt", "Mặc định", "Nhẹ nhàng", "Lớn", "Tăng dần", "Tùy chỉnh...")
+        val values = arrayOf("off", "default", "gentle", "loud", "progressive", "custom")
+
+        val currentIndex = values.indexOf(soundType).takeIf { it >= 0 } ?: 1
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Chọn âm thanh")
+            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
+                if (values[which] == "custom") {
+                    dialog.dismiss()
+                    openSoundPicker()
+                } else {
+                    soundType = values[which]
+                    currentSoundUri = ""
+                    updateDisplayTexts()
+                    dialog.dismiss()
+                }
+            }
+            .show()
+    }
+
+    private fun openSoundPicker() {
+        val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Chọn nhạc chuông báo thức")
+            if (currentSoundUri.isNotEmpty()) {
+                putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(currentSoundUri))
+            }
+        }
+        soundPickerLauncher.launch(intent)
+    }
+
+    // Layout index (Mon=0...Sun=6) to Domain index (Sun=0...Sat=6)
     private fun toDomainIndex(layoutIndex: Int): Int = (layoutIndex + 1) % 7
 
     companion object {
         const val EXTRA_ALARM = "extra_alarm"
         const val RESULT_DELETED = 100
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showSystemUI(white = false)
+    }
+
+    private fun Activity.showSystemUI(white: Boolean = false) {
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+
+        if (white) {
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        } else {
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                        View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        }
     }
 }

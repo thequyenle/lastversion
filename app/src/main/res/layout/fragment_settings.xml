@@ -1,14 +1,260 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.SettingsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Settings Title -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/tvSettingsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="57dp"
+        android:text="Settings"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <!-- Volume Icon -->
+    <!-- Volume Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutVolumeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSettingsTitle">
+
+        <!-- Volume Icon -->
+        <ImageView
+            android:id="@+id/icVolume"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_volume"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Volume Text -->
+        <TextView
+            android:id="@+id/tvVolume"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Volume"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toEndOf="@id/icVolume"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:progressTint="#76E0C1"
+        android:thumbTint="#76E0C1"
+        android:progressBackgroundTint="#E0E0E0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutVolumeContainer"
+        />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutThemeAlarmContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutVolumeContainer">
+
+        <!-- Volume Icon -->
+        <ImageView
+            android:id="@+id/icTheme"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_volume"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Volume Text -->
+        <TextView
+            android:id="@+id/tvTheme"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Theme Alarm"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toEndOf="@id/icTheme"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutLanguage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutThemeAlarmContainer">
+
+        <!-- Volume Icon -->
+        <ImageView
+            android:id="@+id/icLanguage"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_volume"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Volume Text -->
+        <TextView
+            android:id="@+id/tvLanguage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Language"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toEndOf="@id/icLanguage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutRateUs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutLanguage">
+
+        <!-- Volume Icon -->
+        <ImageView
+            android:id="@+id/icRateUs"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_rate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Volume Text -->
+        <TextView
+            android:id="@+id/tvRateUs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Rate Us"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toEndOf="@id/icRateUs"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutShare"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutRateUs">
+
+        <!-- Volume Icon -->
+        <ImageView
+            android:id="@+id/icShare"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_share"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Volume Text -->
+        <TextView
+            android:id="@+id/tvShare"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Share"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toEndOf="@id/icShare"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutPrivacy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutShare">
+
+        <!-- Volume Icon -->
+        <ImageView
+            android:id="@+id/icPrivacy"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_privacy"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Volume Text -->
+        <TextView
+            android:id="@+id/tvPrivacy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Privacy"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toEndOf="@id/icPrivacy"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

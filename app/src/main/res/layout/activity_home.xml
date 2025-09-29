@@ -21,7 +21,7 @@
     <LinearLayout
         android:id="@+id/custom_bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="90dp"
         android:orientation="horizontal"
         android:background="#76E0C1"
         android:padding="8dp"
@@ -31,11 +31,10 @@
         <LinearLayout
             android:id="@+id/nav_alarm"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="12dp"
             android:clickable="true"
             android:focusable="true">
 
@@ -61,23 +60,27 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Alarm"
                 android:textSize="12sp"
                 android:textColor="#FFFFFF"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="4dp"
+                android:singleLine="true"
+                android:gravity="center"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/nav_clock"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="12dp"
             android:clickable="true"
             android:focusable="true">
 
@@ -104,23 +107,28 @@
 
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Clock"
                 android:textSize="12sp"
+                android:gravity="center"
                 android:textColor="#FFFFFF"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="4dp"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/nav_stopwatch"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="12dp"
+
             android:clickable="true"
             android:focusable="true">
 
@@ -146,12 +154,17 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Stopwatch"
                 android:textSize="12sp"
                 android:textColor="#FFFFFF"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                />
 
         </LinearLayout>
 
@@ -162,18 +175,19 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center"
-       >
+            android:clickable="true"
+            android:focusable="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/timerIconContainer"
+                android:id="@+id/timer_icon_container"
                 android:layout_width="48dp"
                 android:layout_height="26dp"
                 android:background="@drawable/selected_nav_background">
 
                 <ImageView
                     android:id="@+id/timer_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:contentDescription="Timer"
                     android:src="@drawable/ic_timer_selector"
                     app:tint="#76E0C1"
@@ -188,16 +202,18 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Timer"
                 android:textSize="12sp"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
-                android:layout_marginTop="4dp" />
+                />
 
         </LinearLayout>
 
@@ -207,7 +223,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/settings_icon_container"
@@ -231,11 +249,12 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Settings"
                 android:textSize="12sp"
                 android:textColor="#FFFFFF"
+                android:gravity="center"
                 android:layout_marginTop="4dp" />
 
         </LinearLayout>
