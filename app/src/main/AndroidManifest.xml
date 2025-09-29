@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <!-- Basic permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- Notification permissions -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Foreground service permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- Android 9+ requires specific foreground service types -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Wake lock to keep service running -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" /> <!-- Exact alarm permissions for reliable timer (Android 12+) -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        tools:ignore="UnusedAttribute" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission
+        android:name="android.permission.USE_EXACT_ALARM"
+        tools:ignore="UnusedAttribute" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" /> <!-- Battery optimization bypass (optional but recommended) -->
+    <uses-permission
+        android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+        tools:ignore="UnusedAttribute" />
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        tools:ignore="UnusedAttribute" /> <!-- Other existing permissions -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -22,6 +46,50 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Lastversion"
         tools:targetApi="31">
+        <activity
+            android:name=".alarm.presentation.activity.AlarmRingingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".alarm.presentation.activity.EditAlarmActivity"
+            android:exported="false" /> <!-- QUAN TRỌNG: Đăng ký receivers -->
+        <receiver
+            android:name=".alarm.infrastructure.receiver.AlarmReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".alarm.infrastructure.receiver.AlarmActionReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".alarm.infrastructure.receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".alarm.presentation.activity.SetAlarmActivity"
+            android:exported="false" /> <!-- Timer Service - handles background timer execution -->
+        <service
+            android:name="net.android.last.service.TimerService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" /> <!-- Broadcast Receiver - handles timer completion when service might be killed -->
+        <service
+            android:name=".stopwatch.StopwatchService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <receiver
+            android:name=".timer.receiver.TimeUpReceiver"
+            android:enabled="true"
+            android:exported="false" /> <!-- Existing activities -->
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
@@ -45,7 +113,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
     </application>
 
 </manifest>

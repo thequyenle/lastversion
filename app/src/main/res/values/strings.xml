@@ -22,4 +22,8 @@
     <string name="home_screen">Welcome to Home Screen</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pause">pause</string>
+    <string name="resume">resume</string>
+    <string name="stop">stop</string>
+    <string name="permission_text">\"Alarm Clock\" requires permission to use\nthe Camera and Photos</string>
 </resources>

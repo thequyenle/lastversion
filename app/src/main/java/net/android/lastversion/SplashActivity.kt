@@ -1,9 +1,11 @@
 package net.android.lastversion
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +16,7 @@ import android.view.animation.AnimationUtils
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
@@ -31,5 +34,21 @@ class SplashActivity : AppCompatActivity() {
             }
             finish()
         }, 4000)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showSystemUI(white =false)
+    }
+    fun Activity.showSystemUI(white: Boolean = false) {
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+
+        if (white) {
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        } else {
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        }
     }
 }
