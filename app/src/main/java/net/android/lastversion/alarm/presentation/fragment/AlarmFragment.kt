@@ -139,7 +139,12 @@ class AlarmFragment : Fragment() {
                             repository.insertAlarm(deletedAlarm)
 
                             // ✅ Schedule lại nếu enabled
+                            // ✅ Schedule lại nếu enabled
                             if (deletedAlarm.isEnabled) {
+                                // 🔒 EXTRA SAFE: Cancel trước để chắc chắn không bị lặp
+                                scheduler.cancelAlarm(deletedAlarm.id)
+
+                                // Sau đó mới schedule
                                 scheduler.scheduleAlarm(deletedAlarm)
                             }
 
@@ -272,6 +277,10 @@ class AlarmFragment : Fragment() {
 
                         // ✅ Schedule lại alarm nếu nó đang enabled
                         if (deletedAlarm.isEnabled) {
+                            // 🔒 EXTRA SAFE: Cancel trước để chắc chắn không bị lặp
+                            scheduler.cancelAlarm(deletedAlarm.id)
+
+                            // Sau đó mới schedule
                             scheduler.scheduleAlarm(deletedAlarm)
                         }
 
