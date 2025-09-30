@@ -73,17 +73,23 @@ class AlarmReceiver : BroadcastReceiver() {
             Log.d(TAG, "⚠️ Preview mode - skipping notification (alarmId = 0)")
         }
 
-        // Handle post-trigger logic
+        // ✅ FIX: KHÔNG xử lý post-trigger logic ngay lập tức
+        // Để tránh race condition khi user bấm Snooze
+        // Logic này sẽ được xử lý khi user bấm Dismiss hoặc sau khi Snooze xong
+        // COMMENT OUT CODE NÀY:
+        /*
         CoroutineScope(Dispatchers.IO).launch {
             handleAlarmTriggered(context, alarmId)
         }
+        */
     }
 
-    private suspend fun handleAlarmTriggered(context: Context, alarmId: Int) {
+    // ✅ THÊM: Function mới để xử lý sau khi Dismiss
+    // Gọi function này từ AlarmActionReceiver khi user bấm Dismiss
+    suspend fun handleAlarmDismissed(context: Context, alarmId: Int) {
         try {
-            // ✅ FIX: Không xử lý logic cho preview alarm
             if (alarmId == 0) {
-                Log.d(TAG, "Preview mode - skipping post-trigger logic")
+                Log.d(TAG, "Preview mode - skipping post-dismiss logic")
                 return
             }
 
@@ -104,7 +110,7 @@ class AlarmReceiver : BroadcastReceiver() {
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "Error handling alarm trigger", e)
+            Log.e(TAG, "Error handling alarm dismiss", e)
         }
     }
 

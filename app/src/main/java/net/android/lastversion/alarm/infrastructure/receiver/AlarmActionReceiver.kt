@@ -35,6 +35,12 @@ class AlarmActionReceiver : BroadcastReceiver() {
             AlarmNotificationManager.ACTION_DISMISS -> {
                 Log.d(TAG, "🔴 ACTION_DISMISS received for alarm $alarmId")
                 notificationManager.cancelNotification(alarmId)
+
+                // ✅ FIX: Xử lý disable/reschedule alarm SAU KHI dismiss
+                CoroutineScope(Dispatchers.IO).launch {
+                    handleAlarmDismissed(context, alarmId)
+                }
+
                 Log.d(TAG, "✅ Alarm $alarmId dismissed successfully")
             }
 
@@ -51,6 +57,35 @@ class AlarmActionReceiver : BroadcastReceiver() {
             else -> {
                 Log.w(TAG, "⚠️ UNKNOWN action: ${intent.action}")
             }
+        }
+    }
+
+    // ✅ THÊM: Xử lý logic sau khi dismiss
+    private suspend fun handleAlarmDismissed(context: Context, alarmId: Int) {
+        try {
+            if (alarmId == 0) {
+                Log.d(TAG, "Preview mode - skipping post-dismiss logic")
+                return
+            }
+
+            val repository = AlarmRepositoryImpl(
+                AlarmDatabase.getDatabase(context).alarmDao()
+            )
+            val scheduler = AlarmSchedulerImpl(context)
+
+            val alarm = repository.getAlarmById(alarmId)
+            if (alarm != null && alarm.hasRecurringDays()) {
+                // Reschedule recurring alarm
+                scheduler.scheduleAlarm(alarm)
+                Log.d(TAG, "✅ Recurring alarm ${alarm.id} rescheduled after dismiss")
+            } else if (alarm != null) {
+                // Disable one-time alarm
+                repository.updateAlarm(alarm.copy(isEnabled = false))
+                Log.d(TAG, "✅ One-time alarm ${alarm.id} disabled after dismiss")
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error handling alarm dismiss", e)
         }
     }
 
@@ -118,6 +153,17 @@ class AlarmActionReceiver : BroadcastReceiver() {
                 Log.d(TAG, "✅ Snooze alarm object created with ID: ${snoozeAlarm.id}")
 
                 scheduler.scheduleAlarm(snoozeAlarm)
+
+                // ✅ FIX: SAU KHI schedule snooze xong, xử lý alarm gốc
+                // Nếu là recurring alarm → reschedule
+                // Nếu là one-time alarm → disable
+                if (alarm.hasRecurringDays()) {
+                    scheduler.scheduleAlarm(alarm)
+                    Log.d(TAG, "✅ Recurring alarm ${alarm.id} rescheduled after snooze")
+                } else {
+                    repository.updateAlarm(alarm.copy(isEnabled = false))
+                    Log.d(TAG, "✅ One-time alarm ${alarm.id} disabled after snooze")
+                }
 
                 Log.d(TAG, "🎉 SUCCESS! Alarm $alarmId snoozed for $snoozeMinutes minutes")
                 Log.d(TAG, "Will ring at: ${java.util.Date(snoozeTime)}")
