@@ -36,12 +36,13 @@ class AlarmActionReceiver : BroadcastReceiver() {
         }
     }
 
+    // Thay thế function handleSnooze trong AlarmActionReceiver.kt
+
     private fun handleSnooze(context: Context, alarmId: Int, intent: Intent) {
         val notificationManager = AlarmNotificationManager(context)
         notificationManager.cancelNotification(alarmId)
 
         val title = intent.getStringExtra("alarm_title") ?: "Alarm"
-        // THAY ĐỔI: Đọc snoozeMinutes từ intent thay vì hardcode
         val snoozeMinutes = intent.getIntExtra("snooze_minutes", 5)
         val snoozeTime = System.currentTimeMillis() + (snoozeMinutes * 60 * 1000L)
 
@@ -58,11 +59,27 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
                 val alarm = repository.getAlarmById(alarmId)
                 if (alarm != null) {
-                    // Create temporary snooze alarm
+                    // Tính giờ phút mới cho snooze
+                    val snoozeCalendar = java.util.Calendar.getInstance().apply {
+                        timeInMillis = snoozeTime
+                    }
+
+                    val snoozeHour12 = snoozeCalendar.get(java.util.Calendar.HOUR)
+                    val snoozeMinute = snoozeCalendar.get(java.util.Calendar.MINUTE)
+                    val snoozeAmPm = if (snoozeCalendar.get(java.util.Calendar.AM_PM) == java.util.Calendar.AM) "AM" else "PM"
+
+                    // Fix hour = 0 thành hour = 12 cho 12 AM/PM
+                    val displayHour = if (snoozeHour12 == 0) 12 else snoozeHour12
+
+                    // Create temporary snooze alarm với giờ mới
                     val snoozeAlarm = alarm.copy(
-                        id = alarmId + 50000, // Offset to avoid conflicts
-                        activeDays = BooleanArray(7) { false } // One-time alarm
+                        id = alarmId + 50000,  // Offset to avoid conflicts
+                        hour = displayHour,     // ← THÊM: Giờ mới
+                        minute = snoozeMinute,  // ← THÊM: Phút mới
+                        amPm = snoozeAmPm,      // ← THÊM: AM/PM mới
+                        activeDays = BooleanArray(7) { false }  // One-time alarm
                     )
+
                     scheduler.scheduleAlarm(snoozeAlarm)
                     Log.d(TAG, "Alarm $alarmId snoozed for $snoozeMinutes minutes until ${java.util.Date(snoozeTime)}")
                 }
