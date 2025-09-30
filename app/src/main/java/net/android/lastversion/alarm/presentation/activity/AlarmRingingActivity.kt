@@ -24,7 +24,6 @@ import java.util.*
 class AlarmRingingActivity : AppCompatActivity() {
 
     private lateinit var tvTime: TextView
-    private lateinit var tvLabel: TextView
     private lateinit var tvNote: TextView
     private lateinit var btnDismiss: Button
     private lateinit var btnSnooze: Button
@@ -62,7 +61,6 @@ class AlarmRingingActivity : AppCompatActivity() {
 
     private fun initViews() {
         tvTime = findViewById(R.id.tvTime)
-        tvLabel = findViewById(R.id.tvLabel)
         tvNote = findViewById(R.id.tvNote)
         btnDismiss = findViewById(R.id.btnDismiss)
         btnSnooze = findViewById(R.id.btnSnooze)
@@ -76,20 +74,20 @@ class AlarmRingingActivity : AppCompatActivity() {
         val hour = intent.getIntExtra("alarm_hour", 0)
         val minute = intent.getIntExtra("alarm_minute", 0)
         val amPm = intent.getStringExtra("alarm_am_pm") ?: "AM"
-        val label = intent.getStringExtra("alarm_label") ?: "Alarm"
         val note = intent.getStringExtra("alarm_note") ?: ""
+        android.util.Log.d("AlarmRinging", "Received note: '$note'")
+
+        tvNote.text = if (note.isNotEmpty()) {
+            android.util.Log.d("AlarmRinging", "Showing note")
+            note
+        } else {
+           return
+        }
         snoozeMinutes = intent.getIntExtra("snooze_minutes", 5)
 
         // Display time
         tvTime.text = String.format("%02d:%02d %s", hour, minute, amPm)
-        tvLabel.text = label
 
-        if (note.isNotEmpty()) {
-            tvNote.text = note
-            tvNote.visibility = android.view.View.VISIBLE
-        } else {
-            tvNote.visibility = android.view.View.GONE
-        }
 
         // Hide snooze button if snooze disabled
         if (snoozeMinutes == 0) {
@@ -215,8 +213,4 @@ class AlarmRingingActivity : AppCompatActivity() {
         stopAlarm()
     }
 
-    override fun onBackPressed() {
-        // Prevent back button from dismissing alarm
-        // User must press Dismiss or Snooze
-    }
 }

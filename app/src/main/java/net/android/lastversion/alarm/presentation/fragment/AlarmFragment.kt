@@ -1,12 +1,14 @@
 package net.android.lastversion.alarm.presentation.fragment
 
 import android.app.Activity
+import android.app.ProgressDialog.show
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsetsController
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -103,7 +105,9 @@ class AlarmFragment : Fragment() {
     private fun setupRecyclerView() {
         alarmAdapter = AlarmAdapter(
             onItemClick = { alarm -> openSetAlarmActivity(alarm) },
-            onSwitchToggle = { alarm -> alarmViewModel.toggleAlarm(alarm.id) }
+            onSwitchToggle = { alarm -> alarmViewModel.toggleAlarm(alarm.id) },
+            onMenuClick = { alarm, view -> showAlarmMenu(alarm, view) }  // ← THÊM dòng này
+
         )
 
         recyclerViewAlarms.apply {
@@ -183,6 +187,61 @@ class AlarmFragment : Fragment() {
         } else {
             window.decorView.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        }
+    }
+
+    private fun showAlarmMenu(alarm: Alarm, anchorView: View) {
+        val options = arrayOf("Duplicate", "Delete")
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setItems(options) { dialog, which ->
+                when (which) {
+                    0 -> duplicateAlarm(alarm)
+                    1 -> deleteAlarmWithUndo(alarm)
+                }
+                dialog.dismiss()
+            }
+            .create()
+
+        // Bo góc cho dialog
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_rounded)
+
+        dialog.show()
+    }
+
+    private fun deleteAlarmWithUndo(alarm: Alarm) {
+        val dialogView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.dialog_delete_confirm, null)
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_rounded)
+
+        dialogView.findViewById<View>(R.id.btnNo).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<View>(R.id.btnYes).setOnClickListener {
+            alarmViewModel.deleteAlarm(alarm)
+            showSnackbar("Alarm deleted") {
+                alarmViewModel.saveAlarm(alarm)
+            }
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun duplicateAlarm(alarm: Alarm) {
+        lifecycleScope.launch {
+            val duplicatedAlarm = alarm.copy(
+                id = 0, // Database sẽ tự tạo ID mới
+                label = "${alarm.label}"
+            )
+            alarmViewModel.saveAlarm(duplicatedAlarm)
+            showSnackbar("Alarm duplicated")
         }
     }
 }

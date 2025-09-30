@@ -20,7 +20,7 @@ data class Alarm(
     val soundType: String = "default",
 
     val isSilentModeEnabled: Boolean = false,
-    val note: String = "",
+    val note: String = "Wake Up !!!",
     val soundUri: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()

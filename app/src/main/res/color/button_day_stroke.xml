@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Màu viền khi được chọn: Xanh -->
+    <item android:color="#5DD5C0" android:state_selected="true" />
+    <!-- Màu viền mặc định: Xám -->
+    <item android:color="#C4C4C4" />
+</selector>

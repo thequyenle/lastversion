@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Trạng thái được chọn -->
+    <item android:state_selected="true">
+        <shape android:shape="oval">
+            <solid android:color="#4DD0E1"/>
+        </shape>
+    </item>
+
+    <!-- Trạng thái bình thường -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#E0E0E0"/>
+        </shape>
+    </item>
+</selector>

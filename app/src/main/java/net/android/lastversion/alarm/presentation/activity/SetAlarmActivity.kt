@@ -5,11 +5,13 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 import net.android.lastversion.R
 import net.android.lastversion.alarm.data.local.database.AlarmDatabase
@@ -21,26 +23,32 @@ import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 
 
 
+
 class SetAlarmActivity : AppCompatActivity() {
 
     // Views
     private lateinit var btnBack: ImageView
     private lateinit var btnSave: TextView
-    private lateinit var etLabel: EditText
-    private lateinit var hourPicker: NumberPicker
-    private lateinit var minutePicker: NumberPicker
-    private lateinit var amPmSpinner: Spinner
-    private lateinit var etAlarmNote: EditText
-    private lateinit var tvPreview: TextView
+    private lateinit var hourPicker: com.shawnlin.numberpicker.NumberPicker
+    private lateinit var minutePicker: com.shawnlin.numberpicker.NumberPicker
+    private lateinit var amPmSpinner: com.shawnlin.numberpicker.NumberPicker
+    private lateinit var tvPreview: LinearLayout
+    private lateinit var tvAlarmNoteValue: TextView
+    private lateinit var layoutAlarmNote: LinearLayout
+    private var alarmNote = ""
 
     // Day checkboxes - ORDER MATCHES LAYOUT (Monday first)
-    private lateinit var cbMonday: CheckBox
-    private lateinit var cbTuesday: CheckBox
-    private lateinit var cbWednesday: CheckBox
-    private lateinit var cbThursday: CheckBox
-    private lateinit var cbFriday: CheckBox
-    private lateinit var cbSaturday: CheckBox
-    private lateinit var cbSunday: CheckBox
+    private lateinit var cbMonday: TextView
+    private lateinit var cbTuesday: TextView
+    private lateinit var cbWednesday: TextView
+    private lateinit var cbThursday: TextView
+    private lateinit var cbFriday: TextView
+    private lateinit var cbSaturday: TextView
+    private lateinit var cbSunday: TextView
+
+    // Trong khai báo biến
+    private lateinit var switchSilentMode: ImageView
+    private var isSilentModeEnabled = true  // Mặc định bật (vì src="ic_switch_on")
 
     private lateinit var layoutSnooze: LinearLayout
     private lateinit var textSnoozeValue: TextView
@@ -50,8 +58,6 @@ class SetAlarmActivity : AppCompatActivity() {
 
     private lateinit var layoutSound: LinearLayout
     private lateinit var textSoundValue: TextView
-
-    private lateinit var switchSilentMode: Switch
 
     // Data
     private lateinit var repository: AlarmRepositoryImpl
@@ -79,6 +85,23 @@ class SetAlarmActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupDayButtons() {
+        val dayButtons = listOf(
+            cbMonday,
+            cbTuesday,
+            cbWednesday,
+            cbThursday,
+            cbFriday,
+            cbSaturday,
+            cbSunday
+        )
+
+        dayButtons.forEach { textView ->
+            textView.setOnClickListener {
+                textView.isSelected = !textView.isSelected
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_set_alarm)
@@ -98,12 +121,12 @@ class SetAlarmActivity : AppCompatActivity() {
     private fun initViews() {
         btnBack = findViewById(R.id.btnBack)
         btnSave = findViewById(R.id.btnSave)
-        etLabel = findViewById(R.id.etLabel)
         hourPicker = findViewById(R.id.hourPicker)
         minutePicker = findViewById(R.id.minutePicker)
         amPmSpinner = findViewById(R.id.amPmSpinner)
-        etAlarmNote = findViewById(R.id.etAlarmNote)
-        tvPreview = findViewById(R.id.tvPreview)
+        tvAlarmNoteValue = findViewById(R.id.tvAlarmNoteValue)
+        layoutAlarmNote = findViewById(R.id.layoutAlarmNote)
+        tvPreview = findViewById<LinearLayout>(R.id.tvPreview)
 
         // Day checkboxes
         cbMonday = findViewById(R.id.cbMonday)
@@ -129,6 +152,7 @@ class SetAlarmActivity : AppCompatActivity() {
     private fun setupViews() {
         setupTimePickers()
         setupClickListeners()
+        setupDayButtons()  // ← THÊM DÒNG NÀY
         setDefaultValues()
     }
 
@@ -144,9 +168,10 @@ class SetAlarmActivity : AppCompatActivity() {
             setFormatter { i -> String.format("%02d", i) }
         }
 
-        val amPmAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, arrayOf("AM", "PM"))
-        amPmAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        amPmSpinner.adapter = amPmAdapter
+        amPmSpinner.minValue = 0
+        amPmSpinner.maxValue = 1
+        amPmSpinner.displayedValues = arrayOf("AM", "PM")
+        amPmSpinner.value = 0
     }
 
     private fun setupClickListeners() {
@@ -171,6 +196,14 @@ class SetAlarmActivity : AppCompatActivity() {
         layoutSound.setOnClickListener {
             showSoundDialog()
         }
+
+        switchSilentMode.setOnClickListener {
+            isSilentModeEnabled = !isSilentModeEnabled
+            updateSilentModeUI()
+        }
+        layoutAlarmNote.setOnClickListener {
+            showAlarmNoteDialog()
+        }
     }
 
     private fun setDefaultValues() {
@@ -178,17 +211,19 @@ class SetAlarmActivity : AppCompatActivity() {
             val currentTime = java.util.Calendar.getInstance()
             val hour = currentTime.get(java.util.Calendar.HOUR)
             val minute = currentTime.get(java.util.Calendar.MINUTE)
-            val amPm = if (currentTime.get(java.util.Calendar.AM_PM) == java.util.Calendar.AM) "AM" else "PM"
+            val amPm = if (currentTime.get(java.util.Calendar.AM_PM) == java.util.Calendar.AM) 0 else 1  // ĐỔI THÀNH INT
 
             hourPicker.value = if (hour == 0) 12 else hour
             minutePicker.value = minute
-            amPmSpinner.setSelection(if (amPm == "AM") 0 else 1)
-
+            amPmSpinner.value = amPm  // ĐỔI DÒNG NÀY (không phải setSelection)
+            tvAlarmNoteValue.text = "Wake Up!!!"
             // Default settings
             snoozeMinutes = 5
             vibrationPattern = "default"
             soundType = "default"
-            switchSilentMode.isChecked = false
+            isSilentModeEnabled = false  // Hoặc true tùy ý
+            updateSilentModeUI()  // ← THÊM DÒNG NÀY
+
 
             updateDisplayTexts()
         }
@@ -201,23 +236,23 @@ class SetAlarmActivity : AppCompatActivity() {
 
             hourPicker.value = alarm.hour
             minutePicker.value = alarm.minute
-            amPmSpinner.setSelection(if (alarm.amPm == "AM") 0 else 1)
+            amPmSpinner.value = if (alarm.amPm == "AM") 0 else 1
 
-            etLabel.setText(alarm.label)
-            etAlarmNote.setText(alarm.note)
-
+            alarmNote = alarm.note
+            updateAlarmNoteDisplay()
             // Load active days
             val layoutCheckboxes = listOf(cbMonday, cbTuesday, cbWednesday, cbThursday, cbFriday, cbSaturday, cbSunday)
-            layoutCheckboxes.forEachIndexed { layoutIndex, checkbox ->
+            layoutCheckboxes.forEachIndexed { layoutIndex, textView ->  // Đổi tên biến
                 val domainIndex = toDomainIndex(layoutIndex)
-                checkbox.isChecked = alarm.activeDays[domainIndex]
-            }
+                textView.isSelected = alarm.activeDays[domainIndex]  // Đổi .isChecked → .isSelected
+                Log.d("DayButton", "Clicked: ${(textView as TextView).text}, isSelected: ${textView.isSelected}")            }
 
             // Load alarm settings
             snoozeMinutes = alarm.snoozeMinutes
             vibrationPattern = alarm.vibrationPattern
             soundType = alarm.soundType
-            switchSilentMode.isChecked = alarm.isSilentModeEnabled
+            isSilentModeEnabled = alarm.isSilentModeEnabled
+            updateSilentModeUI()  // ← THÊM DÒNG NÀY
             currentSoundUri = alarm.soundUri
 
             updateDisplayTexts()
@@ -257,37 +292,43 @@ class SetAlarmActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateSilentModeUI() {
+        if (isSilentModeEnabled) {
+            switchSilentMode.setImageResource(R.drawable.ic_switch_on)
+        } else {
+            switchSilentMode.setImageResource(R.drawable.ic_switch_off)
+        }
+    }
+
     private fun saveAlarm() {
         lifecycleScope.launch {
             try {
                 val hour = hourPicker.value
                 val minute = minutePicker.value
-                val amPm = amPmSpinner.selectedItem.toString()
-                val label = etLabel.text.toString().trim().ifEmpty { "Alarm" }
-                val note = etAlarmNote.text.toString().trim()
+                val amPm = if (amPmSpinner.value == 0) "AM" else "PM"
+                val note = alarmNote.trim().ifEmpty { "Wake Up!!!" }
 
                 // Get active days
                 val activeDays = BooleanArray(7) { false }
                 val layoutCheckboxes = listOf(cbMonday, cbTuesday, cbWednesday, cbThursday, cbFriday, cbSaturday, cbSunday)
-                layoutCheckboxes.forEachIndexed { layoutIndex, checkbox ->
-                    if (checkbox.isChecked) {
+                layoutCheckboxes.forEachIndexed { layoutIndex, textView ->  // Đổi tên biến
+                    if (textView.isSelected) {  // Đổi .isChecked → .isSelected
                         val domainIndex = toDomainIndex(layoutIndex)
                         activeDays[domainIndex] = true
                     }
-                }
+            }
 
                 val alarm = Alarm(
                     id = if (isEditMode) currentAlarm?.id ?: 0 else 0,
                     hour = hour,
                     minute = minute,
                     amPm = amPm,
-                    label = label,
                     activeDays = activeDays,
                     isEnabled = true,
                     snoozeMinutes = snoozeMinutes,
                     vibrationPattern = vibrationPattern,
                     soundType = soundType,
-                    isSilentModeEnabled = switchSilentMode.isChecked,
+                    isSilentModeEnabled = isSilentModeEnabled,
                     note = note,
                     soundUri = currentSoundUri
                 )
@@ -315,13 +356,12 @@ class SetAlarmActivity : AppCompatActivity() {
             putExtra("alarm_id", 0) // Preview mode
             putExtra("alarm_hour", hourPicker.value)
             putExtra("alarm_minute", minutePicker.value)
-            putExtra("alarm_am_pm", amPmSpinner.selectedItem.toString())
-            putExtra("alarm_label", etLabel.text.toString().ifEmpty { "Preview" })
-            putExtra("alarm_note", etAlarmNote.text.toString())
+            putExtra("alarm_am_pm", if (amPmSpinner.value == 0) "AM" else "PM")  // ĐỔI DÒNG NÀY
+            putExtra("alarm_note", alarmNote.ifBlank { "Wake Up!!!" })  // ← Thêm .ifEmpty
             putExtra("snooze_minutes", snoozeMinutes)
             putExtra("vibration_pattern", vibrationPattern)
             putExtra("sound_type", soundType)
-            putExtra("is_silent_mode_enabled", switchSilentMode.isChecked)
+            putExtra("is_silent_mode_enabled", isSilentModeEnabled)
             putExtra("sound_uri", currentSoundUri)
         }
         startActivity(intent)
@@ -420,5 +460,28 @@ class SetAlarmActivity : AppCompatActivity() {
                         View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         }
+    }
+
+    private fun showAlarmNoteDialog() {
+        val editText = EditText(this).apply {
+            setText(alarmNote)
+            hint = "Enter alarm note"
+            setSingleLine()
+        }
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Alarm note")
+            .setView(editText)
+            .setPositiveButton("OK") { dialog, _ ->
+                alarmNote = editText.text.toString().trim()
+                updateAlarmNoteDisplay()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun updateAlarmNoteDisplay() {
+        tvAlarmNoteValue.text = if (alarmNote.isEmpty()) "Add note" else alarmNote
     }
 }

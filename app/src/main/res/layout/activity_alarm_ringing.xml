@@ -34,7 +34,7 @@
 
     <!-- Label -->
     <TextView
-        android:id="@+id/tvLabel"
+        android:id="@+id/tvNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Wake up!!!"
@@ -47,18 +47,6 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Note (optional) -->
-    <TextView
-        android:id="@+id/tvNote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textColor="#7F8C8D"
-        android:textSize="14sp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tvLabel"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Snooze Button -->
     <com.google.android.material.button.MaterialButton
@@ -70,7 +58,7 @@
         android:textSize="16sp"
         android:backgroundTint="@null"
         app:backgroundTint="#84DCC6"
-        app:layout_constraintTop_toBottomOf="@id/tvLabel"
+        app:layout_constraintTop_toBottomOf="@id/tvNote"
         android:layout_marginTop="36dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
