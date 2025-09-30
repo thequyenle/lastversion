@@ -2,6 +2,7 @@ package net.android.lastversion.alarm.presentation.activity
 
 import android.app.KeyguardManager
 import android.content.Context
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -18,6 +19,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import net.android.lastversion.R
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
+import net.android.lastversion.alarm.infrastructure.receiver.AlarmActionReceiver
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -187,8 +189,22 @@ class AlarmRingingActivity : AppCompatActivity() {
     private fun snoozeAlarm() {
         stopAlarm()
 
-        // TODO: Implement snooze logic
-        // Có thể gọi AlarmActionReceiver hoặc trực tiếp schedule snooze alarm
+        // Tạo Intent để trigger snooze action
+        val snoozeIntent = Intent(this, AlarmActionReceiver::class.java).apply {
+            action = AlarmNotificationManager.ACTION_SNOOZE
+            putExtra("alarm_id", alarmId)
+            putExtra("alarm_title", intent.getStringExtra("alarm_label") ?: "Alarm")
+            putExtra("snooze_minutes", snoozeMinutes)
+        }
+
+        // Gửi broadcast để xử lý snooze
+        sendBroadcast(snoozeIntent)
+
+        // Cancel notification hiện tại
+        val notificationManager = AlarmNotificationManager(this)
+        notificationManager.cancelNotification(alarmId)
+
+        android.util.Log.d("AlarmRinging", "Snooze alarm $alarmId for $snoozeMinutes minutes")
 
         finish()
     }
