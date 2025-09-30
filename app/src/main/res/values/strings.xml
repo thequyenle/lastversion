@@ -54,4 +54,7 @@
     <string name="snoozeSetAlarm">Snooze</string>
     <string name="preview">Preview</string>
     <string name="vibration">Vibration</string>
+    <string name="sound">Sound</string>
+    <string name="play_sound_even_when_in_silent_mode">Play sound even when in silent mode</string>
+    <string name="alarm_note">Alarm note</string>
 </resources>

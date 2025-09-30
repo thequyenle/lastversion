@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white">
 
     <!-- Header -->
@@ -11,51 +11,54 @@
         android:id="@+id/btnBack"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_arrow_back"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="58dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back"
+        android:src="@drawable/ic_arrow_back"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="58dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="57dp"
+        android:focusable="false"
+        android:background="@null"
         android:text="@string/set_alarm"
+        android:focusableInTouchMode="false"
         android:textColor="@android:color/black"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:background="@null"
-        android:layout_marginTop="57dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/btnBack" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <TextView
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="?android:attr/selectableItemBackground"
         android:text="Save"
         android:textColor="#00BCD4"
         android:textSize="18sp"
-        android:background="?android:attr/selectableItemBackground"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btnBack"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
-        android:layout_marginEnd="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnBack" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="117dp"
         android:fillViewport="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="117dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -63,34 +66,34 @@
 
             <TextView
                 android:id="@+id/tvHours"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="@id/hourPicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#4F4F4F"
                 android:text="Hours"
-                android:textSize="18sp"/>
+                android:textColor="#4F4F4F"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@id/hourPicker"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvMinute"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="@id/minutePicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#4F4F4F"
                 android:text="Minute"
-                android:textSize="18sp"/>
+                android:textColor="#4F4F4F"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@id/minutePicker"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Time Pickers -->
             <com.shawnlin.numberpicker.NumberPicker
                 android:id="@+id/hourPicker"
                 android:layout_width="32dp"
                 android:layout_height="95dp"
+                android:layout_marginStart="58dp"
+                android:layout_marginTop="20dp"
                 android:contentDescription="Hours"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvHours"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="58dp"
                 app:np_dividerColor="#00000000"
                 app:np_max="12"
                 app:np_min="01"
@@ -103,14 +106,14 @@
                 android:id="@+id/minutePicker"
                 android:layout_width="32dp"
                 android:layout_height="95dp"
+                android:layout_marginStart="30dp"
                 android:contentDescription="Minutes"
+                app:layout_constraintBottom_toBottomOf="@id/hourPicker"
                 app:layout_constraintEnd_toStartOf="@id/amPmSpinner"
                 app:layout_constraintStart_toEndOf="@id/tvHours"
                 app:layout_constraintTop_toTopOf="@id/hourPicker"
-                app:layout_constraintBottom_toBottomOf="@id/hourPicker"
                 app:np_dividerColor="#00000000"
                 app:np_max="59"
-                android:layout_marginStart="30dp"
                 app:np_min="00"
                 app:np_selectedTextColor="#252525"
                 app:np_selectedTextSize="28sp"
@@ -122,10 +125,10 @@
                 android:layout_width="43dp"
                 android:layout_height="64dp"
                 android:contentDescription="AM PM"
-                app:layout_constraintStart_toEndOf="@id/minutePicker"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/hourPicker"
                 app:layout_constraintBottom_toBottomOf="@id/hourPicker"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/minutePicker"
+                app:layout_constraintTop_toTopOf="@id/hourPicker"
                 app:np_dividerColor="#00000000"
                 app:np_max="1"
                 app:np_min="0"
@@ -139,11 +142,11 @@
                 android:id="@+id/tvActiveDays"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
                 android:text="Active days"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
-                android:layout_marginTop="24dp"
-                android:layout_marginStart="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/hourPicker" />
 
@@ -152,107 +155,107 @@
                 android:id="@+id/cbMonday"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:text="Mon"
-                android:textSize="14sp"
-                android:textColor="@color/button_day_text"
+                android:layout_marginTop="12dp"
                 android:background="@drawable/bg_day_selector"
-                android:gravity="center"
                 android:clickable="true"
                 android:focusable="true"
-                app:layout_constraintStart_toStartOf="parent"
+                android:gravity="center"
+                android:text="Mon"
+                android:textColor="@color/button_day_text"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@id/cbTuesday"
-                app:layout_constraintTop_toBottomOf="@id/tvActiveDays"
                 app:layout_constraintHorizontal_chainStyle="spread"
-                android:layout_marginTop="12dp" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvActiveDays" />
 
             <TextView
                 android:id="@+id/cbTuesday"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:text="Tue"
-                android:textSize="14sp"
-                android:textColor="@color/button_day_text"
                 android:background="@drawable/bg_day_selector"
-                android:gravity="center"
                 android:clickable="true"
                 android:focusable="true"
-                app:layout_constraintStart_toEndOf="@id/cbMonday"
+                android:gravity="center"
+                android:text="Tue"
+                android:textColor="@color/button_day_text"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@id/cbWednesday"
+                app:layout_constraintStart_toEndOf="@id/cbMonday"
                 app:layout_constraintTop_toTopOf="@id/cbMonday" />
 
             <TextView
                 android:id="@+id/cbWednesday"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:text="Wed"
-                android:textSize="14sp"
-                android:textColor="@color/button_day_text"
                 android:background="@drawable/bg_day_selector"
-                android:gravity="center"
                 android:clickable="true"
                 android:focusable="true"
-                app:layout_constraintStart_toEndOf="@id/cbTuesday"
+                android:gravity="center"
+                android:text="Wed"
+                android:textColor="@color/button_day_text"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@id/cbThursday"
+                app:layout_constraintStart_toEndOf="@id/cbTuesday"
                 app:layout_constraintTop_toTopOf="@id/cbMonday" />
 
             <TextView
                 android:id="@+id/cbThursday"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:text="Thu"
-                android:textSize="14sp"
-                android:textColor="@color/button_day_text"
                 android:background="@drawable/bg_day_selector"
-                android:gravity="center"
                 android:clickable="true"
                 android:focusable="true"
-                app:layout_constraintStart_toEndOf="@id/cbWednesday"
+                android:gravity="center"
+                android:text="Thu"
+                android:textColor="@color/button_day_text"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@id/cbFriday"
+                app:layout_constraintStart_toEndOf="@id/cbWednesday"
                 app:layout_constraintTop_toTopOf="@id/cbMonday" />
 
             <TextView
                 android:id="@+id/cbFriday"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:text="Fri"
-                android:textSize="14sp"
-                android:textColor="@color/button_day_text"
                 android:background="@drawable/bg_day_selector"
-                android:gravity="center"
                 android:clickable="true"
                 android:focusable="true"
-                app:layout_constraintStart_toEndOf="@id/cbThursday"
+                android:gravity="center"
+                android:text="Fri"
+                android:textColor="@color/button_day_text"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@id/cbSaturday"
+                app:layout_constraintStart_toEndOf="@id/cbThursday"
                 app:layout_constraintTop_toTopOf="@id/cbMonday" />
 
             <TextView
                 android:id="@+id/cbSaturday"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:text="Sat"
-                android:textSize="14sp"
-                android:textColor="@color/button_day_text"
                 android:background="@drawable/bg_day_selector"
-                android:gravity="center"
                 android:clickable="true"
                 android:focusable="true"
-                app:layout_constraintStart_toEndOf="@id/cbFriday"
+                android:gravity="center"
+                android:text="Sat"
+                android:textColor="@color/button_day_text"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@id/cbSunday"
+                app:layout_constraintStart_toEndOf="@id/cbFriday"
                 app:layout_constraintTop_toTopOf="@id/cbMonday" />
 
             <TextView
                 android:id="@+id/cbSunday"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:text="Sun"
-                android:textSize="14sp"
-                android:textColor="@color/button_day_text"
                 android:background="@drawable/bg_day_selector"
-                android:gravity="center"
                 android:clickable="true"
                 android:focusable="true"
-                app:layout_constraintStart_toEndOf="@id/cbSaturday"
+                android:gravity="center"
+                android:text="Sun"
+                android:textColor="@color/button_day_text"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cbSaturday"
                 app:layout_constraintTop_toTopOf="@id/cbMonday" />
 
             <!-- Options Section -->
@@ -260,10 +263,10 @@
                 android:id="@+id/layoutOptions"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginTop="24dp"
-                app:layout_constraintStart_toStartOf="parent"
+                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cbMonday">
 
                 <!-- Snooze -->
@@ -271,8 +274,8 @@
                     android:id="@+id/layoutSnooze"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp">
 
@@ -284,9 +287,9 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="16dp">
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -312,8 +315,8 @@
                     android:id="@+id/layoutVibration"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp">
 
@@ -325,9 +328,9 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="16dp">
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -353,8 +356,8 @@
                     android:id="@+id/layoutSound"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp">
 
@@ -366,14 +369,14 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="16dp">
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sound"
+                            android:text="@string/sound"
                             android:textColor="@android:color/black"
                             android:textSize="16sp" />
 
@@ -414,7 +417,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Play sound even when in silent mode"
+                            android:text="@string/play_sound_even_when_in_silent_mode"
                             android:textColor="@android:color/black"
                             android:textSize="16sp" />
 
@@ -424,10 +427,10 @@
                         android:id="@+id/switchSilentMode"
                         android:layout_width="56dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/ic_switch_on"
                         android:clickable="true"
                         android:focusable="true"
-                        android:scaleType="fitXY"/>
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_switch_on" />
 
 
                 </LinearLayout>
@@ -437,18 +440,19 @@
                     android:id="@+id/layoutAlarmNote"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_note" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -458,19 +462,19 @@
                             android:layout_width="286dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
-                            android:text="Alarm note"
+                            android:layout_marginTop="3dp"
+                            android:text="@string/alarm_note"
                             android:textColor="@android:color/black"
-                            android:textSize="16sp"
-                            android:layout_marginTop="3dp"/>
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/tvAlarmNoteValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:text="Add note"
-                            android:layout_marginStart="16dp"
                             android:textColor="@android:color/darker_gray"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -480,13 +484,13 @@
                     android:id="@+id/tvPreview"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -496,11 +500,11 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
                         android:layout_weight="1"
                         android:text="@string/preview"
                         android:textColor="@android:color/black"
-                        android:textSize="16sp"
-                        android:layout_marginStart="16dp" />
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 

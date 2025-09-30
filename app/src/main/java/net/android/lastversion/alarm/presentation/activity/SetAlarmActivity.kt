@@ -67,7 +67,7 @@ class SetAlarmActivity : AppCompatActivity() {
     private var currentAlarm: Alarm? = null
     private var isEditMode = false
 
-    private lateinit var tvToolbar: TextView
+    private lateinit var tvTitle: EditText  // ✅ THÊM
 
 
     // Alarm settings
@@ -131,7 +131,7 @@ class SetAlarmActivity : AppCompatActivity() {
         layoutAlarmNote = findViewById(R.id.layoutAlarmNote)
         tvPreview = findViewById<LinearLayout>(R.id.tvPreview)
 
-        tvToolbar = findViewById(R.id.tvToolbar)
+        tvTitle = findViewById(R.id.tvTitle)  // ✅ THÊM
 
 
         // Day checkboxes
@@ -263,9 +263,9 @@ class SetAlarmActivity : AppCompatActivity() {
 
             updateDisplayTexts()
 
-            tvToolbar.text = "Edit Alarm"
+            tvTitle.setText("Edit Alarm")  // ✅ THAY ĐỔI
         } ?: run {
-            tvToolbar.text = "Set Alarm"
+            tvTitle.setText("Set Alarm")   // ✅ THAY ĐỔI
         }
     }
 
