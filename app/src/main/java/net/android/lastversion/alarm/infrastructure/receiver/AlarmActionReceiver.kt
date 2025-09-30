@@ -147,7 +147,8 @@ class AlarmActionReceiver : BroadcastReceiver() {
                     hour = displayHour,
                     minute = snoozeMinute,
                     amPm = snoozeAmPm,
-                    activeDays = BooleanArray(7) { false }
+                    activeDays = BooleanArray(7) { false },
+                    isEnabled = true  // ✅ FIX: Đảm bảo snooze alarm được ENABLE
                 )
 
                 Log.d(TAG, "✅ Snooze alarm object created with ID: ${snoozeAlarm.id}")
