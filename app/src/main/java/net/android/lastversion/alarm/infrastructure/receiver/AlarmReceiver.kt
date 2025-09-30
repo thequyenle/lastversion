@@ -28,7 +28,6 @@ class AlarmReceiver : BroadcastReceiver() {
         val title = intent.getStringExtra("alarm_label") ?: "Alarm"
         val note = intent.getStringExtra("alarm_note") ?: ""
 
-        // THAY ĐỔI: Đọc giá trị mới thay vì Boolean
         val snoozeMinutes = intent.getIntExtra("snooze_minutes", 5)
         val vibrationPattern = intent.getStringExtra("vibration_pattern") ?: "default"
         val soundType = intent.getStringExtra("sound_type") ?: "default"
@@ -55,18 +54,24 @@ class AlarmReceiver : BroadcastReceiver() {
         }
         context.startActivity(alarmIntent)
 
-        // Show notification as backup
-        val notificationManager = AlarmNotificationManager(context)
-        notificationManager.showAlarmNotification(
-            alarmId = alarmId,
-            title = title,
-            note = note,
-            snoozeMinutes = snoozeMinutes,
-            vibrationPattern = vibrationPattern,
-            soundType = soundType,
-            soundUri = soundUri,
-            isSilentModeEnabled = isSilentModeEnabled
-        )
+        // ✅ FIX: Chỉ show notification nếu KHÔNG phải preview mode
+        // Preview mode có alarmId = 0, alarm thật có alarmId > 0
+        if (alarmId != 0) {
+            Log.d(TAG, "✅ Real alarm - showing notification with functional snooze button")
+            val notificationManager = AlarmNotificationManager(context)
+            notificationManager.showAlarmNotification(
+                alarmId = alarmId,
+                title = title,
+                note = note,
+                snoozeMinutes = snoozeMinutes,
+                vibrationPattern = vibrationPattern,
+                soundType = soundType,
+                soundUri = soundUri,
+                isSilentModeEnabled = isSilentModeEnabled
+            )
+        } else {
+            Log.d(TAG, "⚠️ Preview mode - skipping notification (alarmId = 0)")
+        }
 
         // Handle post-trigger logic
         CoroutineScope(Dispatchers.IO).launch {
@@ -76,6 +81,12 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private suspend fun handleAlarmTriggered(context: Context, alarmId: Int) {
         try {
+            // ✅ FIX: Không xử lý logic cho preview alarm
+            if (alarmId == 0) {
+                Log.d(TAG, "Preview mode - skipping post-trigger logic")
+                return
+            }
+
             val repository = AlarmRepositoryImpl(
                 AlarmDatabase.getDatabase(context).alarmDao()
             )
