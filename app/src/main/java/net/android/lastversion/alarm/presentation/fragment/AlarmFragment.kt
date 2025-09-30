@@ -106,8 +106,7 @@ class AlarmFragment : Fragment() {
         alarmAdapter = AlarmAdapter(
             onItemClick = { alarm -> openSetAlarmActivity(alarm) },
             onSwitchToggle = { alarm -> alarmViewModel.toggleAlarm(alarm.id) },
-            onMenuClick = { alarm, view -> showAlarmMenu(alarm, view) }  // ← THÊM dòng này
-
+            onMenuClick = { alarm, view -> showAlarmMenu(alarm, view) }
         )
 
         recyclerViewAlarms.apply {
@@ -115,20 +114,45 @@ class AlarmFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-        // Swipe to delete
+        // ✅ FIX: Swipe to delete với UNDO hoạt động đúng
         val itemTouchHelper = ItemTouchHelper(
             SwipeToDeleteCallback { position ->
                 val alarm = alarmAdapter.getAlarmAt(position)
+
+                // ✅ Lưu bản copy đầy đủ trước khi xóa
+                val deletedAlarm = alarm.copy()
+
+                // Xóa alarm
                 alarmViewModel.deleteAlarm(alarm)
 
+                // Hiển thị snackbar với UNDO
                 showSnackbar("Alarm deleted") {
-                    alarmViewModel.saveAlarm(alarm)
+                    lifecycleScope.launch {
+                        try {
+                            // ✅ Lấy repository và scheduler
+                            val repository = AlarmRepositoryImpl(
+                                AlarmDatabase.getDatabase(requireContext()).alarmDao()
+                            )
+                            val scheduler = AlarmSchedulerImpl(requireContext())
+
+                            // ✅ INSERT lại alarm với ID cũ
+                            repository.insertAlarm(deletedAlarm)
+
+                            // ✅ Schedule lại nếu enabled
+                            if (deletedAlarm.isEnabled) {
+                                scheduler.scheduleAlarm(deletedAlarm)
+                            }
+
+                            showSnackbar("Alarm restored")
+                        } catch (e: Exception) {
+                            showSnackbar("Failed to restore: ${e.message}")
+                        }
+                    }
                 }
             }
         )
         itemTouchHelper.attachToRecyclerView(recyclerViewAlarms)
     }
-
     private fun setupFab() {
         fabAddAlarm.setOnClickListener {
             openSetAlarmActivity(null)
@@ -226,7 +250,7 @@ class AlarmFragment : Fragment() {
         }
 
         dialogView.findViewById<View>(R.id.btnYes).setOnClickListener {
-            // ✅ FIX: Lưu bản copy của alarm với đầy đủ thông tin
+            // ✅ Lưu bản copy đầy đủ của alarm trước khi xóa
             val deletedAlarm = alarm.copy()
 
             // Xóa alarm
@@ -234,18 +258,27 @@ class AlarmFragment : Fragment() {
 
             // Hiển thị snackbar với UNDO action
             showSnackbar("Alarm deleted") {
-                // ✅ Khôi phục alarm với đầy đủ thông tin
+                // ✅ Khôi phục alarm bằng cách INSERT trực tiếp vào database
                 lifecycleScope.launch {
-                    // Insert lại alarm với ID cũ
-                    alarmViewModel.saveAlarm(deletedAlarm)
-
-                    // ✅ QUAN TRỌNG: Schedule lại alarm nếu nó đang enabled
-                    if (deletedAlarm.isEnabled) {
+                    try {
+                        // Lấy repository và scheduler
+                        val repository = AlarmRepositoryImpl(
+                            AlarmDatabase.getDatabase(requireContext()).alarmDao()
+                        )
                         val scheduler = AlarmSchedulerImpl(requireContext())
-                        scheduler.scheduleAlarm(deletedAlarm)
-                    }
 
-                    showSnackbar("Alarm restored")
+                        // ✅ INSERT lại alarm với ID cũ (FORCE INSERT)
+                        repository.insertAlarm(deletedAlarm)
+
+                        // ✅ Schedule lại alarm nếu nó đang enabled
+                        if (deletedAlarm.isEnabled) {
+                            scheduler.scheduleAlarm(deletedAlarm)
+                        }
+
+                        showSnackbar("Alarm restored")
+                    } catch (e: Exception) {
+                        showSnackbar("Failed to restore: ${e.message}")
+                    }
                 }
             }
             dialog.dismiss()
