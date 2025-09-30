@@ -209,6 +209,8 @@ class AlarmFragment : Fragment() {
         dialog.show()
     }
 
+    // Thay thế hàm deleteAlarmWithUndo trong AlarmFragment.kt
+
     private fun deleteAlarmWithUndo(alarm: Alarm) {
         val dialogView = LayoutInflater.from(requireContext())
             .inflate(R.layout.dialog_delete_confirm, null)
@@ -224,9 +226,27 @@ class AlarmFragment : Fragment() {
         }
 
         dialogView.findViewById<View>(R.id.btnYes).setOnClickListener {
+            // ✅ FIX: Lưu bản copy của alarm với đầy đủ thông tin
+            val deletedAlarm = alarm.copy()
+
+            // Xóa alarm
             alarmViewModel.deleteAlarm(alarm)
+
+            // Hiển thị snackbar với UNDO action
             showSnackbar("Alarm deleted") {
-                alarmViewModel.saveAlarm(alarm)
+                // ✅ Khôi phục alarm với đầy đủ thông tin
+                lifecycleScope.launch {
+                    // Insert lại alarm với ID cũ
+                    alarmViewModel.saveAlarm(deletedAlarm)
+
+                    // ✅ QUAN TRỌNG: Schedule lại alarm nếu nó đang enabled
+                    if (deletedAlarm.isEnabled) {
+                        val scheduler = AlarmSchedulerImpl(requireContext())
+                        scheduler.scheduleAlarm(deletedAlarm)
+                    }
+
+                    showSnackbar("Alarm restored")
+                }
             }
             dialog.dismiss()
         }
