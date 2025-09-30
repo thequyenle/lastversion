@@ -67,6 +67,9 @@ class SetAlarmActivity : AppCompatActivity() {
     private var currentAlarm: Alarm? = null
     private var isEditMode = false
 
+    private lateinit var tvToolbar: TextView
+
+
     // Alarm settings
     private var snoozeMinutes = 5
     private var vibrationPattern = "default"
@@ -127,6 +130,9 @@ class SetAlarmActivity : AppCompatActivity() {
         tvAlarmNoteValue = findViewById(R.id.tvAlarmNoteValue)
         layoutAlarmNote = findViewById(R.id.layoutAlarmNote)
         tvPreview = findViewById<LinearLayout>(R.id.tvPreview)
+
+        tvToolbar = findViewById(R.id.tvToolbar)
+
 
         // Day checkboxes
         cbMonday = findViewById(R.id.cbMonday)
@@ -257,9 +263,9 @@ class SetAlarmActivity : AppCompatActivity() {
 
             updateDisplayTexts()
 
-            title = "Edit Alarm"
+            tvToolbar.text = "Edit Alarm"
         } ?: run {
-            title = "Set Alarm"
+            tvToolbar.text = "Set Alarm"
         }
     }
 
