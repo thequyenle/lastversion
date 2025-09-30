@@ -56,10 +56,13 @@ data class Alarm(
         return activeDays[today]
     }
 
+    // Thay thế function getNextTriggerTime() trong Alarm.kt
+
     fun getNextTriggerTime(): Long {
         val calendar = Calendar.getInstance()
         val targetCalendar = Calendar.getInstance()
 
+        // Chuyển đổi 12-hour sang 24-hour format
         val hour24 = when {
             amPm == "AM" && hour == 12 -> 0
             amPm == "AM" -> hour
@@ -67,6 +70,7 @@ data class Alarm(
             else -> hour + 12
         }
 
+        // Set giờ phút cho target calendar
         targetCalendar.apply {
             set(Calendar.HOUR_OF_DAY, hour24)
             set(Calendar.MINUTE, minute)
@@ -74,23 +78,29 @@ data class Alarm(
             set(Calendar.MILLISECOND, 0)
         }
 
+        // Nếu không có ngày lặp lại (one-time alarm)
         if (!hasRecurringDays()) {
+            // Nếu thời gian đã qua hôm nay, chuyển sang ngày mai
             if (targetCalendar.timeInMillis <= calendar.timeInMillis) {
                 targetCalendar.add(Calendar.DAY_OF_MONTH, 1)
             }
             return targetCalendar.timeInMillis
         }
 
+        // Với recurring alarm: tìm ngày kế tiếp có alarm
         for (i in 0..7) {
             val dayOfWeek = targetCalendar.get(Calendar.DAY_OF_WEEK) - 1
 
+            // Kiểm tra nếu ngày này được active VÀ thời gian chưa qua
             if (activeDays[dayOfWeek] && targetCalendar.timeInMillis > calendar.timeInMillis) {
                 return targetCalendar.timeInMillis
             }
 
+            // Chuyển sang ngày tiếp theo
             targetCalendar.add(Calendar.DAY_OF_MONTH, 1)
         }
 
+        // Fallback: trả về thời gian hiện tại (không nên xảy ra)
         return targetCalendar.timeInMillis
     }
 

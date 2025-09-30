@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/ivLanguage"
         android:layout_width="wrap_content"
-        android:text="Language"
+        android:text="@string/language"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_height="wrap_content"
@@ -28,8 +28,8 @@
         android:layout_marginEnd="19dp"
         android:backgroundTint="@android:color/transparent"
         android:src="@drawable/ic_checked"
-        android:text="Done"
-        android:contentDescription="done button desc"
+        android:text="@string/doneLanguage"
+        android:contentDescription="@string/done_button_descLanguage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
 

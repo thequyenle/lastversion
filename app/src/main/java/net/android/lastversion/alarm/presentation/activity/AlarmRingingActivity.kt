@@ -71,25 +71,29 @@ class AlarmRingingActivity : AppCompatActivity() {
         btnSnooze.setOnClickListener { snoozeAlarm() }
     }
 
+    // Thay thế function loadAlarmData() trong AlarmRingingActivity.kt
+
     private fun loadAlarmData() {
         alarmId = intent.getIntExtra("alarm_id", -1)
         val hour = intent.getIntExtra("alarm_hour", 0)
         val minute = intent.getIntExtra("alarm_minute", 0)
         val amPm = intent.getStringExtra("alarm_am_pm") ?: "AM"
         val note = intent.getStringExtra("alarm_note") ?: ""
-        android.util.Log.d("AlarmRinging", "Received note: '$note'")
-
-        tvNote.text = if (note.isNotEmpty()) {
-            android.util.Log.d("AlarmRinging", "Showing note")
-            note
-        } else {
-           return
-        }
         snoozeMinutes = intent.getIntExtra("snooze_minutes", 5)
+
+        android.util.Log.d("AlarmRinging", "Received note: '$note'")
 
         // Display time
         tvTime.text = String.format("%02d:%02d %s", hour, minute, amPm)
 
+        // Display note - ẩn TextView nếu note rỗng
+        if (note.isNotEmpty()) {
+            android.util.Log.d("AlarmRinging", "Showing note")
+            tvNote.text = note
+            tvNote.visibility = android.view.View.VISIBLE
+        } else {
+            tvNote.visibility = android.view.View.GONE
+        }
 
         // Hide snooze button if snooze disabled
         if (snoozeMinutes == 0) {
