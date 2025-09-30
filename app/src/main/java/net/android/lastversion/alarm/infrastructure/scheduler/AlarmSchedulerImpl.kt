@@ -14,45 +14,64 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override fun scheduleAlarm(alarm: Alarm) {
+        Log.d(TAG, "========================================")
+        Log.d(TAG, "scheduleAlarm() CALLED")
+        Log.d(TAG, "Alarm ID: ${alarm.id}")
+        Log.d(TAG, "Time: ${alarm.hour}:${alarm.minute} ${alarm.amPm}")
+        Log.d(TAG, "Enabled: ${alarm.isEnabled}")
+
         if (!alarm.isEnabled) {
-            Log.d(TAG, "Alarm ${alarm.id} is disabled, skipping schedule")
+            Log.w(TAG, "⚠️ Alarm ${alarm.id} is DISABLED, skipping schedule")
             return
         }
 
         val triggerTime = alarm.getNextTriggerTime()
+        Log.d(TAG, "Trigger time: ${java.util.Date(triggerTime)}")
+        Log.d(TAG, "Current time: ${java.util.Date()}")
 
         if (triggerTime <= System.currentTimeMillis()) {
-            Log.w(TAG, "Trigger time is in the past for alarm ${alarm.id}")
+            Log.e(TAG, "❌ ERROR: Trigger time is in the PAST!")
+            Log.e(TAG, "Trigger: ${java.util.Date(triggerTime)}")
+            Log.e(TAG, "Current: ${java.util.Date()}")
             return
         }
+
+        Log.d(TAG, "✅ Trigger time is valid (in the future)")
 
         // Check exact alarm permission for Android 12+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!alarmManager.canScheduleExactAlarms()) {
-                Log.e(TAG, "Cannot schedule exact alarms - permission denied")
+                Log.e(TAG, "❌ ERROR: Cannot schedule exact alarms - PERMISSION DENIED")
                 return
             }
+            Log.d(TAG, "✅ Has exact alarm permission")
         }
 
         try {
             val intent = createAlarmIntent(alarm)
+            Log.d(TAG, "✅ Intent created")
+
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
                 alarm.id,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
+            Log.d(TAG, "✅ PendingIntent created with requestCode: ${alarm.id}")
 
-            // Use setAlarmClock for exact timing and lock screen display
             val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingIntent)
             alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
 
-            Log.d(TAG, "Alarm ${alarm.id} scheduled for ${java.util.Date(triggerTime)}")
+            Log.d(TAG, "🎉 SUCCESS! Alarm ${alarm.id} scheduled!")
+            Log.d(TAG, "Will ring at: ${java.util.Date(triggerTime)}")
+            Log.d(TAG, "========================================")
 
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to schedule alarm ${alarm.id}", e)
+            Log.e(TAG, "❌❌❌ EXCEPTION in scheduleAlarm:", e)
+            Log.e(TAG, "Error: ${e.message}")
         }
     }
+
 
     override fun cancelAlarm(alarmId: Int) {
         try {

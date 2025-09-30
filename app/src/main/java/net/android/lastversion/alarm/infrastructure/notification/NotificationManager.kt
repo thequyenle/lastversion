@@ -126,6 +126,12 @@ class AlarmNotificationManager(private val context: Context) {
     }
 
     // THAY ĐỔI: Parameters mới
+    // ============================================
+// FILE 2: AlarmNotificationManager.kt
+// Thêm log vào buildAlarmNotification()
+// Tìm function buildAlarmNotification() và thêm log
+// ============================================
+
     private fun buildAlarmNotification(
         alarmId: Int,
         title: String,
@@ -136,6 +142,13 @@ class AlarmNotificationManager(private val context: Context) {
         isSilentModeEnabled: Boolean,
         soundUri: String
     ): android.app.Notification {
+
+        Log.d(TAG, "========================================")
+        Log.d(TAG, "buildAlarmNotification()")
+        Log.d(TAG, "Alarm ID: $alarmId")
+        Log.d(TAG, "Title: $title")
+        Log.d(TAG, "Snooze minutes: $snoozeMinutes")
+        Log.d(TAG, "========================================")
 
         // Content intent - open app
         val contentIntent = Intent(context, MainActivity::class.java).apply {
@@ -158,6 +171,8 @@ class AlarmNotificationManager(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        Log.d(TAG, "✅ Dismiss PendingIntent created")
+
         val builder = NotificationCompat.Builder(context, ALARM_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_alarm_enable)
             .setContentTitle(title)
@@ -172,19 +187,32 @@ class AlarmNotificationManager(private val context: Context) {
             .addAction(R.drawable.ic_clock_disable, "Dismiss", dismissPendingIntent)
             .setDefaults(0)
 
-        // Snooze action - chỉ thêm nếu snoozeMinutes > 0
         if (snoozeMinutes > 0) {
-            val snoozeIntent = Intent(context, AlarmActionReceiver::class.java).apply {
-                action = ACTION_SNOOZE
-                putExtra("alarm_id", alarmId)
-                putExtra("alarm_title", title)
-                putExtra("snooze_minutes", snoozeMinutes)
+            // Kiểm tra có phải preview alarm không
+            if (alarmId != 0) {
+                // ALARM THẬT - Tạo snooze button có chức năng
+                val snoozeIntent = Intent(context, AlarmActionReceiver::class.java).apply {
+                    action = ACTION_SNOOZE
+                    putExtra("alarm_id", alarmId)
+                    putExtra("alarm_title", title)
+                    putExtra("snooze_minutes", snoozeMinutes)
+                }
+                val snoozePendingIntent = PendingIntent.getBroadcast(
+                    context, alarmId * 10 + 1, snoozeIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                builder.addAction(R.drawable.ic_snooze, "Snooze $snoozeMinutes min", snoozePendingIntent)
+            } else {
+                // PREVIEW ALARM - Tạo snooze button giả (không hoạt động)
+                val dummyIntent = Intent(context, AlarmActionReceiver::class.java).apply {
+                    action = "DUMMY_ACTION"  // Action không tồn tại
+                }
+                val dummyPendingIntent = PendingIntent.getBroadcast(
+                    context, 99999, dummyIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                builder.addAction(R.drawable.ic_snooze, "Snooze $snoozeMinutes min", dummyPendingIntent)
             }
-            val snoozePendingIntent = PendingIntent.getBroadcast(
-                context, alarmId * 10 + 1, snoozeIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            builder.addAction(R.drawable.ic_snooze, "Snooze $snoozeMinutes min", snoozePendingIntent)
         }
 
         // Sound - dựa vào soundType
@@ -194,30 +222,20 @@ class AlarmNotificationManager(private val context: Context) {
                 else -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
                     ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             }
-
-            // Nếu silent mode enabled, vẫn phát âm thanh
-            if (soundType != "off") {
-                val alarmUri = when {
-                    soundType == "custom" && soundUri.isNotEmpty() -> Uri.parse(soundUri)
-                    else -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                }
-
-                builder.setSound(alarmUri)
-                // Note: isSilentModeEnabled chỉ xử lý trong AlarmRingingActivity
-            }
+            builder.setSound(alarmUri)
         }
 
         // Vibration - dựa vào vibrationPattern
         when (vibrationPattern) {
-            "off" -> {
-                // Không rung
-            }
+            "off" -> { }
             "short" -> builder.setVibrate(longArrayOf(0, 300, 200, 300))
             "long" -> builder.setVibrate(longArrayOf(0, 1000, 500, 1000))
             "double" -> builder.setVibrate(longArrayOf(0, 500, 200, 500, 200, 500))
             "default" -> builder.setVibrate(longArrayOf(0, 1000, 500, 1000, 500, 1000))
         }
+
+        Log.d(TAG, "✅ Notification built successfully")
+        Log.d(TAG, "========================================")
 
         return builder.build()
     }
