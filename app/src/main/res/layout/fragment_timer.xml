@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_marginTop="88dp"
@@ -161,7 +161,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_marginTop="32dp"
             >
 

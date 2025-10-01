@@ -47,9 +47,6 @@
         android:theme="@style/Theme.Lastversion"
         tools:targetApi="31">
         <activity
-            android:name=".dialog.DialogRate"
-            android:exported="false" />
-        <activity
             android:name=".alarm.presentation.activity.AlarmRingingActivity"
             android:exported="false" />
         <activity

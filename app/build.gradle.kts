@@ -51,22 +51,12 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
 
-
-    // Google Play In-App Review
     // Room - Sử dụng KSP thay vì kapt
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.databinding.runtime)
-   // implementation(libs.core.ktx)
     ksp(libs.androidx.room.compiler)
 
-    implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
-
-    // Google Play In-App Review - QUAN TRỌNG
-    implementation("com.google.android.play:review:2.0.2")
-    implementation("com.google.android.play:review-ktx:2.0.2")
-
-    // Core library (nếu chưa có)
     implementation ("io.github.ShawnLin013:number-picker:2.4.13")
     // SQLite bundled để tránh lỗi OEM driver
    // implementation(libs.androidx.sqlite.bundled)

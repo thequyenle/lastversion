@@ -8,16 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.constraintlayout.widget.ConstraintLayout
 import net.android.lastversion.R
 import net.android.lastversion.utils.showSystemUI
-import net.android.lastversion.utils.InAppReviewHelper
 
 class SettingsFragment : Fragment() {
 
     private lateinit var seekBarVolume: SeekBar
     private lateinit var audioManager: AudioManager
-    private lateinit var layoutRateUs: ConstraintLayout
 
     private val PREFS_NAME = "settings_preferences"
     private val KEY_VOLUME = "alarm_volume"
@@ -41,9 +38,8 @@ class SettingsFragment : Fragment() {
         // Đặt ở đây - timing chính xác
         activity?.showSystemUI(white = false)
 
-        // Khởi tạo các components
+        // Khởi tạo SeekBar Volume
         setupVolumeSeekBar(view)
-        setupRateUs(view)
     }
 
     /**
@@ -79,25 +75,6 @@ class SettingsFragment : Fragment() {
                 }
             }
         })
-    }
-
-    /**
-     * Thiết lập Rate Us click listener
-     */
-    private fun setupRateUs(view: View) {
-        layoutRateUs = view.findViewById(R.id.layoutRateUs)
-
-        layoutRateUs.setOnClickListener {
-            // Hiển thị In-App Review
-            activity?.let { act ->
-                InAppReviewHelper.showInAppReview(act) { success ->
-                    if (success) {
-                        // Review flow thành công, lưu lại đã hiển thị
-                        InAppReviewHelper.markReviewShown(act)
-                    }
-                }
-            }
-        }
     }
 
     /**
