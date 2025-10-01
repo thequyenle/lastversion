@@ -1,6 +1,5 @@
 package net.android.lastversion
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -33,7 +32,6 @@ class ThemeActivity : AppCompatActivity() {
     ) { uri: Uri? ->
         uri?.let {
             val themeId = themeManager.addCustomTheme(it)
-            // Tự động chọn theme mới thêm
             themeManager.saveSelectedTheme(themeId, ThemeType.CUSTOM)
             loadThemes()
             Toast.makeText(this, "Theme added!", Toast.LENGTH_SHORT).show()
@@ -63,13 +61,7 @@ class ThemeActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerViewThemes)
-        themeAdapter = ThemeAdapter(
-            onThemeClick = { theme ->
-                themeManager.saveSelectedTheme(theme.id, theme.type)
-                themeAdapter.notifyDataSetChanged()
-            },
-            getCurrentThemeId = { themeManager.getCurrentTheme()?.id }
-        )
+        themeAdapter = ThemeAdapter()
 
         recyclerView.apply {
             adapter = themeAdapter
@@ -92,17 +84,15 @@ class ThemeActivity : AppCompatActivity() {
         themeAdapter.submitList(themes.toList())
     }
 
-    inner class ThemeAdapter(
-        private val onThemeClick: (Theme) -> Unit,
-        private val getCurrentThemeId: () -> String?
-    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    // ========== ADAPTER ==========
+    // ✅ BỎ "inner" để có thể dùng companion object
+    private inner class ThemeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private var themes = listOf<Theme>()
 
-        companion object {
-            const val VIEW_TYPE_ADD = 0
-            const val VIEW_TYPE_THEME = 1
-        }
+        // ✅ Constants ở ngoài companion object
+        private val VIEW_TYPE_ADD = 0
+        private val VIEW_TYPE_THEME = 1
 
         fun submitList(newThemes: List<Theme>) {
             themes = newThemes
@@ -138,6 +128,7 @@ class ThemeActivity : AppCompatActivity() {
 
         override fun getItemCount() = themes.size
 
+        // ViewHolder cho nút Add
         inner class AddThemeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             fun bind() {
                 itemView.setOnClickListener {
@@ -146,13 +137,15 @@ class ThemeActivity : AppCompatActivity() {
             }
         }
 
+        // ViewHolder cho theme
         inner class ThemeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val imageView: ImageView = itemView.findViewById(R.id.imgTheme)
             private val selectedIndicator: ImageView = itemView.findViewById(R.id.selectedIndicator)
 
             fun bind(theme: Theme) {
                 // Hiển thị selected indicator
-                selectedIndicator.visibility = if (theme.id == getCurrentThemeId()) {
+                val currentThemeId = themeManager.getCurrentTheme()?.id
+                selectedIndicator.visibility = if (theme.id == currentThemeId) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -179,7 +172,8 @@ class ThemeActivity : AppCompatActivity() {
                 }
 
                 itemView.setOnClickListener {
-                    onThemeClick(theme)
+                    themeManager.saveSelectedTheme(theme.id, theme.type)
+                    notifyDataSetChanged()
                 }
             }
         }
