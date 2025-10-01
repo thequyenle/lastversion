@@ -17,7 +17,7 @@ class ThemeManager(private val context: Context) {
         private const val KEY_SELECTED_THEME_ID = "selected_theme_id"
         private const val KEY_SELECTED_THEME_TYPE = "selected_theme_type"
         private const val KEY_CUSTOM_THEME_IDS = "custom_theme_ids"
-        private const val CUSTOM_THEMES_DIR = "custom_themes"
+        const val CUSTOM_THEMES_DIR = "custom_themes"
 
         // Danh sách ảnh có sẵn
         val PRESET_THEMES = listOf(
@@ -42,12 +42,15 @@ class ThemeManager(private val context: Context) {
         return when (type) {
             ThemeType.PRESET -> PRESET_THEMES.find { it.id == themeId }
             ThemeType.CUSTOM -> Theme(themeId, 0, ThemeType.CUSTOM)
-            ThemeType.ADD_NEW -> TODO()
+            ThemeType.ADD_NEW -> null // ✅ ADD_NEW không bao giờ được lưu làm current theme
         }
     }
 
     // Lưu theme được chọn
     fun saveSelectedTheme(themeId: String, type: ThemeType) {
+        // ✅ Không cho phép lưu ADD_NEW
+        if (type == ThemeType.ADD_NEW) return
+
         prefs.edit().apply {
             putString(KEY_SELECTED_THEME_ID, themeId)
             putString(KEY_SELECTED_THEME_TYPE, type.name)
@@ -61,7 +64,7 @@ class ThemeManager(private val context: Context) {
         return when (theme.type) {
             ThemeType.PRESET -> theme.drawableRes
             ThemeType.CUSTOM -> null // Sẽ load từ file
-            ThemeType.ADD_NEW -> TODO()
+            ThemeType.ADD_NEW -> null // ✅ ADD_NEW không có drawable
         }
     }
 
@@ -149,5 +152,5 @@ data class Theme(
 enum class ThemeType {
     PRESET,
     CUSTOM,
-    ADD_NEW  // ← Thêm type mới cho nút Add
+    ADD_NEW
 }

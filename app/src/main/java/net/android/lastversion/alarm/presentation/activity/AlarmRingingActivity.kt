@@ -3,6 +3,8 @@ package net.android.lastversion.alarm.presentation.activity
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -26,14 +28,14 @@ import net.android.lastversion.utils.ThemeType
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class AlarmRingingActivity : AppCompatActivity() {
 
     private lateinit var tvTime: TextView
     private lateinit var tvNote: TextView
     private lateinit var btnDismiss: Button
     private lateinit var btnSnooze: Button
-
-    private lateinit var ivAlarmIcon: ImageView  // ← THÊM biến này
+    private lateinit var ivAlarmIcon: ImageView
 
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
@@ -65,6 +67,7 @@ class AlarmRingingActivity : AppCompatActivity() {
         loadAlarmData()
         startAlarm()
     }
+
     private fun setBackgroundTheme() {
         val themeManager = ThemeManager(this)
         val rootLayout = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(
@@ -86,11 +89,16 @@ class AlarmRingingActivity : AppCompatActivity() {
                         rootLayout.background = BitmapDrawable(resources, bitmap)
                     }
                 }
+                ThemeType.ADD_NEW -> {
+                    // ✅ ADD_NEW không bao giờ là current theme, giữ background mặc định
+                    // Không làm gì cả
+                }
             }
         }
     }
+
     private fun initViews() {
-        ivAlarmIcon = findViewById(R.id.ivAlarmIcon)  // ← THÊM dòng này
+        ivAlarmIcon = findViewById(R.id.ivAlarmIcon)
 
         tvTime = findViewById(R.id.tvTime)
         tvNote = findViewById(R.id.tvNote)
@@ -100,10 +108,7 @@ class AlarmRingingActivity : AppCompatActivity() {
         btnDismiss.setOnClickListener { dismissAlarm() }
         btnSnooze.setOnClickListener { snoozeAlarm() }
         startBellAnimation()
-
     }
-
-    // Thay thế function loadAlarmData() trong AlarmRingingActivity.kt
 
     private fun loadAlarmData() {
         alarmId = intent.getIntExtra("alarm_id", -1)
@@ -214,7 +219,7 @@ class AlarmRingingActivity : AppCompatActivity() {
 
     private fun dismissAlarm() {
         stopAlarm()
-        stopBellAnimation()  // ← THÊM dòng này
+        stopBellAnimation()
 
         // Cancel notification
         val notificationManager = AlarmNotificationManager(this)
@@ -226,6 +231,7 @@ class AlarmRingingActivity : AppCompatActivity() {
     private fun snoozeAlarm() {
         stopAlarm()
         stopBellAnimation()
+
         // Tạo Intent để trigger snooze action
         val snoozeIntent = Intent(this, AlarmActionReceiver::class.java).apply {
             action = AlarmNotificationManager.ACTION_SNOOZE
@@ -264,11 +270,9 @@ class AlarmRingingActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopAlarm()
-        stopBellAnimation()  // ← THÊM dòng này
-
+        stopBellAnimation()
     }
 
-    // ✅ THÊM HÀM MỚI: Start animation
     private fun startBellAnimation() {
         val shakeAnimation = android.view.animation.AnimationUtils.loadAnimation(
             this,
@@ -277,9 +281,7 @@ class AlarmRingingActivity : AppCompatActivity() {
         ivAlarmIcon.startAnimation(shakeAnimation)
     }
 
-    // ✅ THÊM HÀM MỚI: Stop animation khi dismiss
     private fun stopBellAnimation() {
         ivAlarmIcon.clearAnimation()
     }
-
 }
