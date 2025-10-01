@@ -84,7 +84,7 @@ class HomeActivity : AppCompatActivity() {
         // Updated to use ConstraintLayout instead of FrameLayout
         val navContainers = listOf(
             findViewById<ConstraintLayout>(R.id.alarm_icon_container),
-            findViewById<ConstraintLayout>(R.id.clock_icon_container),
+           // findViewById<ConstraintLayout>(R.id.clock_icon_container),
             findViewById<ConstraintLayout>(R.id.stopwatch_icon_container),
             findViewById<ConstraintLayout>(R.id.timer_icon_container),
             findViewById<ConstraintLayout>(R.id.settings_icon_container)
@@ -92,7 +92,7 @@ class HomeActivity : AppCompatActivity() {
 
         val navItems = listOf(
             findViewById<LinearLayout>(R.id.nav_alarm),
-            findViewById<LinearLayout>(R.id.nav_clock),
+           // findViewById<LinearLayout>(R.id.nav_clock),
             findViewById<LinearLayout>(R.id.nav_stopwatch),
             findViewById<LinearLayout>(R.id.nav_timer),
             findViewById<LinearLayout>(R.id.nav_settings)

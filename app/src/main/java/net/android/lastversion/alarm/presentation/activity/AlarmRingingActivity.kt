@@ -15,6 +15,7 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import net.android.lastversion.R
@@ -29,6 +30,8 @@ class AlarmRingingActivity : AppCompatActivity() {
     private lateinit var tvNote: TextView
     private lateinit var btnDismiss: Button
     private lateinit var btnSnooze: Button
+
+    private lateinit var ivAlarmIcon: ImageView  // ← THÊM biến này
 
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
@@ -62,6 +65,8 @@ class AlarmRingingActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
+        ivAlarmIcon = findViewById(R.id.ivAlarmIcon)  // ← THÊM dòng này
+
         tvTime = findViewById(R.id.tvTime)
         tvNote = findViewById(R.id.tvNote)
         btnDismiss = findViewById(R.id.btnDismiss)
@@ -69,6 +74,8 @@ class AlarmRingingActivity : AppCompatActivity() {
 
         btnDismiss.setOnClickListener { dismissAlarm() }
         btnSnooze.setOnClickListener { snoozeAlarm() }
+        startBellAnimation()
+
     }
 
     // Thay thế function loadAlarmData() trong AlarmRingingActivity.kt
@@ -182,6 +189,7 @@ class AlarmRingingActivity : AppCompatActivity() {
 
     private fun dismissAlarm() {
         stopAlarm()
+        stopBellAnimation()  // ← THÊM dòng này
 
         // Cancel notification
         val notificationManager = AlarmNotificationManager(this)
@@ -192,7 +200,7 @@ class AlarmRingingActivity : AppCompatActivity() {
 
     private fun snoozeAlarm() {
         stopAlarm()
-
+        stopBellAnimation()
         // Tạo Intent để trigger snooze action
         val snoozeIntent = Intent(this, AlarmActionReceiver::class.java).apply {
             action = AlarmNotificationManager.ACTION_SNOOZE
@@ -231,6 +239,22 @@ class AlarmRingingActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopAlarm()
+        stopBellAnimation()  // ← THÊM dòng này
+
+    }
+
+    // ✅ THÊM HÀM MỚI: Start animation
+    private fun startBellAnimation() {
+        val shakeAnimation = android.view.animation.AnimationUtils.loadAnimation(
+            this,
+            R.anim.shake_bell
+        )
+        ivAlarmIcon.startAnimation(shakeAnimation)
+    }
+
+    // ✅ THÊM HÀM MỚI: Stop animation khi dismiss
+    private fun stopBellAnimation() {
+        ivAlarmIcon.clearAnimation()
     }
 
 }
