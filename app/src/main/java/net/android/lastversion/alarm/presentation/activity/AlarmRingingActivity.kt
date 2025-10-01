@@ -70,9 +70,7 @@ class AlarmRingingActivity : AppCompatActivity() {
 
     private fun setBackgroundTheme() {
         val themeManager = ThemeManager(this)
-        val rootLayout = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(
-            android.R.id.content
-        ).getChildAt(0) as androidx.constraintlayout.widget.ConstraintLayout
+        val rootLayout = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.root_layout)
 
         val theme = themeManager.getCurrentTheme()
         theme?.let {

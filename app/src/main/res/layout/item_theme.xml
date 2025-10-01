@@ -22,16 +22,17 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
-        <!-- Selected Indicator (ở giữa màn hình) -->
+        <!-- Selected Indicator - Góc dưới bên phải -->
         <ImageView
             android:id="@+id/selectedIndicator"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:src="@drawable/ic_check_circle"
             android:visibility="gone"
-            app:tint="@android:color/white"
-             />
+            app:tint="@android:color/white" />
 
     </FrameLayout>
 
