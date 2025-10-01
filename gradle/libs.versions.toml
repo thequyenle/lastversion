@@ -15,6 +15,7 @@ sqlite = "2.3.1"
 # KSP version phải match với Kotlin version: Kotlin 1.9.24 -> KSP 1.9.24-1.0.20
 ksp = "1.9.0-1.0.13"
 databindingRuntime = "8.13.0"
+coreKtxVersion = "1.10.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,6 +38,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 # SQLite bundled để tránh lỗi driver OEM
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-databinding-runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databindingRuntime" }
+core-ktx = { group = "com.google.android.play", name = "core-ktx", version.ref = "coreKtxVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
