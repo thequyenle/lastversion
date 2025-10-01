@@ -42,7 +42,9 @@ class AlarmRingingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // Remove dim/overlay from window
+        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         // Show on lock screen
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
@@ -107,20 +109,22 @@ class AlarmRingingActivity : AppCompatActivity() {
     private fun setBackgroundTheme() {
         val themeManager = ThemeManager(this)
 
-        // Get root layout
-        val rootLayout = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.root_layout)
+        // ✅ CRITICAL: Use ImageView instead of root layout background
+        val imgBackground = findViewById<ImageView>(R.id.imgBackground)
 
         val theme = themeManager.getCurrentTheme()
         theme?.let {
             when (it.type) {
                 ThemeType.PRESET -> {
-                    rootLayout.setBackgroundResource(it.drawableRes)
+                    // ✅ Set image resource (not background)
+                    imgBackground.setImageResource(it.drawableRes)
                 }
                 ThemeType.CUSTOM -> {
                     val file = themeManager.getCurrentThemeFile()
                     file?.let { themeFile ->
                         val bitmap = BitmapFactory.decodeFile(themeFile.absolutePath)
-                        rootLayout.background = BitmapDrawable(resources, bitmap)
+                        // ✅ Set bitmap (not background)
+                        imgBackground.setImageBitmap(bitmap)
                     }
                 }
                 ThemeType.ADD_NEW -> {
