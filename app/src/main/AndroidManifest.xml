@@ -37,6 +37,7 @@
         android:required="false" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -52,9 +53,7 @@
         <activity
             android:name=".alarm.presentation.activity.AlarmRingingActivity"
             android:exported="false" />
-        <activity
-            android:name=".alarm.presentation.activity.EditAlarmActivity"
-            android:exported="false" /> <!-- QUAN TRỌNG: Đăng ký receivers -->
+        <!-- QUAN TRỌNG: Đăng ký receivers -->
         <receiver
             android:name=".alarm.infrastructure.receiver.AlarmReceiver"
             android:enabled="true"

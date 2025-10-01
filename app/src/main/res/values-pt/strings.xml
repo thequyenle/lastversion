@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">lastversion</string>
+
+    <!-- Splash -->
+    <string name="splash_welcome">Bem-vindo ao aplicativo</string>
+
+    <!-- Language -->
+    <string name="select_language">Selecione seu idioma</string>
+    <string name="done">Concluído</string>
+
+    <!-- Tutorial -->
+    <string name="next">Próximo</string>
+    <string name="slide1">Bem-vindo</string>
+    <string name="slide2">Explorar recursos</string>
+    <string name="slide3">Começar</string>
+
+    <!-- Permission -->
+    <string name="grant_permission">Conceder permissão para continuar</string>
+
+    <!-- Main -->
+    <string name="home_screen">Bem-vindo à tela inicial</string>
+    <string name="hello_blank_fragment">Olá fragmento em branco</string>
+    <string name="pause">pausar</string>
+    <string name="resume">retomar</string>
+    <string name="stop">parar</string>
+    <string name="permission_text">\"Despertador\" requer permissão para usar\na Câmera e Fotos</string>
+    <string name="wake_up">Acorde!!!</string>
+    <string name="stopq">Parar</string>
+    <string name="snooze">Soneca</string>
+    <string name="_06_00_am">06:00 AM</string>
+    <string name="alarm">Alarme</string>
+    <string name="clock">Relógio</string>
+    <string name="stopwatch">Cronômetro</string>
+    <string name="settings">Configurações</string>
+    <string name="alarmHome">Alarme</string>
+    <string name="clockHome">Relógio</string>
+    <string name="stopwatchHome">Cronômetro</string>
+    <string name="timerHome">Temporizador</string>
+    <string name="settingsHome">Configurações</string>
+    <string name="doneLanguage">Concluído</string>
+    <string name="done_button_descLanguage">botão concluído</string>
+    <string name="language">Idioma</string>
+    <string name="permission">Permissão</string>
+    <string name="toggle_camera_permission">Alternar permissão da câmera</string>
+    <string name="go">Ir</string>
+    <string name="toggle_notification_permission">Alternar permissão de notificação</string>
+    <string name="toggle_storage_permission">Alternar permissão de armazenamento</string>
+    <string name="camera_permission">Permissão da câmera</string>
+    <string name="notification_permission">Permissão de notificação</string>
+    <string name="storage_permission">Permissão de armazenamento</string>
+    <string name="set_alarm">Configurar alarme</string>
+    <string name="snoozeSetAlarm">Soneca</string>
+    <string name="preview">Visualização</string>
+    <string name="vibration">Vibração</string>
+    <string name="sound">Som</string>
+    <string name="play_sound_even_when_in_silent_mode">Tocar som mesmo no modo silencioso</string>
+    <string name="alarm_note">Nota do alarme</string>
+</resources>

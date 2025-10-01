@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import net.android.lastversion.LanguageActivity
 import net.android.lastversion.R
 import net.android.lastversion.ThemeActivity
 import net.android.lastversion.utils.showSystemUI
@@ -37,11 +38,21 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Đặt ở đây - timing chính xác
         activity?.showSystemUI(white = false)
+
+        // Theme click handler (đã có)
         view.findViewById<View>(R.id.layoutThemeAlarmContainer).setOnClickListener {
             startActivity(Intent(requireContext(), ThemeActivity::class.java))
         }
+
+        // ✅ THÊM: Language click handler
+        view.findViewById<View>(R.id.layoutLanguage).setOnClickListener {
+            val intent = Intent(requireContext(), LanguageActivity::class.java)
+            // Đánh dấu là đang mở từ Settings, không phải onboarding
+            intent.putExtra("from_settings", true)
+            startActivity(intent)
+        }
+
         // Khởi tạo SeekBar Volume
         setupVolumeSeekBar(view)
     }

@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">lastversion</string>
+
+    <!-- Splash -->
+    <string name="splash_welcome">ऐप में आपका स्वागत है</string>
+
+    <!-- Language -->
+    <string name="select_language">अपनी भाषा चुनें</string>
+    <string name="done">हो गया</string>
+
+    <!-- Tutorial -->
+    <string name="next">अगला</string>
+    <string name="slide1">स्वागत है</string>
+    <string name="slide2">सुविधाओं का अन्वेषण करें</string>
+    <string name="slide3">शुरू करें</string>
+
+    <!-- Permission -->
+    <string name="grant_permission">जारी रखने के लिए अनुमति दें</string>
+
+    <!-- Main -->
+    <string name="home_screen">होम स्क्रीन में आपका स्वागत है</string>
+    <string name="hello_blank_fragment">हैलो खाली फ्रैगमेंट</string>
+    <string name="pause">रोकें</string>
+    <string name="resume">फिर से शुरू करें</string>
+    <string name="stop">बंद करें</string>
+    <string name="permission_text">\"अलार्म घड़ी\" को कैमरा और\nफोटो उपयोग करने की अनुमति चाहिए</string>
+    <string name="wake_up">जागो!!!</string>
+    <string name="stopq">बंद करें</string>
+    <string name="snooze">स्नूज़</string>
+    <string name="_06_00_am">06:00 AM</string>
+    <string name="alarm">अलार्म</string>
+    <string name="clock">घड़ी</string>
+    <string name="stopwatch">स्टॉपवॉच</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="alarmHome">अलार्म</string>
+    <string name="clockHome">घड़ी</string>
+    <string name="stopwatchHome">स्टॉपवॉच</string>
+    <string name="timerHome">टाइमर</string>
+    <string name="settingsHome">सेटिंग्स</string>
+    <string name="doneLanguage">हो गया</string>
+    <string name="done_button_descLanguage">हो गया बटन</string>
+    <string name="language">भाषा</string>
+    <string name="permission">अनुमति</string>
+    <string name="toggle_camera_permission">कैमरा अनुमति टॉगल करें</string>
+    <string name="go">जाओ</string>
+    <string name="toggle_notification_permission">सूचना अनुमति टॉगल करें</string>
+    <string name="toggle_storage_permission">स्टोरेज अनुमति टॉगल करें</string>
+    <string name="camera_permission">कैमरा अनुमति</string>
+    <string name="notification_permission">सूचना अनुमति</string>
+    <string name="storage_permission">स्टोरेज अनुमति</string>
+    <string name="set_alarm">अलार्म सेट करें</string>
+    <string name="snoozeSetAlarm">स्नूज़</string>
+    <string name="preview">पूर्वावलोकन</string>
+    <string name="vibration">कंपन</string>
+    <string name="sound">ध्वनि</string>
+    <string name="play_sound_even_when_in_silent_mode">साइलेंट मोड में भी ध्वनि बजाएं</string>
+    <string name="alarm_note">अलार्म नोट</string>
+</resources>
