@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
@@ -25,9 +26,6 @@ import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificati
 import net.android.lastversion.alarm.infrastructure.receiver.AlarmActionReceiver
 import net.android.lastversion.utils.ThemeManager
 import net.android.lastversion.utils.ThemeType
-import java.text.SimpleDateFormat
-import java.util.*
-
 
 class AlarmRingingActivity : AppCompatActivity() {
 
@@ -62,25 +60,63 @@ class AlarmRingingActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_alarm_ringing)
+
+        // Hide system bars for full screen
+        hideSystemBars()
+
+        // Set theme background
         setBackgroundTheme()
+
         initViews()
         loadAlarmData()
         startAlarm()
     }
 
+    private fun hideSystemBars() {
+        // Set window to draw edge-to-edge (no rounded corners)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11+ (API 30+)
+            window.setDecorFitsSystemWindows(false)
+            window.insetsController?.let { controller ->
+                controller.hide(
+                    android.view.WindowInsets.Type.statusBars() or
+                            android.view.WindowInsets.Type.navigationBars()
+                )
+                controller.systemBarsBehavior =
+                    android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            // Android 10 and below
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    )
+        }
+    }
+
     private fun setBackgroundTheme() {
         val themeManager = ThemeManager(this)
+
+        // Get root layout
         val rootLayout = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.root_layout)
 
         val theme = themeManager.getCurrentTheme()
         theme?.let {
             when (it.type) {
                 ThemeType.PRESET -> {
-                    // Set drawable resource
                     rootLayout.setBackgroundResource(it.drawableRes)
                 }
                 ThemeType.CUSTOM -> {
-                    // Load từ file
                     val file = themeManager.getCurrentThemeFile()
                     file?.let { themeFile ->
                         val bitmap = BitmapFactory.decodeFile(themeFile.absolutePath)
@@ -88,8 +124,7 @@ class AlarmRingingActivity : AppCompatActivity() {
                     }
                 }
                 ThemeType.ADD_NEW -> {
-                    // ✅ ADD_NEW không bao giờ là current theme, giữ background mặc định
-                    // Không làm gì cả
+                    // Do nothing
                 }
             }
         }
@@ -97,7 +132,6 @@ class AlarmRingingActivity : AppCompatActivity() {
 
     private fun initViews() {
         ivAlarmIcon = findViewById(R.id.ivAlarmIcon)
-
         tvTime = findViewById(R.id.tvTime)
         tvNote = findViewById(R.id.tvNote)
         btnDismiss = findViewById(R.id.btnDismiss)
@@ -121,18 +155,18 @@ class AlarmRingingActivity : AppCompatActivity() {
         // Display time
         tvTime.text = String.format("%02d:%02d %s", hour, minute, amPm)
 
-        // Display note - ẩn TextView nếu note rỗng
+        // Display note - hide TextView if note is empty
         if (note.isNotEmpty()) {
             android.util.Log.d("AlarmRinging", "Showing note")
             tvNote.text = note
-            tvNote.visibility = android.view.View.VISIBLE
+            tvNote.visibility = View.VISIBLE
         } else {
-            tvNote.visibility = android.view.View.GONE
+            tvNote.visibility = View.GONE
         }
 
         // Hide snooze button if snooze disabled
         if (snoozeMinutes == 0) {
-            btnSnooze.visibility = android.view.View.GONE
+            btnSnooze.visibility = View.GONE
         } else {
             btnSnooze.text = "Snooze $snoozeMinutes min"
         }
@@ -165,7 +199,6 @@ class AlarmRingingActivity : AppCompatActivity() {
             }
 
             mediaPlayer = MediaPlayer().apply {
-                // QUAN TRỌNG: Dùng STREAM_ALARM để bypass silent mode
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     val audioAttributes = AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_ALARM)
@@ -202,7 +235,7 @@ class AlarmRingingActivity : AppCompatActivity() {
             "short" -> longArrayOf(0, 300, 200, 300)
             "long" -> longArrayOf(0, 1000, 500, 1000)
             "double" -> longArrayOf(0, 500, 200, 500, 200, 500)
-            else -> longArrayOf(0, 1000, 500, 1000, 500, 1000) // default
+            else -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -219,7 +252,6 @@ class AlarmRingingActivity : AppCompatActivity() {
         stopAlarm()
         stopBellAnimation()
 
-        // Cancel notification
         val notificationManager = AlarmNotificationManager(this)
         notificationManager.cancelNotification(alarmId)
 
@@ -230,7 +262,6 @@ class AlarmRingingActivity : AppCompatActivity() {
         stopAlarm()
         stopBellAnimation()
 
-        // Tạo Intent để trigger snooze action
         val snoozeIntent = Intent(this, AlarmActionReceiver::class.java).apply {
             action = AlarmNotificationManager.ACTION_SNOOZE
             putExtra("alarm_id", alarmId)
@@ -238,10 +269,8 @@ class AlarmRingingActivity : AppCompatActivity() {
             putExtra("snooze_minutes", snoozeMinutes)
         }
 
-        // Gửi broadcast để xử lý snooze
         sendBroadcast(snoozeIntent)
 
-        // Cancel notification hiện tại
         val notificationManager = AlarmNotificationManager(this)
         notificationManager.cancelNotification(alarmId)
 
