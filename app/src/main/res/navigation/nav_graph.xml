@@ -8,10 +8,10 @@
         android:name="net.android.lastversion.alarm.presentation.fragment.AlarmFragment"
         android:label="Alarm" />
 
-    <fragment
-        android:id="@+id/clockFragment"
-        android:name="net.android.lastversion.fragment.ClockFragment"
-        android:label="Clock" />
+<!--    <fragment-->
+<!--        android:id="@+id/clockFragment"-->
+<!--        android:name="net.android.lastversion.fragment.ClockFragment"-->
+<!--        android:label="Clock" />-->
 
     <fragment
         android:id="@+id/stopwatchFragment"

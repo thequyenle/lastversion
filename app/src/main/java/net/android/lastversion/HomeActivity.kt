@@ -38,7 +38,7 @@ class HomeActivity : AppCompatActivity() {
     private fun setupCustomNavigation(navController: androidx.navigation.NavController) {
         // Get references to navigation items
         val navAlarm = findViewById<LinearLayout>(R.id.nav_alarm)
-        val navClock = findViewById<LinearLayout>(R.id.nav_clock)
+       // val navClock = findViewById<LinearLayout>(R.id.nav_clock)
         val navStopwatch = findViewById<LinearLayout>(R.id.nav_stopwatch)
         val navTimer = findViewById<LinearLayout>(R.id.nav_timer)
         val navSettings = findViewById<LinearLayout>(R.id.nav_settings)
@@ -48,9 +48,9 @@ class HomeActivity : AppCompatActivity() {
             navController.navigate(R.id.alarmFragment)
         }
 
-        navClock.setOnClickListener {
-            navController.navigate(R.id.clockFragment)
-        }
+//        navClock.setOnClickListener {
+//            navController.navigate(R.id.clockFragment)
+//        }
 
         navStopwatch.setOnClickListener {
             navController.navigate(R.id.stopwatchFragment)
@@ -72,7 +72,7 @@ class HomeActivity : AppCompatActivity() {
             // Highlight current item based on destination
             when (destination.id) {
                 R.id.alarmFragment -> highlightNavigationItem(navAlarm)
-                R.id.clockFragment -> highlightNavigationItem(navClock)
+                //R.id.clockFragment -> highlightNavigationItem(navClock)
                 R.id.stopwatchFragment -> highlightNavigationItem(navStopwatch)
                 R.id.timerFragment -> highlightNavigationItem(navTimer)
                 R.id.settingsFragment -> highlightNavigationItem(navSettings)
