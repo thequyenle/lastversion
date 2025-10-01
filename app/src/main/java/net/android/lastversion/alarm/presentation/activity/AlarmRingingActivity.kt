@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity
 import net.android.lastversion.R
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
 import net.android.lastversion.alarm.infrastructure.receiver.AlarmActionReceiver
+import net.android.lastversion.utils.ThemeManager
+import net.android.lastversion.utils.ThemeType
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -58,12 +60,35 @@ class AlarmRingingActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_alarm_ringing)
-
+        setBackgroundTheme()
         initViews()
         loadAlarmData()
         startAlarm()
     }
+    private fun setBackgroundTheme() {
+        val themeManager = ThemeManager(this)
+        val rootLayout = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(
+            android.R.id.content
+        ).getChildAt(0) as androidx.constraintlayout.widget.ConstraintLayout
 
+        val theme = themeManager.getCurrentTheme()
+        theme?.let {
+            when (it.type) {
+                ThemeType.PRESET -> {
+                    // Set drawable resource
+                    rootLayout.setBackgroundResource(it.drawableRes)
+                }
+                ThemeType.CUSTOM -> {
+                    // Load từ file
+                    val file = themeManager.getCurrentThemeFile()
+                    file?.let { themeFile ->
+                        val bitmap = BitmapFactory.decodeFile(themeFile.absolutePath)
+                        rootLayout.background = BitmapDrawable(resources, bitmap)
+                    }
+                }
+            }
+        }
+    }
     private fun initViews() {
         ivAlarmIcon = findViewById(R.id.ivAlarmIcon)  // ← THÊM dòng này
 

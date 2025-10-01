@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
-    id ("kotlin-parcelize")
+    id("kotlin-parcelize")
     // Loại bỏ androidx.room plugin vì có thể conflict với KSP
 }
 
@@ -57,16 +57,19 @@ dependencies {
     implementation(libs.androidx.databinding.runtime)
     ksp(libs.androidx.room.compiler)
 
-    implementation ("io.github.ShawnLin013:number-picker:2.4.13")
+    implementation("io.github.ShawnLin013:number-picker:2.4.13")
     // SQLite bundled để tránh lỗi OEM driver
-   // implementation(libs.androidx.sqlite.bundled)
-    implementation (libs.sqlite)
-    implementation (libs.sqlite.ktx)
-    implementation (libs.sqlite.framework)
+    // implementation(libs.androidx.sqlite.bundled)
+    implementation(libs.sqlite)
+    implementation(libs.sqlite.ktx)
+    implementation(libs.sqlite.framework)
     implementation(libs.material)
     // Coroutines - Cần thiết cho Room
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // Lifecycle components - Cần cho Flow và ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
@@ -87,7 +90,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // Parcelize
-    implementation ("org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22")
+    implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

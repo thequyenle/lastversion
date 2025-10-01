@@ -1,6 +1,7 @@
 package net.android.lastversion.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.media.AudioManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import net.android.lastversion.R
+import net.android.lastversion.ThemeActivity
 import net.android.lastversion.utils.showSystemUI
 
 class SettingsFragment : Fragment() {
@@ -37,7 +39,9 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Đặt ở đây - timing chính xác
         activity?.showSystemUI(white = false)
-
+        view.findViewById<View>(R.id.layoutThemeAlarmContainer).setOnClickListener {
+            startActivity(Intent(requireContext(), ThemeActivity::class.java))
+        }
         // Khởi tạo SeekBar Volume
         setupVolumeSeekBar(view)
     }
