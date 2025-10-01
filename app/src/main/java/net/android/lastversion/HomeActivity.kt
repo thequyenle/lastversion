@@ -33,6 +33,9 @@ class HomeActivity : AppCompatActivity() {
 
         // Setup custom navigation with LinearLayout
         setupCustomNavigation(navController)
+        if (intent.getBooleanExtra("open_settings", false)) {
+            navController.navigate(R.id.settingsFragment)
+        }
     }
 
     private fun setupCustomNavigation(navController: androidx.navigation.NavController) {

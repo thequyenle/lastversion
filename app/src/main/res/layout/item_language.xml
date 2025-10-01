@@ -24,7 +24,7 @@
         android:id="@+id/tvLanguage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Language"
+        android:text="@string/languageItem"
         android:textSize="16sp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"

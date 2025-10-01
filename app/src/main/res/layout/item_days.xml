@@ -22,7 +22,7 @@
         android:gravity="center"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:text="sunday"
+        android:text="@string/sunday"
         android:maxLines="1"
         android:ellipsize="end"
         app:layout_constraintBottom_toBottomOf="@+id/imgDays"

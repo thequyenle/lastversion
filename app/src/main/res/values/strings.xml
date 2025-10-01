@@ -17,7 +17,12 @@
     <!-- Permission -->
     <string name="grant_permission">Grant permission to continue</string>
 
-
+    <string name="settings_title">Settings</string>
+    <string name="volume">Volume</string>
+    <string name="theme_alarm">Theme Alarm</string>
+    <string name="rate_us">Rate Us</string>
+    <string name="share">Share</string>
+    <string name="privacy">Privacy</string>
     <!-- Main -->
     <string name="home_screen">Welcome to Home Screen</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -57,4 +62,68 @@
     <string name="sound">Sound</string>
     <string name="play_sound_even_when_in_silent_mode">Play sound even when in silent mode</string>
     <string name="alarm_note">Alarm note</string>
+    <string name="timer">Timer</string>
+    <string name="back">Back</string>
+    <string name="save">Save</string>
+    <string name="fri">Fri</string>
+    <string name="mon">Mon</string>
+    <string name="sat">Sat</string>
+    <string name="sun">Sun</string>
+    <string name="thu">Thu</string>
+    <string name="tue">Tue</string>
+    <string name="wed">Wed</string>
+    <string name="_5_minutes">5 minutes</string>
+    <string name="basic_bell">Basic bell</string>
+    <string name="vibration_alarm">Vibration</string>
+    <string name="active_days">Active days</string>
+    <string name="add_note">Add note</string>
+    <string name="hours">Hours</string>
+    <string name="minute">Minute</string>
+    <string name="this_action_can_contain_ads">This action can contain ads</string>
+    <string name="alarm_clock">Alarm Clock</string>
+    <string name="theme">Theme</string>
+    <string name="save_theme">Save</string>
+    <string name="nexttutorial">Next</string>
+    <string name="delete">Delete</string>
+    <string name="do_you_want_to_delete_nthis_alarm">Do you want to delete\nthis alarm?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="no_alarms_yet">No alarms yet</string>
+    <string name="alarm_fragment">Alarm</string>
+    <string name="test_alarm_30s">Test Alarm (30s)</string>
+    <string name="test_boot_receiver">TEST BOOT RECEIVER</string>
+    <string name="hoursStopwatch">Hours</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
+    <string name="continuee">Continue</string>
+    <string name="restart">Restart</string>
+    <string name="start">Start</string>
+    <string name="stopP">Stop</string>
+    <string name="_00">00</string>
+    <string name="stopwatch_">Stopwatch</string>
+    <string name="h">h</string>
+    <string name="m">m</string>
+    <string name="s">s</string>
+    <string name="keep_my_screen_on">Keep my screen on</string>
+    <string name="soundTimer">Sound</string>
+    <string name="hoursTimer">Hours</string>
+    <string name="minutesS">Minutes</string>
+    <string name="secondsS">Seconds</string>
+    <string name="restartT">Restart</string>
+    <string name="start_timer">Start Timer</string>
+    <string name="stopTimer">Stop</string>
+    <string name="stop_">Stop</string>
+    <string name="astro">Astro</string>
+    <string name="_5_seconds">5 seconds</string>
+    <string name="time_s_up">Time’s up!</string>
+    <string name="timer_">Timer</string>
+    <string name="mon_tue_wed_thu_fri">Mon, Tue, Wed, Thu, Fri</string>
+    <string name="alarmItem">Alarm</string>
+    <string name="_08_00_am">08:00 AM</string>
+    <string name="sunday">sunday</string>
+    <string name="languageItem">Language</string>
+    <string name="title">Title</string>
+    <string name="description_here">Description here</string>
+    <string name="saveTool">Save</string>
+    <string name="set_alarm_">set alarm</string>
 </resources>

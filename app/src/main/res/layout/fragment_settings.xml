@@ -12,14 +12,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="57dp"
-        android:text="Settings"
+        android:text="@string/settings_title"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Volume Icon -->
     <!-- Volume Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutVolumeContainer"
@@ -48,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Volume"
+            android:text="@string/volume"
             android:textSize="20sp"
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icVolume"
@@ -58,6 +57,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Volume SeekBar -->
     <SeekBar
         android:id="@+id/seekBarVolume"
         android:layout_width="match_parent"
@@ -70,8 +70,9 @@
         android:progressBackgroundTint="#E0E0E0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutVolumeContainer"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/layoutVolumeContainer" />
+
+    <!-- Theme Alarm Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutThemeAlarmContainer"
         android:layout_width="match_parent"
@@ -83,23 +84,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutVolumeContainer">
 
-        <!-- Volume Icon -->
+        <!-- Theme Icon -->
         <ImageView
             android:id="@+id/icTheme"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_volume"
+            android:src="@drawable/ic_theme_alarm"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Volume Text -->
+        <!-- Theme Text -->
         <TextView
             android:id="@+id/tvTheme"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Theme Alarm"
+            android:text="@string/theme_alarm"
             android:textSize="20sp"
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icTheme"
@@ -109,6 +110,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Language Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutLanguage"
         android:layout_width="match_parent"
@@ -120,23 +122,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutThemeAlarmContainer">
 
-        <!-- Volume Icon -->
+        <!-- Language Icon -->
         <ImageView
             android:id="@+id/icLanguage"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_volume"
+            android:src="@drawable/ic_language_settings"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Volume Text -->
+        <!-- Language Text -->
         <TextView
             android:id="@+id/tvLanguage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Language"
+            android:text="@string/language"
             android:textSize="20sp"
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icLanguage"
@@ -146,6 +148,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Rate Us Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutRateUs"
         android:layout_width="match_parent"
@@ -157,7 +160,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutLanguage">
 
-        <!-- Volume Icon -->
+        <!-- Rate Us Icon -->
         <ImageView
             android:id="@+id/icRateUs"
             android:layout_width="36dp"
@@ -167,13 +170,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Volume Text -->
+        <!-- Rate Us Text -->
         <TextView
             android:id="@+id/tvRateUs"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Rate Us"
+            android:text="@string/rate_us"
             android:textSize="20sp"
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icRateUs"
@@ -183,6 +186,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Share Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutShare"
         android:layout_width="match_parent"
@@ -194,7 +198,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutRateUs">
 
-        <!-- Volume Icon -->
+        <!-- Share Icon -->
         <ImageView
             android:id="@+id/icShare"
             android:layout_width="36dp"
@@ -204,13 +208,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Volume Text -->
+        <!-- Share Text -->
         <TextView
             android:id="@+id/tvShare"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Share"
+            android:text="@string/share"
             android:textSize="20sp"
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icShare"
@@ -220,6 +224,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Privacy Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutPrivacy"
         android:layout_width="match_parent"
@@ -231,7 +236,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutShare">
 
-        <!-- Volume Icon -->
+        <!-- Privacy Icon -->
         <ImageView
             android:id="@+id/icPrivacy"
             android:layout_width="36dp"
@@ -241,13 +246,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Volume Text -->
+        <!-- Privacy Text -->
         <TextView
             android:id="@+id/tvPrivacy"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Privacy"
+            android:text="@string/privacy"
             android:textSize="20sp"
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icPrivacy"
@@ -256,6 +261,5 @@
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

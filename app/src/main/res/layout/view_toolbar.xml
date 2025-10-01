@@ -18,7 +18,7 @@
         android:layout_width="0dp"
         android:gravity="center"
         android:textColor="@color/white"
-        android:text="set alarm"
+        android:text="@string/set_alarm_"
         style="@style/TextAppearance.AppCompat.Headline"
         android:textStyle="bold"
         android:layout_height="match_parent"
@@ -33,7 +33,7 @@
         android:gravity="center"
         android:visibility="gone"
         style="@style/TextAppearance.AppCompat.Medium"
-        android:text="Save"
+        android:text="@string/saveTool"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

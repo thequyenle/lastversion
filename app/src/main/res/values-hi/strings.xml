@@ -17,6 +17,14 @@
     <!-- Permission -->
     <string name="grant_permission">जारी रखने के लिए अनुमति दें</string>
 
+    <!-- Settings Screen -->
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="volume">वॉल्यूम</string>
+    <string name="theme_alarm">थीम अलार्म</string>
+    <string name="rate_us">हमें रेट करें</string>
+    <string name="share">साझा करें</string>
+    <string name="privacy">गोपनीयता</string>
+
     <!-- Main -->
     <string name="home_screen">होम स्क्रीन में आपका स्वागत है</string>
     <string name="hello_blank_fragment">हैलो खाली फ्रैगमेंट</string>
@@ -55,4 +63,68 @@
     <string name="sound">ध्वनि</string>
     <string name="play_sound_even_when_in_silent_mode">साइलेंट मोड में भी ध्वनि बजाएं</string>
     <string name="alarm_note">अलार्म नोट</string>
+    <string name="timer">टाइमर</string>
+    <string name="back">पीछे</string>
+    <string name="save">सहेजें</string>
+    <string name="fri">शुक्र</string>
+    <string name="mon">सोम</string>
+    <string name="sat">शनि</string>
+    <string name="sun">रवि</string>
+    <string name="thu">गुरु</string>
+    <string name="tue">मंगल</string>
+    <string name="wed">बुध</string>
+    <string name="_5_minutes">5 मिनट</string>
+    <string name="basic_bell">बेसिक बेल</string>
+    <string name="vibration_alarm">कंपन</string>
+    <string name="active_days">सक्रिय दिन</string>
+    <string name="add_note">नोट जोड़ें</string>
+    <string name="hours">घंटे</string>
+    <string name="minute">मिनट</string>
+    <string name="this_action_can_contain_ads">इस क्रिया में विज्ञापन हो सकते हैं</string>
+    <string name="alarm_clock">अलार्म घड़ी</string>
+    <string name="theme">थीम</string>
+    <string name="save_theme">सहेजें</string>
+    <string name="nexttutorial">अगला</string>
+    <string name="delete">हटाएं</string>
+    <string name="do_you_want_to_delete_nthis_alarm">क्या आप इस अलार्म को\nहटाना चाहते हैं?</string>
+    <string name="yes">हां</string>
+    <string name="no">नहीं</string>
+    <string name="no_alarms_yet">अभी तक कोई अलार्म नहीं</string>
+    <string name="alarm_fragment">अलार्म</string>
+    <string name="test_alarm_30s">टेस्ट अलार्म (30s)</string>
+    <string name="test_boot_receiver">बूट रिसीवर टेस्ट करें</string>
+    <string name="hoursStopwatch">घंटे</string>
+    <string name="minutes">मिनट</string>
+    <string name="seconds">सेकंड</string>
+    <string name="continuee">जारी रखें</string>
+    <string name="restart">पुनः आरंभ करें</string>
+    <string name="start">शुरू करें</string>
+    <string name="stopP">बंद करें</string>
+    <string name="_00">00</string>
+    <string name="stopwatch_">स्टॉपवॉच</string>
+    <string name="h">घं</string>
+    <string name="m">मि</string>
+    <string name="s">से</string>
+    <string name="keep_my_screen_on">मेरी स्क्रीन चालू रखें</string>
+    <string name="soundTimer">ध्वनि</string>
+    <string name="hoursTimer">घंटे</string>
+    <string name="minutesS">मिनट</string>
+    <string name="secondsS">सेकंड</string>
+    <string name="restartT">पुनः आरंभ करें</string>
+    <string name="start_timer">टाइमर शुरू करें</string>
+    <string name="stopTimer">बंद करें</string>
+    <string name="stop_">बंद करें</string>
+    <string name="astro">एस्ट्रो</string>
+    <string name="_5_seconds">5 सेकंड</string>
+    <string name="time_s_up">समय समाप्त!</string>
+    <string name="timer_">टाइमर</string>
+    <string name="mon_tue_wed_thu_fri">सोम, मंगल, बुध, गुरु, शुक्र</string>
+    <string name="alarmItem">अलार्म</string>
+    <string name="_08_00_am">08:00 AM</string>
+    <string name="sunday">रविवार</string>
+    <string name="languageItem">भाषा</string>
+    <string name="title">शीर्षक</string>
+    <string name="description_here">यहां विवरण</string>
+    <string name="saveTool">सहेजें</string>
+    <string name="set_alarm_">अलार्म सेट करें</string>
 </resources>

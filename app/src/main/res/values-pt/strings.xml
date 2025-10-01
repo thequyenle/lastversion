@@ -17,6 +17,14 @@
     <!-- Permission -->
     <string name="grant_permission">Conceder permissão para continuar</string>
 
+    <!-- Settings Screen -->
+    <string name="settings_title">Configurações</string>
+    <string name="volume">Volume</string>
+    <string name="theme_alarm">Tema do alarme</string>
+    <string name="rate_us">Avalie-nos</string>
+    <string name="share">Compartilhar</string>
+    <string name="privacy">Privacidade</string>
+
     <!-- Main -->
     <string name="home_screen">Bem-vindo à tela inicial</string>
     <string name="hello_blank_fragment">Olá fragmento em branco</string>
@@ -55,4 +63,68 @@
     <string name="sound">Som</string>
     <string name="play_sound_even_when_in_silent_mode">Tocar som mesmo no modo silencioso</string>
     <string name="alarm_note">Nota do alarme</string>
+    <string name="timer">Temporizador</string>
+    <string name="back">Voltar</string>
+    <string name="save">Salvar</string>
+    <string name="fri">Sex</string>
+    <string name="mon">Seg</string>
+    <string name="sat">Sáb</string>
+    <string name="sun">Dom</string>
+    <string name="thu">Qui</string>
+    <string name="tue">Ter</string>
+    <string name="wed">Qua</string>
+    <string name="_5_minutes">5 minutos</string>
+    <string name="basic_bell">Sino básico</string>
+    <string name="vibration_alarm">Vibração</string>
+    <string name="active_days">Dias ativos</string>
+    <string name="add_note">Adicionar nota</string>
+    <string name="hours">Horas</string>
+    <string name="minute">Minuto</string>
+    <string name="this_action_can_contain_ads">Esta ação pode conter anúncios</string>
+    <string name="alarm_clock">Despertador</string>
+    <string name="theme">Tema</string>
+    <string name="save_theme">Salvar</string>
+    <string name="nexttutorial">Próximo</string>
+    <string name="delete">Excluir</string>
+    <string name="do_you_want_to_delete_nthis_alarm">Você deseja excluir\neste alarme?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="no_alarms_yet">Nenhum alarme ainda</string>
+    <string name="alarm_fragment">Alarme</string>
+    <string name="test_alarm_30s">Testar Alarme (30s)</string>
+    <string name="test_boot_receiver">TESTAR RECEPTOR DE INICIALIZAÇÃO</string>
+    <string name="hoursStopwatch">Horas</string>
+    <string name="minutes">Minutos</string>
+    <string name="seconds">Segundos</string>
+    <string name="continuee">Continuar</string>
+    <string name="restart">Reiniciar</string>
+    <string name="start">Iniciar</string>
+    <string name="stopP">Parar</string>
+    <string name="_00">00</string>
+    <string name="stopwatch_">Cronômetro</string>
+    <string name="h">h</string>
+    <string name="m">m</string>
+    <string name="s">s</string>
+    <string name="keep_my_screen_on">Manter minha tela ligada</string>
+    <string name="soundTimer">Som</string>
+    <string name="hoursTimer">Horas</string>
+    <string name="minutesS">Minutos</string>
+    <string name="secondsS">Segundos</string>
+    <string name="restartT">Reiniciar</string>
+    <string name="start_timer">Iniciar Temporizador</string>
+    <string name="stopTimer">Parar</string>
+    <string name="stop_">Parar</string>
+    <string name="astro">Astro</string>
+    <string name="_5_seconds">5 segundos</string>
+    <string name="time_s_up">O tempo acabou!</string>
+    <string name="timer_">Temporizador</string>
+    <string name="mon_tue_wed_thu_fri">Seg, Ter, Qua, Qui, Sex</string>
+    <string name="alarmItem">Alarme</string>
+    <string name="_08_00_am">08:00 AM</string>
+    <string name="sunday">domingo</string>
+    <string name="languageItem">Idioma</string>
+    <string name="title">Título</string>
+    <string name="description_here">Descrição aqui</string>
+    <string name="saveTool">Salvar</string>
+    <string name="set_alarm_">configurar alarme</string>
 </resources>

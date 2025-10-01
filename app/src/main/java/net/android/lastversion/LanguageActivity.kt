@@ -60,6 +60,8 @@ class LanguageActivity : AppCompatActivity() {
                 // Restart activity để apply ngôn ngữ mới
                 val intent = Intent(this, HomeActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                intent.putExtra("open_settings", true) // ✅ THÊM DÒNG NÀY
+
                 startActivity(intent)
             } else {
                 // Nếu từ onboarding, tiếp tục flow bình thường
