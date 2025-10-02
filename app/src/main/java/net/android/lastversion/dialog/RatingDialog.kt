@@ -47,23 +47,49 @@ class RatingDialog(
         setupListeners()
     }
 
+    override fun onStart() {
+        super.onStart()
+        // Reset về trạng thái ban đầu mỗi khi dialog hiển thị
+        resetToInitialState()
+    }
+
+    private fun resetToInitialState() {
+        // Reset rating
+        selectedRating = 0
+        ratingBar.rating = 0f
+
+        // Reset icon và text về mặc định
+        imvAvtRate.setImageResource(R.drawable.ic_ask)
+        tv1.text = "Do you like the app?"
+        tv2.text = "Let us know your experience"
+
+        // Disable button vote
+        btnVote.isEnabled = false
+    }
+
     private fun initViews() {
         imvAvtRate = findViewById(R.id.imvAvtRate)
         tv1 = findViewById(R.id.tv1)
         tv2 = findViewById(R.id.tv2)
         btnVote = findViewById(R.id.btnVote)
-        btnCancel = findViewById(R.id.btnCancel) // Giữ nguyên ID trong XML
-        ratingBar = findViewById(R.id.ratingBar) // Giữ nguyên ID trong XML
+        btnCancel = findViewById(R.id.btnCancel)
+        ratingBar = findViewById(R.id.ratingBar)
     }
 
     private fun setupInitialState() {
+        // Set icon mặc định là ic_ask (emoji hỏi)
+        imvAvtRate.setImageResource(R.drawable.ic_ask)
+
         // Set text mặc định
         tv1.text = "Do you like the app?"
         tv2.text = "Let us know your experience"
 
         // Disable button vote ban đầu
         btnVote.isEnabled = false
-        btnVote.alpha = 0.5f
+
+        // Reset rating bar về 0 (tất cả sao empty)
+        ratingBar.rating = 0f
+        selectedRating = 0
     }
 
     private fun setupListeners() {
@@ -71,7 +97,12 @@ class RatingDialog(
         ratingBar.setOnRatingChangeListener { _, rating, fromUser ->
             if (fromUser) {
                 selectedRating = rating.toInt()
-                updateUIForRating(selectedRating)
+                if (selectedRating == 0) {
+                    // Reset về trạng thái ban đầu khi rating = 0
+                    resetToInitialState()
+                } else {
+                    updateUIForRating(selectedRating)
+                }
             }
         }
 
@@ -97,22 +128,22 @@ class RatingDialog(
     private fun updateUIForRating(rating: Int) {
         when (rating) {
             1 -> {
-                imvAvtRate.setImageResource(R.drawable.ic_1star) // Nếu có
+                imvAvtRate.setImageResource(R.drawable.ic_1star)
                 tv1.text = "Oh, no!"
                 tv2.text = "Please give us some feedback"
             }
             2 -> {
-                imvAvtRate.setImageResource(R.drawable.ic_2star) // Nếu có
+                imvAvtRate.setImageResource(R.drawable.ic_2star)
                 tv1.text = "Oh, no!"
                 tv2.text = "Please give us some feedback"
             }
             3 -> {
-                imvAvtRate.setImageResource(R.drawable.ic_3star) // Nếu có
+                imvAvtRate.setImageResource(R.drawable.ic_3star)
                 tv1.text = "Could be better!"
                 tv2.text = "How can we improve?"
             }
             4 -> {
-                imvAvtRate.setImageResource(R.drawable.ic_4star) // Nếu có
+                imvAvtRate.setImageResource(R.drawable.ic_4star)
                 tv1.text = "We love you too!"
                 tv2.text = "Thanks for your feedback"
             }
@@ -123,9 +154,8 @@ class RatingDialog(
             }
         }
 
-        // Enable button vote
+        // Enable button vote (không đổi background, không làm mờ)
         btnVote.isEnabled = true
-        btnVote.alpha = 1f
     }
 
     companion object {

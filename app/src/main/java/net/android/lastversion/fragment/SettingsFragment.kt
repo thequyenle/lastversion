@@ -24,9 +24,14 @@ class SettingsFragment : Fragment() {
     private lateinit var audioManager: AudioManager
     private lateinit var volumeSeekBar: SeekBar
 
+    // Track rating status
+    private var isRated = false
+    private lateinit var layoutRateUs: ConstraintLayout
+
     companion object {
         private const val PREFS_NAME = "AlarmSettings"
         private const val KEY_VOLUME = "volume"
+        private const val KEY_RATED = "is_rated"
 
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
@@ -63,19 +68,62 @@ class SettingsFragment : Fragment() {
         setupLanguageClick(view)
         setupRateUsClick(view)
 
+        // Load saved rating status
+        loadRatingStatus()
+
         activity?.showSystemUI(white = false)
     }
 
     private fun setupRateUsClick(view: View) {
-        val layoutRateUs = view.findViewById<ConstraintLayout>(R.id.layoutRateUs)
+        layoutRateUs = view.findViewById<ConstraintLayout>(R.id.layoutRateUs)
         layoutRateUs.setOnClickListener {
             showRatingDialog()
         }
     }
 
     private fun showRatingDialog() {
-        val dialog = RatingDialog(requireContext())
-        dialog.show()
+        RatingDialog.show(
+            requireContext(),
+            onRatingSubmitted = { rating ->
+                // User đã chọn rating và submit
+                handleRatingSubmitted()
+            },
+            onDismiss = {
+                // Dialog đóng nhưng không submit (ấn Exit hoặc touch outside)
+                // Không làm gì, giữ nguyên trạng thái
+            }
+        )
+    }
+
+    private fun handleRatingSubmitted() {
+        // Đánh dấu đã rating
+        isRated = true
+        saveRatingStatus(true)
+
+        // Ẩn layout Rate Us với animation
+        layoutRateUs.animate()
+            .alpha(0f)
+            .translationY(-layoutRateUs.height.toFloat())
+            .setDuration(300)
+            .withEndAction {
+                layoutRateUs.visibility = View.GONE
+            }
+            .start()
+    }
+
+    private fun saveRatingStatus(rated: Boolean) {
+        val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(KEY_RATED, rated).apply()
+    }
+
+    private fun loadRatingStatus() {
+        val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        isRated = prefs.getBoolean(KEY_RATED, false)
+
+        // Nếu đã rating rồi thì ẩn luôn
+        if (isRated) {
+            layoutRateUs.visibility = View.GONE
+        }
     }
 
     private fun setupLanguageClick(view: View) {
