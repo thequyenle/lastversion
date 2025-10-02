@@ -51,6 +51,9 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
 
+
+    implementation ("com.github.ome450901:SimpleRatingBar:1.5.1")
+
     // Room - Sử dụng KSP thay vì kapt
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
