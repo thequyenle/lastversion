@@ -132,6 +132,7 @@ class SettingsFragment : Fragment() {
         val layoutLanguage = view.findViewById<ConstraintLayout>(R.id.layoutLanguage)
         layoutLanguage.setOnClickListener {
             val intent = Intent(requireContext(), LanguageActivity::class.java)
+            intent.putExtra("from_settings", true)  // ✅ QUAN TRỌNG: Đánh dấu là từ Settings
             startActivity(intent)
         }
     }

@@ -4,6 +4,12 @@
     <!-- Splash -->
     <string name="splash_welcome">Bienvenido a la aplicación</string>
 
+    <string name="exit">Salir</string>
+    <string name="rate">Calificar</string>
+    <string name="fun">😊</string>
+    <string name="let_us_know_your_experience">Cuéntanos tu experiencia</string>
+    <string name="do_you_like_the_app">¿Te gusta la aplicación?</string>
+
     <!-- Language -->
     <string name="select_language">Selecciona tu idioma</string>
     <string name="done">Hecho</string>

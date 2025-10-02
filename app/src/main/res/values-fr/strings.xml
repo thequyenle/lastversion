@@ -8,6 +8,12 @@
     <string name="select_language">Sélectionnez votre langue</string>
     <string name="done">Terminé</string>
 
+    <string name="exit">Sortir</string>
+    <string name="rate">Évaluer</string>
+    <string name="fun">😊</string>
+    <string name="let_us_know_your_experience">Faites-nous part de votre expérience</string>
+    <string name="do_you_like_the_app">Aimez-vous l\'application?</string>
+
     <!-- Tutorial -->
     <string name="next">Suivant</string>
     <string name="slide1">Bienvenue</string>

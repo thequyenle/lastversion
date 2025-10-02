@@ -25,6 +25,11 @@
     <string name="share">साझा करें</string>
     <string name="privacy">गोपनीयता</string>
 
+    <string name="exit">बाहर निकलें</string>
+    <string name="rate">रेट करें</string>
+    <string name="fun">😊</string>
+    <string name="let_us_know_your_experience">हमें अपना अनुभव बताएं</string>
+    <string name="do_you_like_the_app">क्या आपको ऐप पसंद है?</string>
     <!-- Main -->
     <string name="home_screen">होम स्क्रीन में आपका स्वागत है</string>
     <string name="hello_blank_fragment">हैलो खाली फ्रैगमेंट</string>
