@@ -49,6 +49,14 @@ class TimerService : Service() {
         @JvmStatic
         var isServiceRunning: Boolean = false
             private set
+
+        // Reset function
+        fun reset() {
+            isServiceRunning = false
+            currentRemainingSeconds = 0
+            currentTotalSeconds = 0
+            isCurrentlyPaused = false
+        }
     }
 
     // Timer state
@@ -83,29 +91,28 @@ class TimerService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    private fun initializeComponents() {
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "TimerService::WakeLock"
+        )
+        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    }
+
     private fun setupNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Timer",
-                NotificationManager.IMPORTANCE_LOW  // Đổi từ HIGH → LOW để không phát âm thanh
+                "Timer Service",
+                NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Timer countdown and controls"
-                enableLights(true)
-                lightColor = Color.parseColor("#76E0C1")
-                enableVibration(false)  // Tắt rung
-                setSound(null, null)  // Tắt âm thanh notification
-                setBypassDnd(true)
+                description = "Timer notifications"
+                setSound(null, null)
             }
             val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+            notificationManager?.createNotificationChannel(channel)
         }
-    }
-
-    private fun initializeComponents() {
-        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "TimerService::WakeLock")
-        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 
     private fun handleAction(intent: Intent?) {
@@ -121,7 +128,6 @@ class TimerService : Service() {
     }
 
     private fun startTimer(intent: Intent) {
-        // Reset everything first
         cleanupEverything()
 
         totalSeconds = intent.getIntExtra(EXTRA_SECONDS, 0)
@@ -137,18 +143,16 @@ class TimerService : Service() {
             return
         }
 
-        // Initialize state
         isRunning = true
         isPaused = false
         isCompleted = false
 
-        // Update static vars for Fragment
+        // Update static vars
         currentRemainingSeconds = remainingSeconds
         currentTotalSeconds = totalSeconds
         isCurrentlyPaused = false
         isServiceRunning = true
 
-        // Setup
         acquireWakeLock()
         scheduleBackupAlarm()
         startForeground(NOTIFICATION_ID, buildNotification())
@@ -201,10 +205,7 @@ class TimerService : Service() {
         cleanupEverything()
 
         // Reset static vars
-        currentRemainingSeconds = 0
-        currentTotalSeconds = 0
-        isCurrentlyPaused = false
-        isServiceRunning = false
+        reset()
 
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
@@ -243,32 +244,27 @@ class TimerService : Service() {
     }
 
     private fun scheduleBackupAlarm() {
-        cancelAllAlarms()
-
-        if (remainingSeconds <= 0) {
-            Log.w("TimerService", "Not scheduling alarm - no time remaining")
-            return
-        }
-
         try {
-            val intent = Intent(this, TimerBackupReceiver::class.java).apply {
-                putExtra("SOUND_URI", soundUri?.toString())
-                putExtra("SOUND_RES_ID", soundResId)
-            }
-
+            val triggerTime = SystemClock.elapsedRealtime() + (remainingSeconds * 1000L)
+            val intent = Intent(this, TimerBackupReceiver::class.java)
             val pendingIntent = PendingIntent.getBroadcast(
                 this, BACKUP_ALARM_ID, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
             )
 
-            val triggerTime = System.currentTimeMillis() + (remainingSeconds * 1000L)
-
-            alarmManager?.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                triggerTime,
-                pendingIntent
-            )
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager?.setExactAndAllowWhileIdle(
+                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    triggerTime,
+                    pendingIntent
+                )
+            } else {
+                alarmManager?.setExact(
+                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    triggerTime,
+                    pendingIntent
+                )
+            }
             Log.d("TimerService", "Backup alarm scheduled for $remainingSeconds seconds")
         } catch (e: Exception) {
             Log.e("TimerService", "Failed to schedule backup alarm", e)
@@ -301,12 +297,11 @@ class TimerService : Service() {
                         return
                     }
                     isPaused -> {
-                        // Don't decrement when paused, just check again later
-                        countdownHandler?.postDelayed(this, 100) // Check more frequently when paused
+                        countdownHandler?.postDelayed(this, 100)
                     }
                     remainingSeconds > 0 -> {
                         remainingSeconds--
-                        currentRemainingSeconds = remainingSeconds // Update static var
+                        currentRemainingSeconds = remainingSeconds
                         updateNotification()
                         countdownHandler?.postDelayed(this, 1000)
                     }
@@ -340,7 +335,6 @@ class TimerService : Service() {
 
         cancelAllAlarms()
 
-        // Show completion notification
         val completionNotification = buildCompletionNotification()
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, completionNotification)
@@ -385,19 +379,19 @@ class TimerService : Service() {
                 try {
                     setDataSource(applicationContext, soundUri!!)
                 } catch (e: Exception) {
-                    Log.w("TimerService", "Custom URI failed, using built-in")
-                    setBuiltInDataSource()
+                    Log.e("TimerService", "Failed to set custom sound URI", e)
+                    setDataSource(applicationContext,
+                        Uri.parse("android.resource://${packageName}/${R.raw.astro}"))
                 }
             }
-            else -> setBuiltInDataSource()
-        }
-    }
-
-    private fun MediaPlayer.setBuiltInDataSource() {
-        val afd = resources.openRawResourceFd(soundResId)
-        afd?.let {
-            setDataSource(it.fileDescriptor, it.startOffset, it.length)
-            it.close()
+            soundResId != -1 -> {
+                setDataSource(applicationContext,
+                    Uri.parse("android.resource://${packageName}/$soundResId"))
+            }
+            else -> {
+                setDataSource(applicationContext,
+                    Uri.parse("android.resource://${packageName}/${R.raw.astro}"))
+            }
         }
     }
 
@@ -406,24 +400,22 @@ class TimerService : Service() {
             mediaPlayer = MediaPlayer.create(this, R.raw.astro)?.apply {
                 isLooping = true
                 start()
-                Log.d("TimerService", "Fallback sound started")
             }
         } catch (e: Exception) {
-            Log.e("TimerService", "Fallback sound also failed", e)
+            Log.e("TimerService", "Failed to play fallback sound", e)
         }
     }
 
     private fun stopSound() {
         try {
-            mediaPlayer?.let { player ->
-                if (player.isPlaying) {
-                    player.stop()
-                }
-                player.release()
-                mediaPlayer = null
+            mediaPlayer?.apply {
+                if (isPlaying) stop()
+                release()
             }
+            mediaPlayer = null
+            Log.d("TimerService", "Sound stopped")
         } catch (e: Exception) {
-            Log.w("TimerService", "Error stopping sound", e)
+            Log.e("TimerService", "Failed to stop sound", e)
         }
     }
 
@@ -447,15 +439,15 @@ class TimerService : Service() {
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_timer_enable)
-            .setContentTitle(if (isPaused) "Timer Paused" else "Timer Running")
-            .setContentText("Time remaining: ${formatTime(remainingSeconds)}")
+            .setContentTitle("Timer Running")
+            .setContentText("${formatTime(remainingSeconds)} remaining")
             .setContentIntent(contentIntent)
             .setColor(Color.parseColor("#76E0C1"))
             .setOngoing(true)
-            .setSilent(true)  // Quan trọng: Tắt âm thanh khi update
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)  // Dùng DEFAULT thay vì LOW để hiện buttons
+            .setSilent(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)  // Hiện đầy đủ trên lock screen
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .addAction(R.drawable.ic_stopwatch_enable, pauseResumeText, pauseResumeIntent)
             .addAction(R.drawable.ic_stopwatch_enable, "Stop", stopIntent)
             .build()
@@ -515,18 +507,12 @@ class TimerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         cleanupEverything()
-
-        // Reset static vars
-        currentRemainingSeconds = 0
-        currentTotalSeconds = 0
-        isCurrentlyPaused = false
-        isServiceRunning = false
-
+        reset()
         Log.d("TimerService", "Service destroyed")
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        Log.d("TimerService", "Task removed - service continues with alarm backup")
+        Log.d("TimerService", "Task removed - service continuing")
     }
 }

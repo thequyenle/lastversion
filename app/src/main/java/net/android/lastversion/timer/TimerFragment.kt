@@ -21,8 +21,6 @@ import net.android.last.service.TimerService
 import net.android.lastversion.R
 import net.android.lastversion.utils.showSystemUI
 import android.widget.EditText
-import android.widget.ImageView
-
 
 class TimerFragment : Fragment() {
 
@@ -37,13 +35,12 @@ class TimerFragment : Fragment() {
     private lateinit var npHour: com.shawnlin.numberpicker.NumberPicker
     private lateinit var npMinute: com.shawnlin.numberpicker.NumberPicker
     private lateinit var npSecond: com.shawnlin.numberpicker.NumberPicker
+
     // Handler để sync với Service
     private var syncHandler: Handler? = null
     private var syncRunnable: Runnable? = null
 
-    private lateinit var switchKeepScreen: ImageView
     private var isKeepScreenOn = false
-
 
     private val availableSounds = listOf(
         "Astro" to R.raw.astro,
@@ -74,11 +71,10 @@ class TimerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
-        npHour = view.findViewById<com.shawnlin.numberpicker.NumberPicker>(R.id.npHour)
+        npHour = view.findViewById(R.id.npHour)
         npMinute = view.findViewById(R.id.npMinute)
         npSecond = view.findViewById(R.id.npSecond)
-//        removeNumberPickerDivider(npMinute)
-//        removeNumberPickerDivider(npSecond)
+
         // Check if timer is already running
         if (TimerService.isServiceRunning) {
             currentSeconds = TimerService.currentRemainingSeconds
@@ -86,27 +82,14 @@ class TimerFragment : Fragment() {
             isPaused = TimerService.isCurrentlyPaused
 
             if (currentSeconds > 0) {
-                // Timer still running
                 switchToRunningState()
                 startSyncTimer()
             } else {
-                // Timer completed (currentSeconds = 0)
                 switchToTimesUpState()
             }
         }
     }
 
-
-
-//    private fun removeNumberPickerDivider(numberPicker: NumberPicker) {
-//        try {
-//            val dividerField = NumberPicker::class.java.getDeclaredField("mSelectionDivider")
-//            dividerField.isAccessible = true
-//            dividerField.set(numberPicker, null)
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//    }
     private fun setupUI() {
         setupPickers()
         setupSoundPicker()
@@ -152,12 +135,10 @@ class TimerFragment : Fragment() {
 
     private fun updateKeepScreenUI() {
         if (isKeepScreenOn) {
-            switchKeepScreen.setImageResource(R.drawable.ic_switch_on)
-            // Giữ màn hình sáng
+            binding.switchKeepScreen.setImageResource(R.drawable.ic_switch_on)
             requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
-            switchKeepScreen.setImageResource(R.drawable.ic_switch_off)
-            // Tắt giữ màn hình sáng
+            binding.switchKeepScreen.setImageResource(R.drawable.ic_switch_off)
             requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
@@ -167,7 +148,6 @@ class TimerFragment : Fragment() {
         binding.btnRestart.setOnClickListener { goBackToPicker() }
         binding.btnStopTimesUp.setOnClickListener { goBackToPicker() }
 
-        // Pause/Resume button with debounce
         var lastClickTime = 0L
         val debounceDelay = 500L
         binding.btnStop.setOnClickListener {
@@ -188,28 +168,20 @@ class TimerFragment : Fragment() {
 
     private fun pauseTimer() {
         isPaused = true
-
-        // Send pause command to service
         val intent = Intent(requireContext(), TimerService::class.java).apply {
             action = TimerService.ACTION_PAUSE
         }
         requireContext().startService(intent)
-
         binding.btnStop.text = "Continue"
-        Log.d("TimerFragment", "Timer paused")
     }
 
     private fun resumeTimer() {
         isPaused = false
-
-        // Send resume command to service
         val intent = Intent(requireContext(), TimerService::class.java).apply {
             action = TimerService.ACTION_RESUME
         }
         requireContext().startService(intent)
-
         binding.btnStop.text = "Stop"
-        Log.d("TimerFragment", "Timer resumed")
     }
 
     private fun startTimer() {
@@ -223,10 +195,8 @@ class TimerFragment : Fragment() {
             return
         }
 
-        // Reset pause state
         isPaused = false
 
-        // Start service with timer configuration
         val intent = Intent(requireContext(), TimerService::class.java).apply {
             action = TimerService.ACTION_START
             putExtra(TimerService.EXTRA_SECONDS, totalSeconds)
@@ -235,48 +205,31 @@ class TimerFragment : Fragment() {
         }
         ContextCompat.startForegroundService(requireContext(), intent)
 
-        // Start syncing with service
         currentSeconds = totalSeconds
         switchToRunningState()
         startSyncTimer()
+    }
 
-        Log.d("TimerFragment", "Timer started: $totalSeconds seconds")
-    }
-    private fun setNumberPickerTextSize(numberPicker: NumberPicker, textSize: Float) {
-        for (i in 0 until numberPicker.childCount) {
-            val child = numberPicker.getChildAt(i)
-            if (child is EditText) {
-                child.textSize = textSize
-                child.setTextColor(Color.BLACK)
-            }
-        }
-    }
     private fun startSyncTimer() {
         stopSyncTimer()
 
         syncHandler = Handler(Looper.getMainLooper())
         syncRunnable = object : Runnable {
             override fun run() {
-                // Read from Service's static variables
                 if (TimerService.isServiceRunning) {
                     currentSeconds = TimerService.currentRemainingSeconds
                     isPaused = TimerService.isCurrentlyPaused
 
                     updateUI(currentSeconds, totalSeconds)
-
-                    // Update button text based on pause state
                     binding.btnStop.text = if (isPaused) "Continue" else "Stop"
 
                     if (currentSeconds == 0 && !isPaused) {
-                        // Timer completed
                         switchToTimesUpState()
                         stopSyncTimer()
                     } else {
-                        // Continue syncing
-                        syncHandler?.postDelayed(this, 100) // Check every 100ms for smooth UI
+                        syncHandler?.postDelayed(this, 100)
                     }
                 } else {
-                    // Service stopped
                     if (binding.layoutRunning.visibility == View.VISIBLE) {
                         switchToPickerState()
                     }
@@ -309,17 +262,16 @@ class TimerFragment : Fragment() {
     }
 
     private fun goBackToPicker() {
-        // Stop service
         val intent = Intent(requireContext(), TimerService::class.java).apply {
             action = TimerService.ACTION_STOP
         }
         requireContext().startService(intent)
 
-        // Stop syncing and reset state
+        // Reset service state
+        TimerService.reset()
+
         stopSyncTimer()
         isPaused = false
-
-        // Reset UI
         switchToPickerState()
         clearKeepScreen()
     }
@@ -328,8 +280,6 @@ class TimerFragment : Fragment() {
         binding.layoutPickers.visibility = View.GONE
         binding.layoutRunning.visibility = View.VISIBLE
         binding.layoutTimesUp.visibility = View.GONE
-
-        // Reset button text
         binding.btnStop.text = if (isPaused) "Continue" else "Stop"
     }
 
@@ -352,8 +302,6 @@ class TimerFragment : Fragment() {
         binding.tvTimesUpSubtitle.text = "%02dh %02dm %02ds".format(h, m, s)
 
         clearKeepScreen()
-
-        // Reset pause state
         isPaused = false
     }
 
@@ -379,7 +327,7 @@ class TimerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         activity?.showSystemUI(white = false)
-        // Check service state when fragment resumes
+
         if (TimerService.isServiceRunning && binding.layoutRunning.visibility != View.VISIBLE) {
             currentSeconds = TimerService.currentRemainingSeconds
             totalSeconds = TimerService.currentTotalSeconds
@@ -392,12 +340,10 @@ class TimerFragment : Fragment() {
                 switchToTimesUpState()
             }
         }
-
     }
 
     override fun onPause() {
         super.onPause()
-        // Stop syncing when app goes to background to save battery
         stopSyncTimer()
     }
 
