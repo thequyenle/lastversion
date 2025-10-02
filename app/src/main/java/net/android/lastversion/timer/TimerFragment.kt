@@ -21,6 +21,7 @@ import net.android.last.service.TimerService
 import net.android.lastversion.R
 import net.android.lastversion.utils.showSystemUI
 import android.widget.EditText
+import android.widget.ImageView
 
 
 class TimerFragment : Fragment() {
@@ -39,6 +40,10 @@ class TimerFragment : Fragment() {
     // Handler để sync với Service
     private var syncHandler: Handler? = null
     private var syncRunnable: Runnable? = null
+
+    private lateinit var switchKeepScreen: ImageView
+    private var isKeepScreenOn = false
+
 
     private val availableSounds = listOf(
         "Astro" to R.raw.astro,
@@ -139,12 +144,21 @@ class TimerFragment : Fragment() {
     }
 
     private fun setupKeepScreen() {
-        binding.switchKeepScreen.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            } else {
-                requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            }
+        binding.switchKeepScreen.setOnClickListener {
+            isKeepScreenOn = !isKeepScreenOn
+            updateKeepScreenUI()
+        }
+    }
+
+    private fun updateKeepScreenUI() {
+        if (isKeepScreenOn) {
+            switchKeepScreen.setImageResource(R.drawable.ic_switch_on)
+            // Giữ màn hình sáng
+            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            switchKeepScreen.setImageResource(R.drawable.ic_switch_off)
+            // Tắt giữ màn hình sáng
+            requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
@@ -345,7 +359,8 @@ class TimerFragment : Fragment() {
 
     private fun clearKeepScreen() {
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        binding.switchKeepScreen.isChecked = false
+        isKeepScreenOn = false
+        updateKeepScreenUI()
     }
 
     private fun getFileNameFromUri(uri: Uri): String {
