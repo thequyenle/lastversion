@@ -9,21 +9,42 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.constraintlayout.widget.ConstraintLayout
 import net.android.lastversion.LanguageActivity
 import net.android.lastversion.R
-import net.android.lastversion.ThemeActivity
+import net.android.lastversion.dialog.RatingDialog
 import net.android.lastversion.utils.showSystemUI
 
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
+
 class SettingsFragment : Fragment() {
-
-    private lateinit var seekBarVolume: SeekBar
+    private var param1: String? = null
+    private var param2: String? = null
     private lateinit var audioManager: AudioManager
+    private lateinit var volumeSeekBar: SeekBar
 
-    private val PREFS_NAME = "settings_preferences"
-    private val KEY_VOLUME = "alarm_volume"
+    companion object {
+        private const val PREFS_NAME = "AlarmSettings"
+        private const val KEY_VOLUME = "volume"
+
+        @JvmStatic
+        fun newInstance(param1: String, param2: String) =
+            SettingsFragment().apply {
+                arguments = Bundle().apply {
+                    putString("param1", param1)
+                    putString("param2", param2)
+                }
+            }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            param1 = it.getString(ARG_PARAM1)
+            param2 = it.getString(ARG_PARAM2)
+        }
+
         // Khởi tạo AudioManager
         audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
@@ -32,49 +53,50 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupVolumeControl(view)
+        setupLanguageClick(view)
+        setupRateUsClick(view)
+
         activity?.showSystemUI(white = false)
-
-        // Theme click handler (đã có)
-        view.findViewById<View>(R.id.layoutThemeAlarmContainer).setOnClickListener {
-            startActivity(Intent(requireContext(), ThemeActivity::class.java))
-        }
-
-        // ✅ THÊM: Language click handler
-        view.findViewById<View>(R.id.layoutLanguage).setOnClickListener {
-            val intent = Intent(requireContext(), LanguageActivity::class.java)
-            // Đánh dấu là đang mở từ Settings, không phải onboarding
-            intent.putExtra("from_settings", true)
-            startActivity(intent)
-        }
-
-        // Khởi tạo SeekBar Volume
-        setupVolumeSeekBar(view)
     }
 
-    /**
-     * Thiết lập SeekBar cho điều chỉnh âm lượng
-     */
-    private fun setupVolumeSeekBar(view: View) {
-        seekBarVolume = view.findViewById(R.id.seekBarVolume)
+    private fun setupRateUsClick(view: View) {
+        val layoutRateUs = view.findViewById<ConstraintLayout>(R.id.layoutRateUs)
+        layoutRateUs.setOnClickListener {
+            showRatingDialog()
+        }
+    }
 
-        // Lấy volume đã lưu hoặc dùng giá trị mặc định (50%)
+    private fun showRatingDialog() {
+        val dialog = RatingDialog(requireContext())
+        dialog.show()
+    }
+
+    private fun setupLanguageClick(view: View) {
+        val layoutLanguage = view.findViewById<ConstraintLayout>(R.id.layoutLanguage)
+        layoutLanguage.setOnClickListener {
+            val intent = Intent(requireContext(), LanguageActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun setupVolumeControl(view: View) {
+        volumeSeekBar = view.findViewById(R.id.seekBarVolume)
+
+        // Lấy giá trị volume đã lưu và set cho seekbar
         val savedVolume = getSavedVolume()
-        seekBarVolume.progress = savedVolume
-
-        // Thiết lập volume hiện tại cho hệ thống
+        volumeSeekBar.progress = savedVolume
         setSystemVolume(savedVolume)
 
-        // Lắng nghe thay đổi của SeekBar
-        seekBarVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        volumeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    // Cập nhật volume của hệ thống khi user kéo seekbar
                     setSystemVolume(progress)
                 }
             }
@@ -84,7 +106,6 @@ class SettingsFragment : Fragment() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                // Lưu giá trị khi user thả tay khỏi seekbar
                 seekBar?.let {
                     saveVolume(it.progress)
                 }
@@ -92,56 +113,24 @@ class SettingsFragment : Fragment() {
         })
     }
 
-    /**
-     * Thiết lập âm lượng cho hệ thống
-     * @param volume: giá trị từ 0-100
-     */
     private fun setSystemVolume(volume: Int) {
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
-        // Chuyển đổi từ 0-100 sang giá trị volume thực của hệ thống
         val scaledVolume = (volume * maxVolume) / 100
         audioManager.setStreamVolume(AudioManager.STREAM_ALARM, scaledVolume, 0)
     }
 
-    /**
-     * Lưu giá trị volume vào SharedPreferences
-     * @param volume: giá trị từ 0-100
-     */
     private fun saveVolume(volume: Int) {
         val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().putInt(KEY_VOLUME, volume).apply()
     }
 
-    /**
-     * Đọc giá trị volume đã lưu từ SharedPreferences
-     * @return giá trị volume từ 0-100, mặc định là 50
-     */
     private fun getSavedVolume(): Int {
         val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getInt(KEY_VOLUME, 50) // Mặc định là 50%
+        return prefs.getInt(KEY_VOLUME, 50)
     }
 
     override fun onResume() {
         super.onResume()
         activity?.showSystemUI(white = false)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
-         */
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SettingsFragment().apply {
-                arguments = Bundle().apply {
-                    putString("param1", param1)
-                    putString("param2", param2)
-                }
-            }
     }
 }
