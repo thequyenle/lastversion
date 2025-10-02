@@ -6,107 +6,143 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Window
-import android.widget.TextView
+import android.view.WindowManager
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import com.willy.ratingbar.ScaleRatingBar
 import net.android.lastversion.R
 
-class RatingDialog(context: Context) : Dialog(context) {
+class RatingDialog(
+    context: Context,
+    private val onRatingSubmitted: ((Int) -> Unit)? = null,
+    private val onDismiss: (() -> Unit)? = null
+) : Dialog(context) {
 
     private var selectedRating = 0
 
-    private lateinit var tvEmoji: TextView
-    private lateinit var tvTitle: TextView
-    private lateinit var tvSubtitle: TextView
-    private lateinit var btnRate: TextView
-    private lateinit var btnExit: TextView
-    private lateinit var simpleRatingBar: ScaleRatingBar
+    private lateinit var imvAvtRate: AppCompatImageView
+    private lateinit var tv1: AppCompatTextView
+    private lateinit var tv2: AppCompatTextView
+    private lateinit var btnVote: AppCompatButton
+    private lateinit var btnCancel: AppCompatTextView
+    private lateinit var ratingBar: ScaleRatingBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.dialog_rating)
 
-        // Làm trong suốt background
-        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        // Set dialog properties
+        window?.apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
+        }
 
         initViews()
-        setupInitialScreen()
-        setupClickListeners()
+        setupInitialState()
+        setupListeners()
     }
 
     private fun initViews() {
-        tvEmoji = findViewById(R.id.tvEmoji)
-        tvTitle = findViewById(R.id.tvTitle)
-        tvSubtitle = findViewById(R.id.tvSubtitle)
-        btnRate = findViewById(R.id.btnRate)
-        btnExit = findViewById(R.id.btnExit)
-        simpleRatingBar = findViewById(R.id.simpleRatingBar)
+        imvAvtRate = findViewById(R.id.imvAvtRate)
+        tv1 = findViewById(R.id.tv1)
+        tv2 = findViewById(R.id.tv2)
+        btnVote = findViewById(R.id.btnVote)
+        btnCancel = findViewById(R.id.btnCancel) // Giữ nguyên ID trong XML
+        ratingBar = findViewById(R.id.ratingBar) // Giữ nguyên ID trong XML
     }
 
-    private fun setupInitialScreen() {
-        tvEmoji.text = "😊"
-        tvTitle.text = "Do you like the app?"
-        tvSubtitle.text = "Let us know your experience"
-        btnRate.visibility = android.view.View.VISIBLE
+    private fun setupInitialState() {
+        // Set text mặc định
+        tv1.text = "Do you like the app?"
+        tv2.text = "Let us know your experience"
+
+        // Disable button vote ban đầu
+        btnVote.isEnabled = false
+        btnVote.alpha = 0.5f
     }
 
-    private fun setupClickListeners() {
-        // Listener cho rating bar - hỗ trợ cả click và swipe
-        simpleRatingBar.setOnRatingChangeListener { ratingBar, rating, fromUser ->
+    private fun setupListeners() {
+        // Rating bar change listener
+        ratingBar.setOnRatingChangeListener { _, rating, fromUser ->
             if (fromUser) {
                 selectedRating = rating.toInt()
-                // Hiển thị feedback ngay khi rating thay đổi
-                showFeedbackScreen(selectedRating, keepRateButton = true)
+                updateUIForRating(selectedRating)
             }
         }
 
-        // Click listener cho Rate button
-        btnRate.setOnClickListener {
+        // Vote button click
+        btnVote.setOnClickListener {
             if (selectedRating > 0) {
-                // Ẩn nút Rate khi user xác nhận
-                btnRate.visibility = android.view.View.GONE
-                // TODO: Gửi rating lên server hoặc lưu vào SharedPreferences
+                onRatingSubmitted?.invoke(selectedRating)
+                dismiss()
             }
         }
 
-        // Click listener cho Exit button
-        btnExit.setOnClickListener {
+        // Cancel button click
+        btnCancel.setOnClickListener {
             dismiss()
+        }
+
+        // Set dismiss listener
+        setOnDismissListener {
+            onDismiss?.invoke()
         }
     }
 
-    private fun showFeedbackScreen(rating: Int, keepRateButton: Boolean = false) {
+    private fun updateUIForRating(rating: Int) {
         when (rating) {
             1 -> {
-                tvEmoji.text = "😭"
-                tvTitle.text = "Oh, no!"
-                tvSubtitle.text = "Please give us some feedback"
+                imvAvtRate.setImageResource(R.drawable.ic_1star) // Nếu có
+                tv1.text = "Oh, no!"
+                tv2.text = "Please give us some feedback"
             }
             2 -> {
-                tvEmoji.text = "😥"
-                tvTitle.text = "Oh, no!"
-                tvSubtitle.text = "Please give us some feedback"
+                imvAvtRate.setImageResource(R.drawable.ic_2star) // Nếu có
+                tv1.text = "Oh, no!"
+                tv2.text = "Please give us some feedback"
             }
             3 -> {
-                tvEmoji.text = "☹️"
-                tvTitle.text = "Oh, no!"
-                tvSubtitle.text = "Please give us some feedback"
+                imvAvtRate.setImageResource(R.drawable.ic_3star) // Nếu có
+                tv1.text = "Could be better!"
+                tv2.text = "How can we improve?"
             }
             4 -> {
-                tvEmoji.text = "😌"
-                tvTitle.text = "We love you too!"
-                tvSubtitle.text = "Thanks for your feedback"
+                imvAvtRate.setImageResource(R.drawable.ic_4star) // Nếu có
+                tv1.text = "We love you too!"
+                tv2.text = "Thanks for your feedback"
             }
             5 -> {
-                tvEmoji.text = "😍"
-                tvTitle.text = "We love you too!"
-                tvSubtitle.text = "Thanks for your feedback"
+                imvAvtRate.setImageResource(R.drawable.ic_5star)
+                tv1.text = "We love you too!"
+                tv2.text = "Thanks for your feedback"
             }
         }
 
-        // Giữ nguyên nút Rate nếu keepRateButton = true
-        if (!keepRateButton) {
-            btnRate.visibility = android.view.View.GONE
+        // Enable button vote
+        btnVote.isEnabled = true
+        btnVote.alpha = 1f
+    }
+
+    companion object {
+        /**
+         * Hiển thị dialog rating
+         * @param context Context
+         * @param onRatingSubmitted Callback khi user submit rating (1-5)
+         * @param onDismiss Callback khi dialog bị đóng
+         */
+        fun show(
+            context: Context,
+            onRatingSubmitted: ((Int) -> Unit)? = null,
+            onDismiss: (() -> Unit)? = null
+        ): RatingDialog {
+            val dialog = RatingDialog(context, onRatingSubmitted, onDismiss)
+            dialog.show()
+            return dialog
         }
     }
 }
