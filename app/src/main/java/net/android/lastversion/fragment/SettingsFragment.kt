@@ -67,6 +67,8 @@ class SettingsFragment : Fragment() {
         setupVolumeControl(view)
         setupLanguageClick(view)
         setupRateUsClick(view)
+        setupShareClick(view)
+        setupPrivacyPolicyClick(view)
 
         // Load saved rating status
         loadRatingStatus()
@@ -132,6 +134,40 @@ class SettingsFragment : Fragment() {
             val intent = Intent(requireContext(), LanguageActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun setupShareClick(view: View) {
+        val layoutShare = view.findViewById<ConstraintLayout>(R.id.layoutShare)
+        layoutShare.setOnClickListener {
+            shareApp()
+        }
+    }
+
+    private fun shareApp() {
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "Check out this amazing Alarm Clock app: http://play.google.com/store/apps/details?id=${requireContext().packageName}"
+            )
+        }
+        startActivity(Intent.createChooser(shareIntent, "Share app via"))
+    }
+
+    private fun setupPrivacyPolicyClick(view: View) {
+        val layoutPrivacy = view.findViewById<ConstraintLayout>(R.id.layoutPrivacy)
+        layoutPrivacy.setOnClickListener {
+            openPrivacyPolicy()
+        }
+    }
+
+    private fun openPrivacyPolicy() {
+        val url = "https://sites.google.com/view/docx-reader-office-viewer/home"
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = android.net.Uri.parse(url)
+        }
+        startActivity(intent)
     }
 
     private fun setupVolumeControl(view: View) {
