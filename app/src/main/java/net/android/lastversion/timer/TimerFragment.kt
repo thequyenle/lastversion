@@ -1,7 +1,7 @@
 package net.android.lastversion.timer
 
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.*
 import android.provider.OpenableColumns
@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,8 +20,9 @@ import androidx.fragment.app.Fragment
 import net.android.lastversion.databinding.FragmentTimerBinding
 import net.android.last.service.TimerService
 import net.android.lastversion.R
+import net.android.lastversion.utils.ThemeManager
+import net.android.lastversion.utils.ThemeType
 import net.android.lastversion.utils.showSystemUI
-import android.widget.EditText
 
 class TimerFragment : Fragment() {
 
@@ -35,6 +37,7 @@ class TimerFragment : Fragment() {
     private lateinit var npHour: com.shawnlin.numberpicker.NumberPicker
     private lateinit var npMinute: com.shawnlin.numberpicker.NumberPicker
     private lateinit var npSecond: com.shawnlin.numberpicker.NumberPicker
+    private lateinit var imgTimerBackground: ImageView
 
     // Handler để sync với Service
     private var syncHandler: Handler? = null
@@ -70,6 +73,10 @@ class TimerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Khởi tạo background image
+        imgTimerBackground = binding.imgTimerBackground
+
         setupUI()
         npHour = view.findViewById(R.id.npHour)
         npMinute = view.findViewById(R.id.npMinute)
@@ -281,6 +288,9 @@ class TimerFragment : Fragment() {
         binding.layoutRunning.visibility = View.VISIBLE
         binding.layoutTimesUp.visibility = View.GONE
         binding.btnStop.text = if (isPaused) "Continue" else "Stop"
+
+        // Ẩn background theme
+        imgTimerBackground.visibility = View.GONE
     }
 
     private fun switchToPickerState() {
@@ -289,6 +299,9 @@ class TimerFragment : Fragment() {
         binding.layoutTimesUp.visibility = View.GONE
         binding.progressRing.setProgress(1f)
         binding.tvTimesUpSubtitle.text = "00h 00m 00s"
+
+        // Ẩn background theme
+        imgTimerBackground.visibility = View.GONE
     }
 
     private fun switchToTimesUpState() {
@@ -303,6 +316,33 @@ class TimerFragment : Fragment() {
 
         clearKeepScreen()
         isPaused = false
+
+        // Hiển thị background theme
+        imgTimerBackground.visibility = View.VISIBLE
+        setBackgroundTheme()
+    }
+
+    private fun setBackgroundTheme() {
+        val themeManager = ThemeManager(requireContext())
+        val theme = themeManager.getCurrentTheme()
+
+        theme?.let {
+            when (it.type) {
+                ThemeType.PRESET -> {
+                    imgTimerBackground.setImageResource(it.drawableRes)
+                }
+                ThemeType.CUSTOM -> {
+                    val file = themeManager.getCurrentThemeFile()
+                    file?.let { themeFile ->
+                        val bitmap = BitmapFactory.decodeFile(themeFile.absolutePath)
+                        imgTimerBackground.setImageBitmap(bitmap)
+                    }
+                }
+                ThemeType.ADD_NEW -> {
+                    // Do nothing
+                }
+            }
+        }
     }
 
     private fun clearKeepScreen() {
