@@ -6,22 +6,20 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Window
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import com.willy.ratingbar.ScaleRatingBar
 import net.android.lastversion.R
 
 class RatingDialog(context: Context) : Dialog(context) {
 
     private var selectedRating = 0
-    private val stars = mutableListOf<ImageView>()
 
     private lateinit var tvEmoji: TextView
     private lateinit var tvTitle: TextView
     private lateinit var tvSubtitle: TextView
     private lateinit var btnRate: TextView
     private lateinit var btnExit: TextView
+    private lateinit var simpleRatingBar: ScaleRatingBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,13 +40,7 @@ class RatingDialog(context: Context) : Dialog(context) {
         tvSubtitle = findViewById(R.id.tvSubtitle)
         btnRate = findViewById(R.id.btnRate)
         btnExit = findViewById(R.id.btnExit)
-
-        // Lấy các star views
-        stars.add(findViewById(R.id.star1))
-        stars.add(findViewById(R.id.star2))
-        stars.add(findViewById(R.id.star3))
-        stars.add(findViewById(R.id.star4))
-        stars.add(findViewById(R.id.star5))
+        simpleRatingBar = findViewById(R.id.simpleRatingBar)
     }
 
     private fun setupInitialScreen() {
@@ -59,17 +51,16 @@ class RatingDialog(context: Context) : Dialog(context) {
     }
 
     private fun setupClickListeners() {
-        // Click listeners cho stars - Hiển thị feedback ngay nhưng giữ nút Rate
-        stars.forEachIndexed { index, star ->
-            star.setOnClickListener {
-                selectedRating = index + 1
-                updateStars(selectedRating)
-                // Hiển thị feedback ngay khi click star
+        // Listener cho rating bar - hỗ trợ cả click và swipe
+        simpleRatingBar.setOnRatingChangeListener { ratingBar, rating, fromUser ->
+            if (fromUser) {
+                selectedRating = rating.toInt()
+                // Hiển thị feedback ngay khi rating thay đổi
                 showFeedbackScreen(selectedRating, keepRateButton = true)
             }
         }
 
-        // Click listener cho Rate button - Submit và ẩn nút Rate
+        // Click listener cho Rate button
         btnRate.setOnClickListener {
             if (selectedRating > 0) {
                 // Ẩn nút Rate khi user xác nhận
@@ -81,16 +72,6 @@ class RatingDialog(context: Context) : Dialog(context) {
         // Click listener cho Exit button
         btnExit.setOnClickListener {
             dismiss()
-        }
-    }
-
-    private fun updateStars(rating: Int) {
-        stars.forEachIndexed { index, star ->
-            if (index < rating) {
-                star.setImageResource(R.drawable.ic_star_filled)
-            } else {
-                star.setImageResource(R.drawable.ic_star_empty)
-            }
         }
     }
 
