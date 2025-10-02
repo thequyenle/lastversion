@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background trong suốt cho toàn bộ EditText -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+    <!-- Chỉ vẽ line dưới cùng màu xanh -->
+    <item
+        android:top="-2dp"
+        android:left="-2dp"
+        android:right="-2dp"
+        android:bottom="0dp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="2dp"
+                android:color="#7DD3C0" />
+        </shape>
+    </item>
+</layer-list>

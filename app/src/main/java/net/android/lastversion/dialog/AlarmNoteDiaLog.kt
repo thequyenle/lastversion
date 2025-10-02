@@ -1,0 +1,54 @@
+package net.android.lastversion.dialog
+
+import android.app.Dialog
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.Window
+import android.widget.EditText
+import android.widget.TextView
+import net.android.lastversion.R
+
+class AlarmNoteDialog(
+    context: Context,
+    private val currentNote: String = "",
+    private val onNoteSet: (String) -> Unit
+) : Dialog(context) {
+
+    private lateinit var etAlarmNote: EditText
+    private lateinit var btnCancel: TextView
+    private lateinit var btnOK: TextView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        setContentView(R.layout.dialog_alarm_note)
+
+        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        initViews()
+        setupClickListeners()
+    }
+
+    private fun initViews() {
+        etAlarmNote = findViewById(R.id.etAlarmNote)
+        btnCancel = findViewById(R.id.btnCancel)
+        btnOK = findViewById(R.id.btnOK)
+
+        etAlarmNote.setText(currentNote)
+        etAlarmNote.setSelection(currentNote.length)
+    }
+
+    private fun setupClickListeners() {
+        btnCancel.setOnClickListener {
+            dismiss()
+        }
+
+        btnOK.setOnClickListener {
+            val note = etAlarmNote.text.toString().trim()
+            onNoteSet(note)
+            dismiss()
+        }
+    }
+}

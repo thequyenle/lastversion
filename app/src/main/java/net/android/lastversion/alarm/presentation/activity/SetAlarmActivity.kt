@@ -20,8 +20,7 @@ import net.android.lastversion.alarm.domain.model.Alarm
 import net.android.lastversion.alarm.infrastructure.scheduler.AlarmSchedulerImpl
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
 import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
-
-
+import net.android.lastversion.dialog.AlarmNoteDialog
 
 
 class SetAlarmActivity : AppCompatActivity() {
@@ -469,22 +468,15 @@ class SetAlarmActivity : AppCompatActivity() {
     }
 
     private fun showAlarmNoteDialog() {
-        val editText = EditText(this).apply {
-            setText(alarmNote)
-            hint = "Enter alarm note"
-            setSingleLine()
-        }
-
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Alarm note")
-            .setView(editText)
-            .setPositiveButton("OK") { dialog, _ ->
-                alarmNote = editText.text.toString().trim()
+        val dialog = AlarmNoteDialog(
+            context = this,
+            currentNote = alarmNote,
+            onNoteSet = { note ->
+                alarmNote = note
                 updateAlarmNoteDisplay()
-                dialog.dismiss()
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        )
+        dialog.show()
     }
 
     private fun updateAlarmNoteDisplay() {
