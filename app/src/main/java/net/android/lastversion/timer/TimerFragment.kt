@@ -287,6 +287,7 @@ class TimerFragment : Fragment() {
         binding.layoutPickers.visibility = View.GONE
         binding.layoutRunning.visibility = View.VISIBLE
         binding.layoutTimesUp.visibility = View.GONE
+        binding.tvTitle.visibility = View.VISIBLE
         binding.btnStop.text = if (isPaused) "Continue" else "Stop"
 
         // Ẩn background theme
@@ -297,6 +298,7 @@ class TimerFragment : Fragment() {
         binding.layoutPickers.visibility = View.VISIBLE
         binding.layoutRunning.visibility = View.GONE
         binding.layoutTimesUp.visibility = View.GONE
+        binding.tvTitle.visibility = View.VISIBLE
         binding.progressRing.setProgress(1f)
         binding.tvTimesUpSubtitle.text = "00h 00m 00s"
 
@@ -308,7 +310,7 @@ class TimerFragment : Fragment() {
         binding.layoutPickers.visibility = View.GONE
         binding.layoutRunning.visibility = View.GONE
         binding.layoutTimesUp.visibility = View.VISIBLE
-
+        binding.tvTitle.visibility = View.GONE
         val h = totalSeconds / 3600
         val m = (totalSeconds % 3600) / 60
         val s = totalSeconds % 60
@@ -317,7 +319,7 @@ class TimerFragment : Fragment() {
         clearKeepScreen()
         isPaused = false
 
-        // Hiển thị background theme
+        // Hiển thị background theme FULL SCREEN
         imgTimerBackground.visibility = View.VISIBLE
         setBackgroundTheme()
     }

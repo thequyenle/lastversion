@@ -298,26 +298,38 @@
             <LinearLayout
                 android:id="@+id/layoutTimesUp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:layout_marginTop="60dp"
                 android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_alarm_enable"
+                    android:layout_marginBottom="24dp"
+                    />
+
 
                 <TextView
                     android:id="@+id/tvTimesUpTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/time_s_up"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
+                    android:textSize="40dp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp"/>
 
                 <TextView
                     android:id="@+id/tvTimesUpSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/_5_seconds"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="8dp"
+                    android:textSize="24dp"
+                    android:layout_marginBottom="56dp"
+                    />
 
                 <Button
                     android:id="@+id/btnStopTimesUp"
