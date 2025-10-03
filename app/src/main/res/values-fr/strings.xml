@@ -20,6 +20,13 @@
     <string name="slide2">Explorer les fonctionnalités</string>
     <string name="slide3">Commencer</string>
 
+    <!-- Tutorial slides -->
+    <string name="tutorial_slide1_title">Bienvenue dans</string>
+    <string name="tutorial_slide1_desc">Réveil facilite la configuration de vos alarmes en quelques secondes</string>
+    <string name="tutorial_slide2_title">Minuteur</string>
+    <string name="tutorial_slide2_desc">Compte à rebours vers vos moments parfaits</string>
+    <string name="tutorial_slide3_title">Chronomètre</string>
+    <string name="tutorial_slide3_desc">Marquez le temps de vos séries</string>
     <!-- Permission -->
     <string name="grant_permission">Accorder la permission pour continuer</string>
 

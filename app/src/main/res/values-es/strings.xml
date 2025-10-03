@@ -20,6 +20,13 @@
     <string name="slide2">Explorar características</string>
     <string name="slide3">Empezar</string>
 
+    <!-- Tutorial slides -->
+    <string name="tutorial_slide1_title">Bienvenido a</string>
+    <string name="tutorial_slide1_desc">Reloj despertador facilita configurar tus alarmas en segundos</string>
+    <string name="tutorial_slide2_title">Temporizador</string>
+    <string name="tutorial_slide2_desc">Cuenta regresiva hacia tus momentos perfectos</string>
+    <string name="tutorial_slide3_title">Cronómetro</string>
+    <string name="tutorial_slide3_desc">Marca el tiempo de tus series</string>
     <!-- Permission -->
     <string name="grant_permission">Conceder permiso para continuar</string>
 

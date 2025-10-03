@@ -304,6 +304,13 @@ class TimerFragment : Fragment() {
 
         // Ẩn background theme
         imgTimerBackground.visibility = View.GONE
+
+        showBottomNavigation()
+
+    }
+    private fun showBottomNavigation() {
+        val bottomNav = activity?.findViewById<View>(R.id.custom_bottom_navigation)
+        bottomNav?.visibility = View.VISIBLE
     }
 
     private fun switchToTimesUpState() {
@@ -322,6 +329,16 @@ class TimerFragment : Fragment() {
         // Hiển thị background theme FULL SCREEN
         imgTimerBackground.visibility = View.VISIBLE
         setBackgroundTheme()
+
+        hideBottomNavigation()
+
+    }
+
+
+    private fun hideBottomNavigation() {
+        // Lấy bottom navigation từ HomeActivity
+        val bottomNav = activity?.findViewById<View>(R.id.custom_bottom_navigation)
+        bottomNav?.visibility = View.GONE
     }
 
     private fun setBackgroundTheme() {

@@ -20,19 +20,19 @@ class TutorialActivity : AppCompatActivity() {
 
         val introPages = listOf(
             IntroPage(
-                R.drawable.ic_clock, // ảnh bạn đưa trong ảnh demo
-                "Welcome to",
-                "Alarm Clock makes it easy to set your alarms in seconds"
+                R.drawable.ic_clock,
+                getString(R.string.tutorial_slide1_title),
+                getString(R.string.tutorial_slide1_desc)
             ),
             IntroPage(
                 R.drawable.ic_time,
-                "Timer",
-                "Counting down to your perfect moments"
+                getString(R.string.tutorial_slide2_title),
+                getString(R.string.tutorial_slide2_desc)
             ),
             IntroPage(
                 R.drawable.ic_stopwatch,
-                "Stopwatch",
-                "Mark the time of your sets"
+                getString(R.string.tutorial_slide3_title),
+                getString(R.string.tutorial_slide3_desc)
             )
         )
 

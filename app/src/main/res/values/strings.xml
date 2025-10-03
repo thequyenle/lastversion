@@ -14,6 +14,13 @@
     <string name="slide2">Explore Features</string>
     <string name="slide3">Get Started</string>
 
+    <!-- Tutorial slides -->
+    <string name="tutorial_slide1_title">Welcome to</string>
+    <string name="tutorial_slide1_desc">Alarm Clock makes it easy to set your alarms in seconds</string>
+    <string name="tutorial_slide2_title">Timer</string>
+    <string name="tutorial_slide2_desc">Counting down to your perfect moments</string>
+    <string name="tutorial_slide3_title">Stopwatch</string>
+    <string name="tutorial_slide3_desc">Mark the time of your sets</string>
     <!-- Permission -->
     <string name="grant_permission">Grant permission to continue</string>
 

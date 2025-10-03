@@ -30,6 +30,13 @@
     <string name="fun">😊</string>
     <string name="let_us_know_your_experience">हमें अपना अनुभव बताएं</string>
     <string name="do_you_like_the_app">क्या आपको ऐप पसंद है?</string>
+    <!-- Tutorial slides -->
+    <string name="tutorial_slide1_title">में आपका स्वागत है</string>
+    <string name="tutorial_slide1_desc">अलार्म घड़ी आपके अलार्म को सेकंडों में सेट करना आसान बनाती है</string>
+    <string name="tutorial_slide2_title">टाइमर</string>
+    <string name="tutorial_slide2_desc">अपने परफेक्ट पलों की उलटी गिनती</string>
+    <string name="tutorial_slide3_title">स्टॉपवॉच</string>
+    <string name="tutorial_slide3_desc">अपने सेट्स का समय चिह्नित करें</string>
     <!-- Main -->
     <string name="home_screen">होम स्क्रीन में आपका स्वागत है</string>
     <string name="hello_blank_fragment">हैलो खाली फ्रैगमेंट</string>

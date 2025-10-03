@@ -23,6 +23,13 @@
     <!-- Permission -->
     <string name="grant_permission">Conceder permissão para continuar</string>
 
+    <!-- Tutorial slides -->
+    <string name="tutorial_slide1_title">Bem-vindo ao</string>
+    <string name="tutorial_slide1_desc">Despertador facilita configurar seus alarmes em segundos</string>
+    <string name="tutorial_slide2_title">Cronômetro</string>
+    <string name="tutorial_slide2_desc">Contagem regressiva para seus momentos perfeitos</string>
+    <string name="tutorial_slide3_title">Cronômetro</string>
+    <string name="tutorial_slide3_desc">Marque o tempo de suas séries</string>
     <!-- Settings Screen -->
     <string name="settings_title">Configurações</string>
     <string name="volume">Volume</string>
