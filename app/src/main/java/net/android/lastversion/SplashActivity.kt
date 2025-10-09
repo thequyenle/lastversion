@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.KeyEvent
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +37,18 @@ class SplashActivity : AppCompatActivity() {
         }, 4000)
     }
 
+    override fun onBackPressed() {
+        // Không làm gì cả - ngăn thoát ứng dụng
+     super.onBackPressed() // Bỏ comment dòng này
+    }
+
+    // Hoặc dùng cách này cho Android 13+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true // Chặn sự kiện back
+        }
+        return super.onKeyDown(keyCode, event)
+    }
     override fun onResume() {
         super.onResume()
         showSystemUI(white =false)

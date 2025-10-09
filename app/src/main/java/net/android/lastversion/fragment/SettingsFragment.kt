@@ -12,6 +12,7 @@ import android.widget.SeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import net.android.lastversion.LanguageActivity
 import net.android.lastversion.R
+import net.android.lastversion.ThemeActivity
 import net.android.lastversion.dialog.RatingDialog
 import net.android.lastversion.utils.showSystemUI
 
@@ -69,7 +70,9 @@ class SettingsFragment : Fragment() {
         setupRateUsClick(view)
         setupShareClick(view)
         setupPrivacyPolicyClick(view)
-
+        view.findViewById<View>(R.id.layoutThemeAlarmContainer).setOnClickListener {
+            startActivity(Intent(requireContext(), ThemeActivity::class.java))
+        }
         // Load saved rating status
         loadRatingStatus()
 

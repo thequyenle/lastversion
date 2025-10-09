@@ -63,10 +63,9 @@
 
         <ImageView
             android:id="@+id/btnMenu"
-            android:layout_width="3dp"
-            android:layout_height="13dp"
+            android:layout_width="17dp"
+            android:layout_height="15dp"
             android:layout_gravity="right"
-            android:scaleType="fitXY"
             android:src="@drawable/ic_3cham" />
 
         <ImageView
