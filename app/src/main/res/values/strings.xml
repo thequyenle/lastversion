@@ -1,181 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">lastversion</string>
 
-    <!-- Splash -->
+    <!-- ==================== SPLASH ==================== -->
     <string name="splash_welcome">Welcome to the App</string>
+    <string name="welcome_to">Welcome to</string>
 
-    <!-- Language -->
+    <!-- ==================== LANGUAGE ==================== -->
     <string name="select_language">Select your language</string>
+    <string name="language">Language</string>
+    <string name="languageItem">Language</string>
     <string name="done">Done</string>
+    <string name="doneLanguage">Done</string>
+    <string name="done_button_descLanguage">done button desc</string>
 
-    <!-- Tutorial -->
+    <!-- ==================== TUTORIAL ==================== -->
     <string name="next">Next</string>
+    <string name="nexttutorial">Next</string>
     <string name="slide1">Welcome</string>
     <string name="slide2">Explore Features</string>
     <string name="slide3">Get Started</string>
-
-    <!-- Tutorial slides -->
     <string name="tutorial_slide1_title">Alarm Clock</string>
     <string name="tutorial_slide1_desc">Alarm Clock makes it easy to set your alarms in seconds</string>
     <string name="tutorial_slide2_title">Timer</string>
     <string name="tutorial_slide2_desc">Counting down to your perfect moments</string>
     <string name="tutorial_slide3_title">Stopwatch</string>
     <string name="tutorial_slide3_desc">Mark the time of your sets</string>
-    <!-- Permission -->
-    <string name="grant_permission">Grant permission to continue</string>
 
+    <!-- ==================== PERMISSIONS ==================== -->
+    <string name="permission">Permission</string>
+    <string name="grant_permission">Grant permission to continue</string>
+    <string name="permission_text">"Alarm Clock" requires permission to use\nthe Camera and Photos</string>
+    <string name="camera_permission">Camera Permission</string>
+    <string name="notification_permission">Notification Permission</string>
+    <string name="storage_permission">Storage Permission</string>
+    <string name="toggle_camera_permission">Toggle camera permission</string>
+    <string name="toggle_notification_permission">Toggle notification permission</string>
+    <string name="toggle_storage_permission">Toggle storage permission</string>
+    <string name="camera_permission_granted">Camera permission already granted</string>
+    <string name="storage_permission_granted">Storage permission already granted</string>
+    <string name="notification_permission_granted">Notification permission already granted</string>
+    <string name="permission_granted">Permission granted</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="permission_required_message">%s permission is required for the app to work properly. Please enable it in app settings.</string>
+    <string name="camera">Camera</string>
+    <string name="storage">Storage</string>
+    <string name="notification">Notification</string>
+    <string name="this_permission">This</string>
+    <string name="exact_alarm_permission_required">Exact Alarm Permission Required</string>
+    <string name="exact_alarm_permission_message">For alarms to work reliably, please enable \'Alarms &amp; reminders\' permission.</string>
+    <string name="permissions_required_message">Some permissions are required for alarms to work properly</string>
+
+    <!-- ==================== SETTINGS ==================== -->
+    <string name="settings">Settings</string>
     <string name="settings_title">Settings</string>
+    <string name="settingsHome">Settings</string>
     <string name="volume">Volume</string>
+    <string name="theme">Theme</string>
     <string name="theme_alarm">Theme Alarm</string>
+    <string name="save_theme">Save</string>
     <string name="rate_us">Rate Us</string>
+    <string name="rate">Rate</string>
     <string name="share">Share</string>
     <string name="privacy">Privacy</string>
-    <!-- Main -->
+    <string name="open_settings">Open Settings</string>
+    <string name="go_to_settings">Go to Settings</string>
+
+    <!-- ==================== MAIN/HOME ==================== -->
     <string name="home_screen">Welcome to Home Screen</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="pause">pause</string>
-    <string name="resume">resume</string>
-    <string name="stop">stop</string>
-    <string name="permission_text">\"Alarm Clock\" requires permission to use\nthe Camera and Photos</string>
-    <string name="wake_up">Wake up!!!</string>
-    <string name="stopq">Stop</string>
-    <string name="snooze">Snooze</string>
-    <string name="_06_00_am">06:00 AM</string>
-    <string name="alarm">Alarm</string>
-    <string name="clock">Clock</string>
-    <string name="stopwatch">Stopwatch</string>
-    <string name="settings">Settings</string>
     <string name="alarmHome">Alarm</string>
     <string name="clockHome">Clock</string>
     <string name="stopwatchHome">Stopwatch</string>
     <string name="timerHome">Timer</string>
-    <string name="settingsHome">Settings</string>
-    <string name="doneLanguage">Done</string>
-    <string name="done_button_descLanguage">done button desc</string>
-    <string name="language">Language</string>
-    <string name="permission">Permission</string>
-    <string name="toggle_camera_permission">Toggle camera permission</string>
-    <string name="go">Go</string>
-    <string name="toggle_notification_permission">Toggle notification permission</string>
-    <string name="toggle_storage_permission">Toggle storage permission</string>
-    <string name="camera_permission">Camera Permission</string>
-    <string name="notification_permission">Notification Permission</string>
-    <string name="storage_permission">Storage Permission</string>
-    <string name="set_alarm">Set alarm</string>
-    <string name="snoozeSetAlarm">Snooze</string>
-    <string name="preview">Preview</string>
-    <string name="vibration">Vibration</string>
-    <string name="sound">Sound</string>
-    <string name="play_sound_even_when_in_silent_mode">Play sound even when in silent mode</string>
-    <string name="alarm_note">Alarm note</string>
-    <string name="timer">Timer</string>
-    <string name="back">Back</string>
-    <string name="save">Save</string>
-    <string name="fri">Fri</string>
-    <string name="mon">Mon</string>
-    <string name="sat">Sat</string>
-    <string name="sun">Sun</string>
-    <string name="thu">Thu</string>
-    <string name="tue">Tue</string>
-    <string name="wed">Wed</string>
-    <string name="_5_minutes">5 minutes</string>
-    <string name="basic_bell">Basic bell</string>
-    <string name="vibration_alarm">Vibration</string>
-    <string name="active_days">Active days</string>
-    <string name="add_note">Add note</string>
-    <string name="hours">Hours</string>
-    <string name="minute">Minute</string>
-    <string name="this_action_can_contain_ads">This action can contain ads</string>
+
+    <!-- ==================== ALARM ==================== -->
+    <string name="alarm">Alarm</string>
     <string name="alarm_clock">Alarm Clock</string>
-    <string name="theme">Theme</string>
-    <string name="save_theme">Save</string>
-    <string name="nexttutorial">Next</string>
-    <string name="delete">Delete</string>
-    <string name="do_you_want_to_delete_nthis_alarm">Do you want to delete\nthis alarm?</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="no_alarms_yet">No alarms yet</string>
     <string name="alarm_fragment">Alarm</string>
+    <string name="alarmItem">Alarm</string>
+    <string name="set_alarm">Set alarm</string>
+    <string name="set_alarm_">set alarm</string>
+    <string name="set_alarm_title">Set Alarm</string>
+    <string name="edit_alarm_title">Edit Alarm</string>
+    <string name="alarm_label_default">Alarm</string>
+    <string name="no_alarms_yet">No alarms yet</string>
     <string name="test_alarm_30s">Test Alarm (30s)</string>
     <string name="test_boot_receiver">TEST BOOT RECEIVER</string>
-    <string name="hoursStopwatch">Hours</string>
-    <string name="minutes">Minutes</string>
-    <string name="seconds">Seconds</string>
-    <string name="continuee">Continue</string>
-    <string name="restart">Restart</string>
-    <string name="start">Start</string>
-    <string name="stopP">Stop</string>
+    <string name="test_alarm_feature">Test alarm feature</string>
+
+    <!-- Alarm Actions -->
+    <string name="wake_up">Wake up!!!</string>
+    <string name="wake_up_default">Wake Up!!!</string>
+    <string name="snooze">Snooze</string>
+    <string name="snoozeSetAlarm">Snooze</string>
+    <string name="snooze_minutes">Snooze %d min</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="stopq">Stop</string>
+    <string name="preview">Preview</string>
+
+    <!-- Alarm Settings -->
+    <string name="active_days">Active days</string>
+    <string name="alarm_note">Alarm note</string>
+    <string name="add_note">Add note</string>
+    <string name="add_note_placeholder">Add note</string>
+    <string name="vibration">Vibration</string>
+    <string name="vibration_alarm">Vibration</string>
+    <string name="sound">Sound</string>
+    <string name="basic_bell">Basic bell</string>
+    <string name="play_sound_even_when_in_silent_mode">Play sound even when in silent mode</string>
+    <string name="choose_alarm_ringtone">Choose alarm ringtone</string>
+
+    <!-- ==================== TIME FORMATS ==================== -->
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <string name="_06_00_am">06:00 AM</string>
+    <string name="_08_00_am">08:00 AM</string>
     <string name="_00">00</string>
-    <string name="stopwatch_">Stopwatch</string>
     <string name="h">h</string>
     <string name="m">m</string>
     <string name="s">s</string>
-    <string name="keep_my_screen_on">Keep my screen on</string>
-    <string name="soundTimer">Sound</string>
+    <string name="hours">Hours</string>
+    <string name="minute">Minute</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
+    <string name="hoursStopwatch">Hours</string>
     <string name="hoursTimer">Hours</string>
     <string name="minutesS">Minutes</string>
     <string name="secondsS">Seconds</string>
-    <string name="restartT">Restart</string>
-    <string name="start_timer">Start Timer</string>
-    <string name="stopTimer">Stop</string>
-    <string name="stop_">Stop</string>
-    <string name="astro">Astro</string>
+    <string name="_5_minutes">5 minutes</string>
     <string name="_5_seconds">5 seconds</string>
-    <string name="time_s_up">Time’s up!</string>
-    <string name="timer_">Timer</string>
-    <string name="mon_tue_wed_thu_fri">Mon, Tue, Wed, Thu, Fri</string>
-    <string name="alarmItem">Alarm</string>
-    <string name="_08_00_am">08:00 AM</string>
-    <string name="sunday">sunday</string>
-    <string name="languageItem">Language</string>
-    <string name="title">Title</string>
-    <string name="description_here">Description here</string>
-    <string name="saveTool">Save</string>
-    <string name="set_alarm_">set alarm</string>
-    <string name="exit">Exit</string>
-    <string name="rate">Rate</string>
-    <string name="fun">😊</string>
-    <string name="let_us_know_your_experience">Let us know your experience</string>
-    <string name="do_you_like_the_app">Do you like the app?</string>
-    <!-- Alarm Settings -->
-    <string name="set_alarm_title">Set Alarm</string>
-    <string name="edit_alarm_title">Edit Alarm</string>
-    <string name="wake_up_default">Wake Up!!!</string>
-
-    <!-- Options -->
-    <string name="off">Off</string>
-    <string name="default_option">Default</string>
-    <string name="short_option">Short</string>
-    <string name="long_option">Long</string>
-    <string name="double_vibration">Double</string>
-    <string name="gentle">Gentle</string>
-    <string name="loud">Loud</string>
-    <string name="progressive">Progressive</string>
-    <string name="custom">Custom</string>
-    <string name="custom_ellipsis">Custom…</string>
-
-    <!-- Time formats -->
-    <string name="minutes_format">%d minutes</string>
     <string name="five_minutes">5 minutes</string>
     <string name="ten_minutes">10 minutes</string>
     <string name="fifteen_minutes">15 minutes</string>
     <string name="twenty_minutes">20 minutes</string>
     <string name="thirty_minutes">30 minutes</string>
+    <string name="minutes_format">%d minutes</string>
 
-    <!-- Dialog titles -->
-    <string name="choose_snooze_time">Choose snooze time</string>
-    <string name="choose_vibration_type">Choose vibration type</string>
-    <string name="choose_sound_type">Choose sound type</string>
+    <!-- ==================== DAYS ==================== -->
+    <string name="mon">Mon</string>
+    <string name="tue">Tue</string>
+    <string name="wed">Wed</string>
+    <string name="thu">Thu</string>
+    <string name="fri">Fri</string>
+    <string name="sat">Sat</string>
+    <string name="sun">Sun</string>
+    <string name="sunday">sunday</string>
+    <string name="mon_tue_wed_thu_fri">Mon, Tue, Wed, Thu, Fri</string>
 
-    <!-- Toast messages -->
-    <string name="camera_permission_granted">Camera permission already granted</string>
-    <string name="storage_permission_granted">Storage permission already granted</string>
-    <string name="notification_permission_granted">Notification permission already granted</string>
-    <string name="permission_granted">Permission granted</string>
-    <string name="error_saving_alarm">Error saving alarm: %s</string>
-    <string name="time_to_wake_up">Time to wake up!</string>
-
+    <!-- Day names (short) -->
     <string name="sun_short">Sun</string>
     <string name="mon_short">Mon</string>
     <string name="tue_short">Tue</string>
@@ -190,31 +163,80 @@
     <string name="weekdays">Weekdays</string>
     <string name="weekends">Weekends</string>
 
-    <!-- Permission dialog -->
-    <string name="exact_alarm_permission_required">Exact Alarm Permission Required</string>
-    <string name="exact_alarm_permission_message">For alarms to work reliably, please enable \'Alarms &amp; reminders\' permission.</string>
-    <string name="open_settings">Open Settings</string>
-    <string name="skip">Skip</string>
+    <!-- ==================== ALARM OPTIONS ==================== -->
+    <string name="off">Off</string>
+    <string name="default_option">Default</string>
+    <string name="short_option">Short</string>
+    <string name="long_option">Long</string>
+    <string name="double_vibration">Double</string>
+    <string name="gentle">Gentle</string>
+    <string name="loud">Loud</string>
+    <string name="progressive">Progressive</string>
+    <string name="custom">Custom</string>
+    <string name="custom_ellipsis">Custom…</string>
 
-    <!-- Snackbar messages -->
+    <!-- ==================== DIALOGS ==================== -->
+    <string name="choose_snooze_time">Choose snooze time</string>
+    <string name="choose_vibration_type">Choose vibration type</string>
+    <string name="choose_sound_type">Choose sound type</string>
+    <string name="delete">Delete</string>
+    <string name="delete_menu">Delete</string>
+    <string name="do_you_want_to_delete_nthis_alarm">Do you want to delete\nthis alarm?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="title">Title</string>
+    <string name="description_here">Description here</string>
+
+    <!-- ==================== ACTIONS/BUTTONS ==================== -->
+    <string name="back">Back</string>
+    <string name="save">Save</string>
+    <string name="saveTool">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="skip">Skip</string>
+    <string name="go">Go</string>
+    <string name="pause">pause</string>
+    <string name="resume">resume</string>
+    <string name="stop">stop</string>
+    <string name="stopP">Stop</string>
+    <string name="stop_">Stop</string>
+    <string name="start">Start</string>
+    <string name="continuee">Continue</string>
+    <string name="restart">Restart</string>
+    <string name="restartT">Restart</string>
+    <string name="exit">Exit</string>
+    <string name="undo">UNDO</string>
+
+    <!-- ==================== CLOCK ==================== -->
+    <string name="clock">Clock</string>
+
+    <!-- ==================== STOPWATCH ==================== -->
+    <string name="stopwatch">Stopwatch</string>
+    <string name="stopwatch_">Stopwatch</string>
+
+    <!-- ==================== TIMER ==================== -->
+    <string name="timer">Timer</string>
+    <string name="timer_">Timer</string>
+    <string name="start_timer">Start Timer</string>
+    <string name="stopTimer">Stop</string>
+    <string name="soundTimer">Sound</string>
+    <string name="time_s_up">Time's up!</string>
+    <string name="keep_my_screen_on">Keep my screen on</string>
+    <string name="astro">Astro</string>
+
+    <!-- ==================== TOAST/SNACKBAR MESSAGES ==================== -->
+    <string name="time_to_wake_up">Time to wake up!</string>
+    <string name="error_saving_alarm">Error saving alarm: %s</string>
+    <string name="failed_to_save_alarm">Failed to save alarm</string>
+    <string name="alarm_deleted">Alarm deleted</string>
+    <string name="alarm_duplicated">Alarm duplicated</string>
     <string name="alarm_restored">Alarm restored</string>
     <string name="failed_to_restore">Failed to restore: %s</string>
     <string name="error_message">Error: %s</string>
-    <string name="permissions_required_message">Some permissions are required for alarms to work properly</string>
-    <string name="failed_to_save_alarm">Failed to save alarm</string>
 
-    <!-- Default labels -->
-    <string name="alarm_label_default">Alarm</string>
-    <string name="am">AM</string>
-    <string name="pm">PM</string>
-    <!-- Permission Dialog -->
-    <string name="permission_required">Permission Required</string>
-    <string name="permission_required_message">%s permission is required for the app to work properly. Please enable it in app settings.</string>
-    <string name="camera">Camera</string>
-    <string name="storage">Storage</string>
-    <string name="notification">Notification</string>
-    <string name="this_permission">This</string>
-    <string name="go_to_settings">Go to Settings</string>
-    <string name="cancel">Cancel</string>
-    <string name="welcome_to">Welcome to</string>
+    <!-- ==================== MISCELLANEOUS ==================== -->
+    <string name="this_action_can_contain_ads">This action can contain ads</string>
+    <string name="fun">😊</string>
+    <string name="let_us_know_your_experience">Let us know your experience</string>
+    <string name="do_you_like_the_app">Do you like the app?</string>
 </resources>

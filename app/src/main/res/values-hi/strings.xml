@@ -1,157 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">lastversion</string>
 
-    <!-- Splash -->
+    <!-- ==================== SPLASH ==================== -->
     <string name="splash_welcome">ऐप में आपका स्वागत है</string>
+    <string name="welcome_to">आपका स्वागत है</string>
 
-    <!-- Language -->
+    <!-- ==================== LANGUAGE ==================== -->
     <string name="select_language">अपनी भाषा चुनें</string>
+    <string name="language">भाषा</string>
+    <string name="languageItem">भाषा</string>
     <string name="done">हो गया</string>
+    <string name="doneLanguage">हो गया</string>
+    <string name="done_button_descLanguage">हो गया बटन</string>
 
-    <!-- Tutorial -->
+    <!-- ==================== TUTORIAL ==================== -->
     <string name="next">अगला</string>
+    <string name="nexttutorial">अगला</string>
     <string name="slide1">स्वागत है</string>
-    <string name="slide2">सुविधाओं का अन्वेषण करें</string>
+    <string name="slide2">सुविधाएं देखें</string>
     <string name="slide3">शुरू करें</string>
-
-    <!-- Permission -->
-    <string name="grant_permission">जारी रखने के लिए अनुमति दें</string>
-
-    <!-- Settings Screen -->
-    <string name="settings_title">सेटिंग्स</string>
-    <string name="volume">वॉल्यूम</string>
-    <string name="theme_alarm">थीम अलार्म</string>
-    <string name="rate_us">हमें रेट करें</string>
-    <string name="share">साझा करें</string>
-    <string name="privacy">गोपनीयता</string>
-
-    <string name="exit">बाहर निकलें</string>
-    <string name="rate">रेट करें</string>
-    <string name="fun">😊</string>
-    <string name="let_us_know_your_experience">हमें अपना अनुभव बताएं</string>
-    <string name="do_you_like_the_app">क्या आपको ऐप पसंद है?</string>
-    <!-- Tutorial slides -->
-    <string name="tutorial_slide1_title">में आपका स्वागत है</string>
-    <string name="tutorial_slide1_desc">अलार्म घड़ी आपके अलार्म को सेकंडों में सेट करना आसान बनाती है</string>
+    <string name="tutorial_slide1_title">अलार्म घड़ी</string>
+    <string name="tutorial_slide1_desc">अलार्म घड़ी से आप सेकंडों में अपने अलार्म सेट कर सकते हैं</string>
     <string name="tutorial_slide2_title">टाइमर</string>
     <string name="tutorial_slide2_desc">अपने परफेक्ट पलों की उलटी गिनती</string>
     <string name="tutorial_slide3_title">स्टॉपवॉच</string>
     <string name="tutorial_slide3_desc">अपने सेट्स का समय चिह्नित करें</string>
-    <!-- Main -->
-    <string name="home_screen">होम स्क्रीन में आपका स्वागत है</string>
-    <string name="hello_blank_fragment">हैलो खाली फ्रैगमेंट</string>
-    <string name="pause">रोकें</string>
-    <string name="resume">फिर से शुरू करें</string>
-    <string name="stop">बंद करें</string>
-    <string name="permission_text">\"अलार्म घड़ी\" को कैमरा और\nफोटो उपयोग करने की अनुमति चाहिए</string>
-    <string name="wake_up">जागो!!!</string>
-    <string name="stopq">बंद करें</string>
-    <string name="snooze">स्नूज़</string>
-    <string name="_06_00_am">06:00 AM</string>
-    <string name="alarm">अलार्म</string>
-    <string name="clock">घड़ी</string>
-    <string name="stopwatch">स्टॉपवॉच</string>
+
+    <!-- ==================== PERMISSIONS ==================== -->
+    <string name="permission">अनुमति</string>
+    <string name="grant_permission">जारी रखने के लिए अनुमति दें</string>
+    <string name="permission_text">"अलार्म घड़ी" को कैमरा और\nफ़ोटो का उपयोग करने की अनुमति चाहिए</string>
+    <string name="camera_permission">कैमरा अनुमति</string>
+    <string name="notification_permission">सूचना अनुमति</string>
+    <string name="storage_permission">स्टोरेज अनुमति</string>
+    <string name="toggle_camera_permission">कैमरा अनुमति टॉगल करें</string>
+    <string name="toggle_notification_permission">सूचना अनुमति टॉगल करें</string>
+    <string name="toggle_storage_permission">स्टोरेज अनुमति टॉगल करें</string>
+    <string name="camera_permission_granted">कैमरा अनुमति पहले से दी गई है</string>
+    <string name="storage_permission_granted">स्टोरेज अनुमति पहले से दी गई है</string>
+    <string name="notification_permission_granted">सूचना अनुमति पहले से दी गई है</string>
+    <string name="permission_granted">अनुमति दी गई</string>
+    <string name="permission_required">अनुमति आवश्यक है</string>
+    <string name="permission_required_message">%s अनुमति ऐप के सही तरीके से काम करने के लिए आवश्यक है। कृपया इसे ऐप सेटिंग्स में सक्षम करें।</string>
+    <string name="camera">कैमरा</string>
+    <string name="storage">स्टोरेज</string>
+    <string name="notification">सूचना</string>
+    <string name="this_permission">यह</string>
+    <string name="exact_alarm_permission_required">सटीक अलार्म अनुमति आवश्यक है</string>
+    <string name="exact_alarm_permission_message">अलार्म के विश्वसनीय रूप से काम करने के लिए, कृपया \'अलार्म और रिमाइंडर\' अनुमति सक्षम करें।</string>
+    <string name="permissions_required_message">अलार्म के सही तरीके से काम करने के लिए कुछ अनुमतियां आवश्यक हैं</string>
+
+    <!-- ==================== SETTINGS ==================== -->
     <string name="settings">सेटिंग्स</string>
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="settingsHome">सेटिंग्स</string>
+    <string name="volume">वॉल्यूम</string>
+    <string name="theme">थीम</string>
+    <string name="theme_alarm">अलार्म थीम</string>
+    <string name="save_theme">सहेजें</string>
+    <string name="rate_us">हमें रेट करें</string>
+    <string name="rate">रेट करें</string>
+    <string name="share">शेयर करें</string>
+    <string name="privacy">गोपनीयता</string>
+    <string name="open_settings">सेटिंग्स खोलें</string>
+    <string name="go_to_settings">सेटिंग्स में जाएं</string>
+
+    <!-- ==================== MAIN/HOME ==================== -->
+    <string name="home_screen">होम स्क्रीन में आपका स्वागत है</string>
+    <string name="hello_blank_fragment">हेलो खाली फ्रैग्मेंट</string>
     <string name="alarmHome">अलार्म</string>
     <string name="clockHome">घड़ी</string>
     <string name="stopwatchHome">स्टॉपवॉच</string>
     <string name="timerHome">टाइमर</string>
-    <string name="settingsHome">सेटिंग्स</string>
-    <string name="doneLanguage">हो गया</string>
-    <string name="done_button_descLanguage">हो गया बटन</string>
-    <string name="language">भाषा</string>
-    <string name="permission">अनुमति</string>
-    <string name="toggle_camera_permission">कैमरा अनुमति टॉगल करें</string>
-    <string name="go">जाओ</string>
-    <string name="toggle_notification_permission">सूचना अनुमति टॉगल करें</string>
-    <string name="toggle_storage_permission">स्टोरेज अनुमति टॉगल करें</string>
-    <string name="camera_permission">कैमरा अनुमति</string>
-    <string name="notification_permission">सूचना अनुमति</string>
-    <string name="storage_permission">स्टोरेज अनुमति</string>
-    <string name="set_alarm">अलार्म सेट करें</string>
-    <string name="snoozeSetAlarm">स्नूज़</string>
-    <string name="preview">पूर्वावलोकन</string>
-    <string name="vibration">कंपन</string>
-    <string name="sound">ध्वनि</string>
-    <string name="play_sound_even_when_in_silent_mode">साइलेंट मोड में भी ध्वनि बजाएं</string>
-    <string name="alarm_note">अलार्म नोट</string>
-    <string name="timer">टाइमर</string>
-    <string name="back">पीछे</string>
-    <string name="save">सहेजें</string>
-    <string name="fri">शुक्र</string>
-    <string name="mon">सोम</string>
-    <string name="sat">शनि</string>
-    <string name="sun">रवि</string>
-    <string name="thu">गुरु</string>
-    <string name="tue">मंगल</string>
-    <string name="wed">बुध</string>
-    <string name="_5_minutes">5 मिनट</string>
-    <string name="basic_bell">बेसिक बेल</string>
-    <string name="vibration_alarm">कंपन</string>
-    <string name="active_days">सक्रिय दिन</string>
-    <string name="add_note">नोट जोड़ें</string>
-    <string name="hours">घंटे</string>
-    <string name="minute">मिनट</string>
-    <string name="this_action_can_contain_ads">इस क्रिया में विज्ञापन हो सकते हैं</string>
+
+    <!-- ==================== ALARM ==================== -->
+    <string name="alarm">अलार्म</string>
     <string name="alarm_clock">अलार्म घड़ी</string>
-    <string name="theme">थीम</string>
-    <string name="save_theme">सहेजें</string>
-    <string name="nexttutorial">अगला</string>
-    <string name="delete">हटाएं</string>
-    <string name="do_you_want_to_delete_nthis_alarm">क्या आप इस अलार्म को\nहटाना चाहते हैं?</string>
-    <string name="yes">हां</string>
-    <string name="no">नहीं</string>
-    <string name="no_alarms_yet">अभी तक कोई अलार्म नहीं</string>
     <string name="alarm_fragment">अलार्म</string>
-    <string name="test_alarm_30s">टेस्ट अलार्म (30s)</string>
-    <string name="test_boot_receiver">बूट रिसीवर टेस्ट करें</string>
-    <string name="hoursStopwatch">घंटे</string>
-    <string name="minutes">मिनट</string>
-    <string name="seconds">सेकंड</string>
-    <string name="continuee">जारी रखें</string>
-    <string name="restart">पुनः आरंभ करें</string>
-    <string name="start">शुरू करें</string>
-    <string name="stopP">बंद करें</string>
-    <string name="_00">00</string>
-    <string name="stopwatch_">स्टॉपवॉच</string>
-    <string name="h">घं</string>
-    <!-- Alarm Settings -->
+    <string name="alarmItem">अलार्म</string>
+    <string name="set_alarm">अलार्म सेट करें</string>
+    <string name="set_alarm_">अलार्म सेट करें</string>
     <string name="set_alarm_title">अलार्म सेट करें</string>
     <string name="edit_alarm_title">अलार्म संपादित करें</string>
+    <string name="alarm_label_default">अलार्म</string>
+    <string name="no_alarms_yet">अभी तक कोई अलार्म नहीं</string>
+    <string name="test_alarm_30s">टेस्ट अलार्म (30s)</string>
+    <string name="test_boot_receiver">बूट रिसीवर टेस्ट करें</string>
+    <string name="test_alarm_feature">टेस्ट अलार्म फीचर</string>
+
+    <!-- Alarm Actions -->
+    <string name="wake_up">उठो!</string>
     <string name="wake_up_default">उठो!</string>
+    <string name="snooze">स्नूज़</string>
+    <string name="snoozeSetAlarm">स्नूज़</string>
+    <string name="snooze_minutes">%d मिनट स्नूज करें</string>
+    <string name="dismiss">खारिज करें</string>
+    <string name="stopq">रोकें</string>
+    <string name="preview">पूर्वावलोकन</string>
 
-    <!-- Options -->
-    <string name="off">बंद</string>
-    <string name="default_option">डिफ़ॉल्ट</string>
-    <string name="short_option">छोटा</string>
-    <string name="long_option">लंबा</string>
-    <string name="double_vibration">डबल वाइब्रेशन</string>
-    <string name="gentle">धीमा</string>
-    <string name="loud">तेज़</string>
-    <string name="progressive">क्रमिक</string>
-    <string name="custom">कस्टम</string>
-    <string name="custom_ellipsis">कस्टम…</string>
+    <!-- Alarm Settings -->
+    <string name="active_days">सक्रिय दिन</string>
+    <string name="alarm_note">अलार्म नोट</string>
+    <string name="add_note">नोट जोड़ें</string>
+    <string name="add_note_placeholder">नोट जोड़ें</string>
+    <string name="vibration">कंपन</string>
+    <string name="vibration_alarm">कंपन</string>
+    <string name="sound">ध्वनि</string>
+    <string name="basic_bell">बेसिक बेल</string>
+    <string name="play_sound_even_when_in_silent_mode">साइलेंट मोड में भी ध्वनि बजाएं</string>
+    <string name="choose_alarm_ringtone">अलार्म रिंगटोन चुनें</string>
 
-    <!-- Time formats -->
-    <string name="minutes_format">%d मिनट</string>
+    <!-- ==================== TIME FORMATS ==================== -->
+    <string name="am">पूर्वाह्न</string>
+    <string name="pm">अपराह्न</string>
+    <string name="_06_00_am">06:00 AM</string>
+    <string name="_08_00_am">08:00 AM</string>
+    <string name="_00">00</string>
+    <string name="h">घं</string>
+    <string name="m">मि</string>
+    <string name="s">से</string>
+    <string name="hours">घंटे</string>
+    <string name="minute">मिनट</string>
+    <string name="minutes">मिनट</string>
+    <string name="seconds">सेकंड</string>
+    <string name="hoursStopwatch">घंटे</string>
+    <string name="hoursTimer">घंटे</string>
+    <string name="minutesS">मिनट</string>
+    <string name="secondsS">सेकंड</string>
+    <string name="_5_minutes">5 मिनट</string>
+    <string name="_5_seconds">5 सेकंड</string>
     <string name="five_minutes">5 मिनट</string>
     <string name="ten_minutes">10 मिनट</string>
     <string name="fifteen_minutes">15 मिनट</string>
     <string name="twenty_minutes">20 मिनट</string>
     <string name="thirty_minutes">30 मिनट</string>
+    <string name="minutes_format">%d मिनट</string>
 
-    <!-- Dialog titles -->
-    <string name="choose_snooze_time">स्नूज़ समय चुनें</string>
-    <string name="choose_vibration_type">वाइब्रेशन प्रकार चुनें</string>
-    <string name="choose_sound_type">ध्वनि प्रकार चुनें</string>
-
-    <!-- Toast messages -->
-    <string name="camera_permission_granted">कैमरा अनुमति पहले से दी गई है</string>
-    <string name="storage_permission_granted">स्टोरेज अनुमति पहले से दी गई है</string>
-    <string name="notification_permission_granted">सूचना अनुमति पहले से दी गई है</string>
-    <string name="permission_granted">अनुमति दी गई</string>
-    <string name="error_saving_alarm">अलार्म सहेजने में त्रुटि: %s</string>
-    <string name="time_to_wake_up">उठने का समय हो गया!</string>
+    <!-- ==================== DAYS ==================== -->
+    <string name="mon">सोम</string>
+    <string name="tue">मंगल</string>
+    <string name="wed">बुध</string>
+    <string name="thu">गुरु</string>
+    <string name="fri">शुक्र</string>
+    <string name="sat">शनि</string>
+    <string name="sun">रवि</string>
+    <string name="sunday">रविवार</string>
+    <string name="mon_tue_wed_thu_fri">सोम, मंगल, बुध, गुरु, शुक्र</string>
 
     <!-- Day names (short) -->
     <string name="sun_short">रवि</string>
@@ -168,54 +163,80 @@
     <string name="weekdays">सप्ताह के दिन</string>
     <string name="weekends">सप्ताहांत</string>
 
-    <!-- Permission dialog -->
-    <string name="exact_alarm_permission_required">सटीक अलार्म अनुमति आवश्यक है</string>
-    <string name="exact_alarm_permission_message">अलार्म के विश्वसनीय रूप से काम करने के लिए, कृपया \'अलार्म और रिमाइंडर\' अनुमति सक्षम करें।</string>
-    <string name="open_settings">सेटिंग्स खोलें</string>
-    <string name="skip">छोड़ें</string>
+    <!-- ==================== ALARM OPTIONS ==================== -->
+    <string name="off">बंद</string>
+    <string name="default_option">डिफ़ॉल्ट</string>
+    <string name="short_option">छोटा</string>
+    <string name="long_option">लंबा</string>
+    <string name="double_vibration">डबल वाइब्रेशन</string>
+    <string name="gentle">धीमा</string>
+    <string name="loud">तेज़</string>
+    <string name="progressive">क्रमिक</string>
+    <string name="custom">कस्टम</string>
+    <string name="custom_ellipsis">कस्टम…</string>
 
-    <!-- Snackbar messages -->
+    <!-- ==================== DIALOGS ==================== -->
+    <string name="choose_snooze_time">स्नूज़ समय चुनें</string>
+    <string name="choose_vibration_type">वाइब्रेशन प्रकार चुनें</string>
+    <string name="choose_sound_type">ध्वनि प्रकार चुनें</string>
+    <string name="delete">हटाएं</string>
+    <string name="delete_menu">हटाएं</string>
+    <string name="do_you_want_to_delete_nthis_alarm">क्या आप इस अलार्म को\nहटाना चाहते हैं?</string>
+    <string name="yes">हां</string>
+    <string name="no">नहीं</string>
+    <string name="duplicate">डुप्लिकेट</string>
+    <string name="title">शीर्षक</string>
+    <string name="description_here">यहाँ विवरण</string>
+
+    <!-- ==================== ACTIONS/BUTTONS ==================== -->
+    <string name="back">पीछे</string>
+    <string name="save">सहेजें</string>
+    <string name="saveTool">सहेजें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="skip">छोड़ें</string>
+    <string name="go">जाएं</string>
+    <string name="pause">रोकें</string>
+    <string name="resume">जारी रखें</string>
+    <string name="stop">बंद करें</string>
+    <string name="stopP">बंद करें</string>
+    <string name="stop_">बंद करें</string>
+    <string name="start">शुरू करें</string>
+    <string name="continuee">जारी रखें</string>
+    <string name="restart">पुनः आरंभ करें</string>
+    <string name="restartT">पुनः आरंभ करें</string>
+    <string name="exit">बाहर निकलें</string>
+    <string name="undo">पूर्ववत करें</string>
+
+    <!-- ==================== CLOCK ==================== -->
+    <string name="clock">घड़ी</string>
+
+    <!-- ==================== STOPWATCH ==================== -->
+    <string name="stopwatch">स्टॉपवॉच</string>
+    <string name="stopwatch_">स्टॉपवॉच</string>
+
+    <!-- ==================== TIMER ==================== -->
+    <string name="timer">टाइमर</string>
+    <string name="timer_">टाइमर</string>
+    <string name="start_timer">टाइमर शुरू करें</string>
+    <string name="stopTimer">बंद करें</string>
+    <string name="soundTimer">ध्वनि</string>
+    <string name="time_s_up">समय समाप्त!</string>
+    <string name="keep_my_screen_on">मेरी स्क्रीन चालू रखें</string>
+    <string name="astro">एस्ट्रो</string>
+
+    <!-- ==================== TOAST/SNACKBAR MESSAGES ==================== -->
+    <string name="time_to_wake_up">उठने का समय हो गया!</string>
+    <string name="error_saving_alarm">अलार्म सहेजने में त्रुटि: %s</string>
+    <string name="failed_to_save_alarm">अलार्म सहेजने में विफल</string>
+    <string name="alarm_deleted">अलार्म हटा दिया गया</string>
+    <string name="alarm_duplicated">अलार्म डुप्लिकेट किया गया</string>
     <string name="alarm_restored">अलार्म पुनर्स्थापित</string>
     <string name="failed_to_restore">पुनर्स्थापित करने में विफल: %s</string>
     <string name="error_message">त्रुटि: %s</string>
-    <string name="permissions_required_message">अलार्म के सही तरीके से काम करने के लिए कुछ अनुमतियां आवश्यक हैं</string>
-    <string name="failed_to_save_alarm">अलार्म सहेजने में विफल</string>
 
-    <!-- Default labels -->
-    <string name="alarm_label_default">अलार्म</string>
-    <string name="am">पूर्वाह्न</string>
-    <string name="pm">अपराह्न</string>
-    <!-- Permission Dialog -->
-    <string name="permission_required">अनुमति आवश्यक है</string>
-    <string name="permission_required_message">%s अनुमति ऐप के सही तरीके से काम करने के लिए आवश्यक है। कृपया इसे ऐप सेटिंग्स में सक्षम करें।</string>
-    <string name="camera">कैमरा</string>
-    <string name="storage">स्टोरेज</string>
-    <string name="notification">सूचना</string>
-    <string name="this_permission">यह</string>
-    <string name="go_to_settings">सेटिंग्स में जाएं</string>
-    <string name="cancel">रद्द करें</string>
-    <string name="m">मि</string>
-    <string name="s">से</string>
-    <string name="keep_my_screen_on">मेरी स्क्रीन चालू रखें</string>
-    <string name="soundTimer">ध्वनि</string>
-    <string name="hoursTimer">घंटे</string>
-    <string name="minutesS">मिनट</string>
-    <string name="secondsS">सेकंड</string>
-    <string name="restartT">पुनः आरंभ करें</string>
-    <string name="start_timer">टाइमर शुरू करें</string>
-    <string name="stopTimer">बंद करें</string>
-    <string name="stop_">बंद करें</string>
-    <string name="astro">एस्ट्रो</string>
-    <string name="_5_seconds">5 सेकंड</string>
-    <string name="time_s_up">समय समाप्त!</string>
-    <string name="timer_">टाइमर</string>
-    <string name="mon_tue_wed_thu_fri">सोम, मंगल, बुध, गुरु, शुक्र</string>
-    <string name="alarmItem">अलार्म</string>
-    <string name="_08_00_am">08:00 AM</string>
-    <string name="sunday">रविवार</string>
-    <string name="languageItem">भाषा</string>
-    <string name="title">शीर्षक</string>
-    <string name="description_here">यहां विवरण</string>
-    <string name="saveTool">सहेजें</string>
-    <string name="set_alarm_">अलार्म सेट करें</string>
+    <!-- ==================== MISCELLANEOUS ==================== -->
+    <string name="this_action_can_contain_ads">इस क्रिया में विज्ञापन हो सकते हैं</string>
+    <string name="fun">😊</string>
+    <string name="let_us_know_your_experience">हमें अपना अनुभव बताएं</string>
+    <string name="do_you_like_the_app">क्या आपको ऐप पसंद है?</string>
 </resources>
