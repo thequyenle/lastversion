@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import net.android.lastversion.R
 import net.android.lastversion.timer.receiver.TimerBackupReceiver
+import net.android.lastversion.timer.presentation.activity.TimerRingingActivity
 
 class TimerService : Service() {
 
@@ -346,6 +347,16 @@ class TimerService : Service() {
 
         cancelAllAlarms()
 
+        // ✅ LAUNCH TimerRingingActivity
+        val timerIntent = Intent(this, TimerRingingActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("total_seconds", totalSeconds)
+            putExtra("sound_uri", soundUri?.toString() ?: "")
+            putExtra("sound_res_id", soundResId)
+        }
+        startActivity(timerIntent)
+
+        // Show notification as backup
         val completionNotification = buildCompletionNotification()
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, completionNotification)

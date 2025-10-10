@@ -48,7 +48,7 @@
         android:theme="@style/Theme.Lastversion"
         tools:targetApi="31">
         <activity
-            android:name=".dialog.DialogRate"
+            android:name=".timer.presentation.activity.TimerRingingActivity"
             android:exported="false" />
         <activity
             android:name=".ThemeActivity"
