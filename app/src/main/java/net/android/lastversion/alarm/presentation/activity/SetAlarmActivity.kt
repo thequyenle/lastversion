@@ -23,7 +23,10 @@ import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificati
 import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 import net.android.lastversion.dialog.AlarmNoteDialog
 import net.android.lastversion.utils.showWithHiddenNavigation
-
+import android.view.LayoutInflater
+import android.widget.RadioGroup
+import android.widget.RadioButton
+import androidx.appcompat.app.AlertDialog
 
 class SetAlarmActivity : BaseActivity() {
 
@@ -375,6 +378,13 @@ class SetAlarmActivity : BaseActivity() {
     }
 
     private fun showSnoozeDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sound_picker, null)
+        val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val radioGroup = dialogView.findViewById<RadioGroup>(R.id.rgSounds)
+
+        tvDialogTitle.text = getString(R.string.choose_snooze_time)
+
+        // Snooze options
         val options = arrayOf(
             getString(R.string.off),
             getString(R.string.five_minutes),
@@ -386,19 +396,57 @@ class SetAlarmActivity : BaseActivity() {
         val values = arrayOf(0, 5, 10, 15, 20, 30)
         val currentIndex = values.indexOf(snoozeMinutes).takeIf { it >= 0 } ?: 1
 
-         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(getString(R.string.choose_snooze_time))
-            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
-                snoozeMinutes = values[which]
-                updateDisplayTexts()
-                dialog.dismiss()
-            }
+        // Create the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
             .create()
-             .showWithHiddenNavigation()
 
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Track selected position
+        var tempSelectedPosition = currentIndex
+
+        // Add radio buttons dynamically
+        options.forEachIndexed { index, option ->
+            val radioButton = RadioButton(this).apply {
+                text = option
+                id = index
+                textSize = 16f
+                setTextColor(resources.getColor(R.color.white, null))
+                setPadding(16, 24, 16, 24)
+                isChecked = (index == currentIndex)
+            }
+
+            radioButton.setOnClickListener {
+                tempSelectedPosition = index
+            }
+
+            radioGroup.addView(radioButton)
+        }
+
+        // Cancel button
+        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // OK button
+        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
+            snoozeMinutes = values[tempSelectedPosition]
+            updateDisplayTexts()
+            dialog.dismiss()
+        }
+
+        dialog.showWithHiddenNavigation()
     }
 
     private fun showVibrationDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sound_picker, null)
+        val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val radioGroup = dialogView.findViewById<RadioGroup>(R.id.rgSounds)
+
+        tvDialogTitle.text = getString(R.string.choose_vibration_type)
+
+        // Vibration options
         val options = arrayOf(
             getString(R.string.off),
             getString(R.string.default_option),
@@ -409,19 +457,58 @@ class SetAlarmActivity : BaseActivity() {
         val values = arrayOf("off", "default", "short", "long", "double")
         val currentIndex = values.indexOf(vibrationPattern).takeIf { it >= 0 } ?: 1
 
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(getString(R.string.choose_vibration_type))
-            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
-                vibrationPattern = values[which]
-                updateDisplayTexts()
-                dialog.dismiss()
-            }
+        // Create the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
             .create()
-            .showWithHiddenNavigation()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Track selected position
+        var tempSelectedPosition = currentIndex
+
+        // Add radio buttons dynamically
+        options.forEachIndexed { index, option ->
+            val radioButton = RadioButton(this).apply {
+                text = option
+                id = index
+                textSize = 16f
+                setTextColor(resources.getColor(R.color.white, null))
+                setPadding(16, 24, 16, 24)
+                isChecked = (index == currentIndex)
+            }
+
+            radioButton.setOnClickListener {
+                tempSelectedPosition = index
+            }
+
+            radioGroup.addView(radioButton)
+        }
+
+        // Cancel button
+        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // OK button
+        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
+            vibrationPattern = values[tempSelectedPosition]
+            updateDisplayTexts()
+            dialog.dismiss()
+        }
+
+        dialog.showWithHiddenNavigation()
     }
 
 
     private fun showSoundDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sound_picker, null)
+        val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val radioGroup = dialogView.findViewById<RadioGroup>(R.id.rgSounds)
+
+        tvDialogTitle.text = getString(R.string.choose_sound_type)
+
+        // Sound options
         val options = arrayOf(
             getString(R.string.off),
             getString(R.string.default_option),
@@ -433,15 +520,55 @@ class SetAlarmActivity : BaseActivity() {
         val values = arrayOf("off", "default", "gentle", "loud", "progressive", "custom")
         val currentIndex = values.indexOf(soundType).takeIf { it >= 0 } ?: 1
 
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(getString(R.string.choose_sound_type))
-            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
-                soundType = values[which]
+        // Create the dialog
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Track selected position
+        var tempSelectedPosition = currentIndex
+
+        // Add radio buttons dynamically
+        options.forEachIndexed { index, option ->
+            val radioButton = RadioButton(this).apply {
+                text = option
+                id = index
+                textSize = 16f
+                setTextColor(resources.getColor(R.color.white, null))
+                setPadding(16, 24, 16, 24)
+                isChecked = (index == currentIndex)
+            }
+
+            radioButton.setOnClickListener {
+                tempSelectedPosition = index
+            }
+
+            radioGroup.addView(radioButton)
+        }
+
+        // Cancel button
+        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // OK button
+        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
+            soundType = values[tempSelectedPosition]
+
+            if (soundType == "custom") {
+                dialog.dismiss()
+                openSoundPicker()
+            } else {
                 updateDisplayTexts()
                 dialog.dismiss()
-            }.create()
-            .showWithHiddenNavigation()
+            }
+        }
+
+        dialog.showWithHiddenNavigation()
     }
+
 
     private fun openSoundPicker() {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
