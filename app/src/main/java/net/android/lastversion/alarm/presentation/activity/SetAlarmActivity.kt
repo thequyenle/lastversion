@@ -22,6 +22,7 @@ import net.android.lastversion.alarm.infrastructure.scheduler.AlarmSchedulerImpl
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
 import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 import net.android.lastversion.dialog.AlarmNoteDialog
+import net.android.lastversion.utils.showWithHiddenNavigation
 
 
 class SetAlarmActivity : BaseActivity() {
@@ -385,14 +386,16 @@ class SetAlarmActivity : BaseActivity() {
         val values = arrayOf(0, 5, 10, 15, 20, 30)
         val currentIndex = values.indexOf(snoozeMinutes).takeIf { it >= 0 } ?: 1
 
-        androidx.appcompat.app.AlertDialog.Builder(this)
+         androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle(getString(R.string.choose_snooze_time))
             .setSingleChoiceItems(options, currentIndex) { dialog, which ->
                 snoozeMinutes = values[which]
                 updateDisplayTexts()
                 dialog.dismiss()
             }
-            .show()
+            .create()
+             .showWithHiddenNavigation()
+
     }
 
     private fun showVibrationDialog() {
@@ -413,7 +416,8 @@ class SetAlarmActivity : BaseActivity() {
                 updateDisplayTexts()
                 dialog.dismiss()
             }
-            .show()
+            .create()
+            .showWithHiddenNavigation()
     }
 
 
@@ -435,8 +439,8 @@ class SetAlarmActivity : BaseActivity() {
                 soundType = values[which]
                 updateDisplayTexts()
                 dialog.dismiss()
-            }
-            .show()
+            }.create()
+            .showWithHiddenNavigation()
     }
 
     private fun openSoundPicker() {
@@ -489,7 +493,7 @@ class SetAlarmActivity : BaseActivity() {
                 updateAlarmNoteDisplay()
             }
         )
-        dialog.show()
+        dialog.showWithHiddenNavigation()
     }
 
     private fun updateAlarmNoteDisplay() {

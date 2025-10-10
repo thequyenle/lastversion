@@ -9,6 +9,7 @@ import android.view.Window
 import android.widget.EditText
 import android.widget.TextView
 import net.android.lastversion.R
+import net.android.lastversion.utils.hideNavigationBar
 
 class AlarmNoteDialog(
     context: Context,
@@ -26,6 +27,7 @@ class AlarmNoteDialog(
         setContentView(R.layout.dialog_alarm_note)
 
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        hideNavigationBar()
 
         initViews()
         setupClickListeners()

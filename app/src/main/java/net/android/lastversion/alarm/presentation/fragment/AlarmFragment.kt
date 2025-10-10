@@ -36,6 +36,7 @@ import net.android.lastversion.alarm.presentation.utils.SwipeToDeleteCallback
 import net.android.lastversion.alarm.presentation.utils.PermissionHelper
 import net.android.lastversion.alarm.presentation.viewmodel.AlarmUiState
 import net.android.lastversion.utils.showSystemUI
+import net.android.lastversion.utils.showWithHiddenNavigation
 
 
 class AlarmFragment : Fragment() {
@@ -235,7 +236,7 @@ class AlarmFragment : Fragment() {
         // Bo góc cho dialog
         dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_rounded)
 
-        dialog.show()
+        dialog.showWithHiddenNavigation()
     }
 
     // Thay thế hàm deleteAlarmWithUndo trong AlarmFragment.kt

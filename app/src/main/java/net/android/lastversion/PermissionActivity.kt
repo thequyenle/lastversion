@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import net.android.lastversion.utils.showWithHiddenNavigation
 
 class PermissionActivity : BaseActivity() {
 
@@ -155,7 +156,7 @@ class PermissionActivity : BaseActivity() {
             else -> getString(R.string.this_permission)
         }
 
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.permission_required)
             .setMessage(getString(R.string.permission_required_message, permissionName))
             .setPositiveButton(R.string.go_to_settings) { dialog, _ ->
@@ -166,7 +167,8 @@ class PermissionActivity : BaseActivity() {
                 dialog.dismiss()
             }
             .setCancelable(false)
-            .show()
+            .create()
+            dialog.showWithHiddenNavigation()
     }
 
     private fun openAppSettings() {

@@ -28,3 +28,4 @@ fun BooleanArray.toStringList(): String {
 fun String.toBooleanArray(): BooleanArray {
     return this.split(",").map { it.toBoolean() }.toBooleanArray()
 }
+

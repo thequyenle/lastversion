@@ -26,6 +26,7 @@ import net.android.lastversion.R
 import net.android.lastversion.utils.ThemeManager
 import net.android.lastversion.utils.ThemeType
 import net.android.lastversion.utils.showSystemUI
+import net.android.lastversion.utils.showWithHiddenNavigation
 
 class TimerFragment : Fragment() {
 
@@ -221,7 +222,8 @@ class TimerFragment : Fragment() {
             }
         }
 
-        dialog.show()
+        dialog.showWithHiddenNavigation()
+
     }
 
 
