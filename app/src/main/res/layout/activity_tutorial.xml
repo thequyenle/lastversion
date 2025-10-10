@@ -7,31 +7,28 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="440dp"
+        android:layout_height="480dp"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="57dp"
+        android:layout_marginTop="47dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+    <ImageView
         android:id="@+id/dotsIndicator"
+        android:layout_width="52dp"
+        android:layout_height="8dp"
+        android:src="@drawable/ic_dot1"
+        android:contentDescription="@string/app_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="wrap_content"
-        app:dotsColor="@color/blue"
-        app:dotsSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:dotsSpacing="6dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="138dp"/>
-
+        android:layout_marginBottom="88dp"/>
 
     <Button
         android:id="@+id/btnNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="123dp"
+        android:layout_marginBottom="73dp"
         android:layout_marginEnd="16dp"
         android:background="@android:color/transparent"
         android:text="@string/nexttutorial"

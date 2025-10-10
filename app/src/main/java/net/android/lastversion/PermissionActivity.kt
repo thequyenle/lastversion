@@ -4,9 +4,12 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.*
+import android.provider.Settings
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -135,7 +138,8 @@ class PermissionActivity : AppCompatActivity() {
         if (results.isNotEmpty() && results[0] == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+            // Permission denied - show dialog to go to settings
+            showPermissionDeniedDialog(perms[0])
         }
 
         // Update states and visibility
@@ -143,25 +147,38 @@ class PermissionActivity : AppCompatActivity() {
         updateButtonVisibility()
     }
 
+    private fun showPermissionDeniedDialog(permission: String) {
+        val permissionName = when (permission) {
+            Manifest.permission.CAMERA -> "Camera"
+            Manifest.permission.READ_EXTERNAL_STORAGE -> "Storage"
+            Manifest.permission.POST_NOTIFICATIONS -> "Notification"
+            else -> "This"
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Permission Required")
+            .setMessage("$permissionName permission is required for the app to work properly. Please enable it in app settings.")
+            .setPositiveButton("Go to Settings") { dialog, _ ->
+                dialog.dismiss()
+                openAppSettings()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri = Uri.fromParts("package", packageName, null)
+        intent.data = uri
+        startActivity(intent)
+    }
+
     private fun updateButtonVisibility() {
-        val cameraGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-        val storageGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-
-        // Check notification permission only if container is visible (Android 13+)
-        val notificationGranted = if (Build.VERSION.SDK_INT >= 33) {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true // No permission needed for notification on Android < 13
-        }
-
-        // Show button only if all required permissions are granted
-        val allPermissionsGranted = if (Build.VERSION.SDK_INT >= 33) {
-            cameraGranted && storageGranted && notificationGranted
-        } else {
-            cameraGranted && storageGranted
-        }
-
-        btnContinue.visibility = if (allPermissionsGranted) View.VISIBLE else View.GONE
+        // Always show the continue button regardless of permission status
+        btnContinue.visibility = View.VISIBLE
     }
 
     private fun continueToHome() {

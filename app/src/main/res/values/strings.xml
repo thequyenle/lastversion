@@ -15,7 +15,7 @@
     <string name="slide3">Get Started</string>
 
     <!-- Tutorial slides -->
-    <string name="tutorial_slide1_title">Welcome to</string>
+    <string name="tutorial_slide1_title">Alarm Clock</string>
     <string name="tutorial_slide1_desc">Alarm Clock makes it easy to set your alarms in seconds</string>
     <string name="tutorial_slide2_title">Timer</string>
     <string name="tutorial_slide2_desc">Counting down to your perfect moments</string>
@@ -138,4 +138,5 @@
     <string name="fun">😊</string>
     <string name="let_us_know_your_experience">Let us know your experience</string>
     <string name="do_you_like_the_app">Do you like the app?</string>
+    <string name="welcome_to">Welcome to</string>
 </resources>

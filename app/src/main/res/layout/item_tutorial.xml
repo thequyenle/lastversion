@@ -5,15 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:padding="24dp">
+    >
 
     <ImageView
         android:id="@+id/imgIntro"
         android:layout_width="328dp"
         android:layout_height="328dp"
+        android:scaleType="fitXY"
         android:src="@drawable/ic_clock"
         android:contentDescription="@string/app_name"
         android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="#252525"
+        android:layout_marginTop="24dp"
+        android:text="Welcome to"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tvTitle"
@@ -22,9 +33,7 @@
         android:textSize="22sp"
         android:textColor="@color/blue"
         android:textStyle="bold"
-        android:layout_marginTop="24dp"
-        android:text="@string/title"
-        />
+        android:text="@string/title" />
 
     <TextView
         android:id="@+id/tvContent"
@@ -32,8 +41,7 @@
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:textColor="@android:color/darker_gray"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="7dp"
         android:text="@string/description_here"
         android:textAlignment="center" />
 </LinearLayout>
-

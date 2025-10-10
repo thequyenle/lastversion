@@ -5,15 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 import net.android.lastversion.data.IntroPage
 
 class TutorialActivity : AppCompatActivity() {
+
+    private lateinit var dotsIndicator: ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tutorial)
@@ -36,10 +36,22 @@ class TutorialActivity : AppCompatActivity() {
             )
         )
 
-        val dotsIndicator = findViewById<WormDotsIndicator>(R.id.dotsIndicator)
+        // Initialize dot indicator
+        dotsIndicator = findViewById(R.id.dotsIndicator)
+
         val viewPager = findViewById<ViewPager2>(R.id.viewPager)
         viewPager.adapter = TutorialAdapter(introPages)
-        dotsIndicator.attachTo(viewPager)
+
+        // Update dot when page changes
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                updateDot(position)
+            }
+        })
+
+        // Set initial dot state
+        updateDot(0)
 
         findViewById<Button>(R.id.btnNext).setOnClickListener {
             if (viewPager.currentItem < introPages.size - 1) {
@@ -53,10 +65,19 @@ class TutorialActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateDot(position: Int) {
+        when (position) {
+            0 -> dotsIndicator.setImageResource(R.drawable.ic_dot1)
+            1 -> dotsIndicator.setImageResource(R.drawable.ic_dot2)
+            2 -> dotsIndicator.setImageResource(R.drawable.ic_dot3)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         showSystemUI(white = false)
     }
+
     fun Activity.showSystemUI(white: Boolean = false) {
         window.statusBarColor = android.graphics.Color.TRANSPARENT
 
