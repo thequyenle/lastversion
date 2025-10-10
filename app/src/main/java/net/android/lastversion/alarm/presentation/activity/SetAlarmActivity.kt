@@ -263,38 +263,38 @@ class SetAlarmActivity : BaseActivity() {
 
             updateDisplayTexts()
 
-            tvTitle.setText("Edit Alarm")  // ✅ THAY ĐỔI
+            tvTitle.setText(R.string.edit_alarm_title)  // ✅ THAY ĐỔI
         } ?: run {
-            tvTitle.setText("Set Alarm")   // ✅ THAY ĐỔI
+            tvTitle.setText(R.string.set_alarm_title)   // or R.string.edit_alarm_title
         }
     }
 
     private fun updateDisplayTexts() {
         // Snooze
         textSnoozeValue.text = when (snoozeMinutes) {
-            0 -> "Tắt"
-            else -> "$snoozeMinutes phút"
+            0 -> getString(R.string.off)
+            else -> getString(R.string.minutes_format, snoozeMinutes)
         }
 
         // Vibration
         textVibrationValue.text = when (vibrationPattern) {
-            "off" -> "Tắt"
-            "default" -> "Mặc định"
-            "short" -> "Ngắn"
-            "long" -> "Dài"
-            "double" -> "Rung đôi"
-            else -> "Mặc định"
+            "off" -> getString(R.string.off)
+            "default" -> getString(R.string.default_option)
+            "short" -> getString(R.string.short_option)
+            "long" -> getString(R.string.long_option)
+            "double" -> getString(R.string.double_vibration)
+            else -> getString(R.string.default_option)
         }
 
         // Sound
         textSoundValue.text = when (soundType) {
-            "off" -> "Tắt"
-            "default" -> "Mặc định"
-            "gentle" -> "Nhẹ nhàng"
-            "loud" -> "Lớn"
-            "progressive" -> "Tăng dần"
-            "custom" -> "Tùy chỉnh"
-            else -> "Mặc định"
+            "off" -> getString(R.string.off)
+            "default" -> getString(R.string.default_option)
+            "gentle" -> getString(R.string.gentle)
+            "loud" -> getString(R.string.loud)
+            "progressive" -> getString(R.string.progressive)
+            "custom" -> getString(R.string.custom)
+            else -> getString(R.string.default_option)
         }
     }
 
@@ -374,13 +374,19 @@ class SetAlarmActivity : BaseActivity() {
     }
 
     private fun showSnoozeDialog() {
-        val options = arrayOf("Tắt", "5 phút", "10 phút", "15 phút", "20 phút", "30 phút")
+        val options = arrayOf(
+            getString(R.string.off),
+            getString(R.string.five_minutes),
+            getString(R.string.ten_minutes),
+            getString(R.string.fifteen_minutes),
+            getString(R.string.twenty_minutes),
+            getString(R.string.thirty_minutes)
+        )
         val values = arrayOf(0, 5, 10, 15, 20, 30)
-
         val currentIndex = values.indexOf(snoozeMinutes).takeIf { it >= 0 } ?: 1
 
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Chọn thời gian báo lại")
+            .setTitle(getString(R.string.choose_snooze_time))
             .setSingleChoiceItems(options, currentIndex) { dialog, which ->
                 snoozeMinutes = values[which]
                 updateDisplayTexts()
@@ -390,13 +396,18 @@ class SetAlarmActivity : BaseActivity() {
     }
 
     private fun showVibrationDialog() {
-        val options = arrayOf("Tắt", "Mặc định", "Ngắn", "Dài", "Rung đôi")
+        val options = arrayOf(
+            getString(R.string.off),
+            getString(R.string.default_option),
+            getString(R.string.short_option),
+            getString(R.string.long_option),
+            getString(R.string.double_vibration)
+        )
         val values = arrayOf("off", "default", "short", "long", "double")
-
         val currentIndex = values.indexOf(vibrationPattern).takeIf { it >= 0 } ?: 1
 
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Chọn kiểu rung")
+            .setTitle(getString(R.string.choose_vibration_type))
             .setSingleChoiceItems(options, currentIndex) { dialog, which ->
                 vibrationPattern = values[which]
                 updateDisplayTexts()
@@ -405,24 +416,25 @@ class SetAlarmActivity : BaseActivity() {
             .show()
     }
 
-    private fun showSoundDialog() {
-        val options = arrayOf("Tắt", "Mặc định", "Nhẹ nhàng", "Lớn", "Tăng dần", "Tùy chỉnh...")
-        val values = arrayOf("off", "default", "gentle", "loud", "progressive", "custom")
 
+    private fun showSoundDialog() {
+        val options = arrayOf(
+            getString(R.string.off),
+            getString(R.string.default_option),
+            getString(R.string.gentle),
+            getString(R.string.loud),
+            getString(R.string.progressive),
+            getString(R.string.custom_ellipsis)
+        )
+        val values = arrayOf("off", "default", "gentle", "loud", "progressive", "custom")
         val currentIndex = values.indexOf(soundType).takeIf { it >= 0 } ?: 1
 
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Chọn âm thanh")
+            .setTitle(getString(R.string.choose_sound_type))
             .setSingleChoiceItems(options, currentIndex) { dialog, which ->
-                if (values[which] == "custom") {
-                    dialog.dismiss()
-                    openSoundPicker()
-                } else {
-                    soundType = values[which]
-                    currentSoundUri = ""
-                    updateDisplayTexts()
-                    dialog.dismiss()
-                }
+                soundType = values[which]
+                updateDisplayTexts()
+                dialog.dismiss()
             }
             .show()
     }

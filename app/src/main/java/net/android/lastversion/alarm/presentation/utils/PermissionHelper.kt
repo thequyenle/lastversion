@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
+import net.android.lastversion.R
 
 class PermissionHelper(private val fragment: Fragment) {
 
@@ -76,15 +77,15 @@ class PermissionHelper(private val fragment: Fragment) {
 
     private fun showExactAlarmDialog() {
         AlertDialog.Builder(fragment.requireContext())
-            .setTitle("Exact Alarm Permission Required")
-            .setMessage("For alarms to work reliably, please enable 'Alarms & reminders' permission.")
-            .setPositiveButton("Open Settings") { _, _ ->
+            .setTitle(R.string.exact_alarm_permission_required)
+            .setMessage(R.string.exact_alarm_permission_message)
+            .setPositiveButton(R.string.open_settings) { _, _ ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
                     exactAlarmLauncher?.launch(intent)
                 }
             }
-            .setNegativeButton("Skip") { _, _ ->
+            .setNegativeButton(R.string.skip) { _, _ ->
                 onPermissionResult?.invoke(false)
             }
             .show()

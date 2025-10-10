@@ -75,7 +75,7 @@ class PermissionActivity : BaseActivity() {
             requestPermission(Manifest.permission.CAMERA, REQ_CODE_CAMERA)
         } else {
             // Show message that permission is already granted
-            Toast.makeText(this, "Camera permission already granted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.camera_permission_granted), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -85,7 +85,7 @@ class PermissionActivity : BaseActivity() {
             requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, REQ_CODE_STORAGE)
         } else {
             // Show message that permission is already granted
-            Toast.makeText(this, "Storage permission already granted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.storage_permission_granted), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -95,7 +95,7 @@ class PermissionActivity : BaseActivity() {
             requestPermission(Manifest.permission.POST_NOTIFICATIONS, REQ_CODE_NOTIFICATION)
         } else if (Build.VERSION.SDK_INT >= 33) {
             // Show message that permission is already granted
-            Toast.makeText(this, "Notification permission already granted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.notification_permission_granted), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -136,7 +136,7 @@ class PermissionActivity : BaseActivity() {
         super.onRequestPermissionsResult(req, perms, results)
 
         if (results.isNotEmpty() && results[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.permission_granted), Toast.LENGTH_SHORT).show()
         } else {
             // Permission denied - show dialog to go to settings
             showPermissionDeniedDialog(perms[0])
@@ -149,20 +149,20 @@ class PermissionActivity : BaseActivity() {
 
     private fun showPermissionDeniedDialog(permission: String) {
         val permissionName = when (permission) {
-            Manifest.permission.CAMERA -> "Camera"
-            Manifest.permission.READ_EXTERNAL_STORAGE -> "Storage"
-            Manifest.permission.POST_NOTIFICATIONS -> "Notification"
-            else -> "This"
+            Manifest.permission.CAMERA -> getString(R.string.camera)
+            Manifest.permission.READ_EXTERNAL_STORAGE -> getString(R.string.storage)
+            Manifest.permission.POST_NOTIFICATIONS -> getString(R.string.notification)
+            else -> getString(R.string.this_permission)
         }
 
         AlertDialog.Builder(this)
-            .setTitle("Permission Required")
-            .setMessage("$permissionName permission is required for the app to work properly. Please enable it in app settings.")
-            .setPositiveButton("Go to Settings") { dialog, _ ->
+            .setTitle(R.string.permission_required)
+            .setMessage(getString(R.string.permission_required_message, permissionName))
+            .setPositiveButton(R.string.go_to_settings) { dialog, _ ->
                 dialog.dismiss()
                 openAppSettings()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
                 dialog.dismiss()
             }
             .setCancelable(false)
