@@ -52,6 +52,9 @@ class TimerBackupReceiver : BroadcastReceiver() {
                 // Handle stop sound action from notification
                 stopBackupSound()
 
+                // Clear completion state
+                clearCompletionState(context)
+
                 // Cancel notification
                 val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.cancel(NOTIFICATION_ID)
@@ -64,6 +67,10 @@ class TimerBackupReceiver : BroadcastReceiver() {
 
                 val soundUri = intent?.getStringExtra("SOUND_URI")
                 val soundResId = intent?.getIntExtra("SOUND_RES_ID", R.raw.astro) ?: R.raw.astro
+                val totalSeconds = intent?.getIntExtra("TOTAL_SECONDS", 0) ?: 0
+
+                // Save completion state so the app shows Time's Up when reopened
+                saveCompletionState(context, totalSeconds)
 
                 createNotificationChannel(context)
                 showBackupNotification(context)
@@ -99,7 +106,9 @@ class TimerBackupReceiver : BroadcastReceiver() {
             // Intent to open app
             val openAppIntent = PendingIntent.getActivity(
                 context, 0,
-                context.packageManager.getLaunchIntentForPackage(context.packageName),
+                context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                },
                 PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
             )
 
@@ -115,8 +124,8 @@ class TimerBackupReceiver : BroadcastReceiver() {
             val notification = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_timer_enable)
                 .setContentTitle("Time's Up!")
-                .setContentText("Your timer finished. Tap to stop sound.")
-                .setContentIntent(stopSoundPendingIntent) // Tap notification = stop sound
+                .setContentText("Your timer has finished")
+                .setContentIntent(openAppIntent) // Tap notification = open app
                 .setColor(Color.parseColor("#76E0C1"))
                 .setOngoing(true) // Keep persistent until user stops it
                 .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -124,7 +133,6 @@ class TimerBackupReceiver : BroadcastReceiver() {
                 .setAutoCancel(false)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE or NotificationCompat.DEFAULT_LIGHTS)
                 .addAction(R.drawable.ic_stopwatch_enable, "Stop Sound", stopSoundPendingIntent)
-                .addAction(R.drawable.ic_timer_enable, "Open App", openAppIntent)
                 .build()
 
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -261,5 +269,25 @@ class TimerBackupReceiver : BroadcastReceiver() {
         } else {
             0
         }
+    }
+
+    private fun saveCompletionState(context: Context, totalSeconds: Int) {
+        val prefs = context.getSharedPreferences("timer_prefs", Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.putBoolean("timer_completed", true)
+        editor.putInt("completed_total_seconds", totalSeconds)
+        editor.putLong("completion_time", System.currentTimeMillis())
+        val success = editor.commit()
+        Log.d("TimerBackupReceiver", "Completion state saved from backup: $success, totalSeconds=$totalSeconds")
+    }
+
+    private fun clearCompletionState(context: Context) {
+        val prefs = context.getSharedPreferences("timer_prefs", Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.remove("timer_completed")
+        editor.remove("completed_total_seconds")
+        editor.remove("completion_time")
+        val success = editor.commit()
+        Log.d("TimerBackupReceiver", "Completion state cleared from backup: $success")
     }
 }

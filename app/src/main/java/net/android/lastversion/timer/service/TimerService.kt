@@ -250,7 +250,11 @@ class TimerService : Service() {
     private fun scheduleBackupAlarm() {
         try {
             val triggerTime = SystemClock.elapsedRealtime() + (remainingSeconds * 1000L)
-            val intent = Intent(this, TimerBackupReceiver::class.java)
+            val intent = Intent(this, TimerBackupReceiver::class.java).apply {
+                putExtra("TOTAL_SECONDS", totalSeconds)
+                soundUri?.let { putExtra("SOUND_URI", it.toString()) }
+                putExtra("SOUND_RES_ID", soundResId)
+            }
             val pendingIntent = PendingIntent.getBroadcast(
                 this, BACKUP_ALARM_ID, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
@@ -462,7 +466,9 @@ class TimerService : Service() {
 
     private fun buildCompletionNotification(): Notification {
         val contentIntent = PendingIntent.getActivity(
-            this, 0, packageManager.getLaunchIntentForPackage(packageName),
+            this, 0, packageManager.getLaunchIntentForPackage(packageName)?.apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            },
             PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
         )
 
@@ -475,14 +481,14 @@ class TimerService : Service() {
             .setSmallIcon(R.drawable.ic_timer_enable)
             .setContentTitle("Time's Up!")
             .setContentText("Your ${formatTime(totalSeconds)} timer has finished")
-            .setContentIntent(stopSoundIntent)
+            .setContentIntent(contentIntent)
             .setColor(Color.parseColor("#76E0C1"))
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+            .setAutoCancel(false)
             .addAction(R.drawable.ic_stopwatch_enable, "Stop Sound", stopSoundIntent)
-            .addAction(R.drawable.ic_timer_enable, "Open App", contentIntent)
             .build()
     }
 
@@ -515,24 +521,22 @@ class TimerService : Service() {
 
     private fun saveCompletionState() {
         val prefs = getSharedPreferences("timer_prefs", Context.MODE_PRIVATE)
-        prefs.edit().apply {
-            putBoolean("timer_completed", true)
-            putInt("completed_total_seconds", totalSeconds)
-            putLong("completion_time", System.currentTimeMillis())
-            apply()
-        }
-        Log.d("TimerService", "Completion state saved")
+        val editor = prefs.edit()
+        editor.putBoolean("timer_completed", true)
+        editor.putInt("completed_total_seconds", totalSeconds)
+        editor.putLong("completion_time", System.currentTimeMillis())
+        val success = editor.commit()  // ✅ Use commit() for immediate save!
+        Log.d("TimerService", "Completion state saved: $success, totalSeconds=$totalSeconds")
     }
 
     private fun clearCompletionState() {
         val prefs = getSharedPreferences("timer_prefs", Context.MODE_PRIVATE)
-        prefs.edit().apply {
-            remove("timer_completed")
-            remove("completed_total_seconds")
-            remove("completion_time")
-            apply()
-        }
-        Log.d("TimerService", "Completion state cleared")
+        val editor = prefs.edit()
+        editor.remove("timer_completed")
+        editor.remove("completed_total_seconds")
+        editor.remove("completion_time")
+        val success = editor.commit()  // ✅ Use commit() for immediate clear!
+        Log.d("TimerService", "Completion state cleared: $success")
     }
 
     // ======================================================================

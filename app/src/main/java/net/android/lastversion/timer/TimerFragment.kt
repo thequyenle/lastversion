@@ -96,9 +96,16 @@ class TimerFragment : Fragment() {
         npSecond = view.findViewById(R.id.npSecond)
 
         restoreSoundPreferences()
-        checkCompletionState()
 
-        if (!binding.layoutTimesUp.isShown && TimerService.isServiceRunning) {
+        // Check completion state first, regardless of service state
+        val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val isCompleted = prefs.getBoolean(KEY_TIMER_COMPLETED, false)
+
+        if (isCompleted) {
+            totalSeconds = prefs.getInt(KEY_COMPLETED_TOTAL_SECONDS, 0)
+            currentSeconds = 0
+            switchToTimesUpState()
+        } else if (TimerService.isServiceRunning) {
             currentSeconds = TimerService.currentRemainingSeconds
             totalSeconds = TimerService.currentTotalSeconds
             isPaused = TimerService.isCurrentlyPaused
@@ -362,6 +369,11 @@ class TimerFragment : Fragment() {
         clearKeepScreen()
     }
 
+    override fun onStart() {
+        super.onStart()
+        Log.d("TimerFragment", "🟢 onStart() called")
+    }
+
     private fun switchToRunningState() {
         binding.layoutPickers.visibility = View.GONE
         binding.layoutRunning.visibility = View.VISIBLE
@@ -390,10 +402,14 @@ class TimerFragment : Fragment() {
     }
 
     private fun switchToTimesUpState() {
+        Log.d("TimerFragment", "🟢 switchToTimesUpState() CALLED")
+        Log.d("TimerFragment", "🟢 Current visibility - Pickers: ${binding.layoutPickers.visibility}, Running: ${binding.layoutRunning.visibility}, TimesUp: ${binding.layoutTimesUp.visibility}")
+
         binding.layoutPickers.visibility = View.GONE
         binding.layoutRunning.visibility = View.GONE
         binding.layoutTimesUp.visibility = View.VISIBLE
         binding.tvTitle.visibility = View.GONE
+
         val h = totalSeconds / 3600
         val m = (totalSeconds % 3600) / 60
         val s = totalSeconds % 60
@@ -405,35 +421,15 @@ class TimerFragment : Fragment() {
         imgTimerBackground.visibility = View.VISIBLE
         setBackgroundTheme()
         hideBottomNavigation()
+
+        Log.d("TimerFragment", "🟢 switchToTimesUpState() COMPLETED")
+        Log.d("TimerFragment", "🟢 New visibility - Pickers: ${binding.layoutPickers.visibility}, Running: ${binding.layoutRunning.visibility}, TimesUp: ${binding.layoutTimesUp.visibility}")
     }
 
     private fun hideBottomNavigation() {
         val bottomNav = activity?.findViewById<View>(R.id.custom_bottom_navigation)
         bottomNav?.visibility = View.GONE
     }
-
-    private fun setBackgroundTheme() {
-        val themeManager = ThemeManager(requireContext())
-        val theme = themeManager.getCurrentTheme()
-
-        theme?.let {
-            when (it.type) {
-                ThemeType.PRESET -> {
-                    imgTimerBackground.setImageResource(it.drawableRes)
-                }
-                ThemeType.CUSTOM -> {
-                    val file = themeManager.getCurrentThemeFile()
-                    file?.let { themeFile ->
-                        val bitmap = BitmapFactory.decodeFile(themeFile.absolutePath)
-                        imgTimerBackground.setImageBitmap(bitmap)
-                    }
-                }
-                ThemeType.ADD_NEW -> {
-                }
-            }
-        }
-    }
-
     private fun clearKeepScreen() {
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         isKeepScreenOn = false
@@ -483,44 +479,62 @@ class TimerFragment : Fragment() {
         }
     }
 
-    private fun checkCompletionState() {
-        val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
-        val isCompleted = prefs.getBoolean(KEY_TIMER_COMPLETED, false)
+    private fun setBackgroundTheme() {
+        val themeManager = ThemeManager(requireContext())
+        val theme = themeManager.getCurrentTheme()
 
-        if (isCompleted) {
-            totalSeconds = prefs.getInt(KEY_COMPLETED_TOTAL_SECONDS, 0)
-            currentSeconds = 0
-
-            Log.d("TimerFragment", "Restoring Time's Up state")
-            switchToTimesUpState()
+        theme?.let {
+            when (it.type) {
+                ThemeType.PRESET -> {
+                    imgTimerBackground.setImageResource(it.drawableRes)
+                }
+                ThemeType.CUSTOM -> {
+                    val file = themeManager.getCurrentThemeFile()
+                    file?.let { themeFile ->
+                        val bitmap = BitmapFactory.decodeFile(themeFile.absolutePath)
+                        imgTimerBackground.setImageBitmap(bitmap)
+                    }
+                }
+                ThemeType.ADD_NEW -> {
+                }
+            }
         }
     }
+
 
     private fun clearCompletionState() {
         val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
-        prefs.edit().apply {
-            remove(KEY_TIMER_COMPLETED)
-            remove(KEY_COMPLETED_TOTAL_SECONDS)
-            remove(KEY_COMPLETION_TIME)
-            apply()
-        }
-        Log.d("TimerFragment", "Completion state cleared")
+        val editor = prefs.edit()
+        editor.remove(KEY_TIMER_COMPLETED)
+        editor.remove(KEY_COMPLETED_TOTAL_SECONDS)
+        editor.remove(KEY_COMPLETION_TIME)
+        val success = editor.commit()  // ✅ Use commit()!
+        Log.d("TimerFragment", "Completion state cleared: $success")
     }
+
+// KEEP your existing onResume() but ADD logs:
 
     override fun onResume() {
         super.onResume()
         activity?.showSystemUI(white = false)
 
+        Log.d("TimerFragment", "🟢 onResume() called")
+
         val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
         val isCompleted = prefs.getBoolean(KEY_TIMER_COMPLETED, false)
 
-        if (isCompleted) {
+        Log.d("TimerFragment", "🟢 onResume - isCompleted: $isCompleted")
+
+        // Always check completion state first - it persists across app restarts
+        if (isCompleted && binding.layoutTimesUp.visibility != View.VISIBLE) {
             totalSeconds = prefs.getInt(KEY_COMPLETED_TOTAL_SECONDS, 0)
             currentSeconds = 0
+            Log.d("TimerFragment", "🟢 onResume - Switching to Time's Up")
             switchToTimesUpState()
             return
         }
 
+        // If not completed, sync with running service if exists
         if (TimerService.isServiceRunning && binding.layoutRunning.visibility != View.VISIBLE) {
             currentSeconds = TimerService.currentRemainingSeconds
             totalSeconds = TimerService.currentTotalSeconds
@@ -534,6 +548,7 @@ class TimerFragment : Fragment() {
             }
         }
     }
+
 
     override fun onPause() {
         super.onPause()
