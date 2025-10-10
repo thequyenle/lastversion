@@ -202,6 +202,10 @@ class TimerService : Service() {
 
     private fun stopTimer() {
         Log.d("TimerService", "Stopping timer...")
+
+        // Clear completion state when manually stopped
+        clearCompletionState()
+
         cleanupEverything()
 
         // Reset static vars
@@ -332,6 +336,9 @@ class TimerService : Service() {
         isRunning = false
         isServiceRunning = false
         currentRemainingSeconds = 0
+
+        // Save completion state
+        saveCompletionState()
 
         cancelAllAlarms()
 
@@ -503,6 +510,32 @@ class TimerService : Service() {
             0
         }
     }
+
+    // ==================== COMPLETION STATE PERSISTENCE ====================
+
+    private fun saveCompletionState() {
+        val prefs = getSharedPreferences("timer_prefs", Context.MODE_PRIVATE)
+        prefs.edit().apply {
+            putBoolean("timer_completed", true)
+            putInt("completed_total_seconds", totalSeconds)
+            putLong("completion_time", System.currentTimeMillis())
+            apply()
+        }
+        Log.d("TimerService", "Completion state saved")
+    }
+
+    private fun clearCompletionState() {
+        val prefs = getSharedPreferences("timer_prefs", Context.MODE_PRIVATE)
+        prefs.edit().apply {
+            remove("timer_completed")
+            remove("completed_total_seconds")
+            remove("completion_time")
+            apply()
+        }
+        Log.d("TimerService", "Completion state cleared")
+    }
+
+    // ======================================================================
 
     override fun onDestroy() {
         super.onDestroy()

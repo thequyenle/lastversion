@@ -312,16 +312,16 @@
             <LinearLayout
                 android:id="@+id/layoutTimesUp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="236dp"
                 android:visibility="gone">
 
                 <ImageView
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:src="@drawable/ic_alarm_enable"
+                    android:src="@drawable/ic_ringbel"
                     android:layout_marginBottom="24dp"
                     />
 

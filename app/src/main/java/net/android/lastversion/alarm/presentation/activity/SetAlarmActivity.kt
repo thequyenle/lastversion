@@ -80,6 +80,10 @@ class SetAlarmActivity : BaseActivity() {
     private var soundType = "default"
     private var currentSoundUri = ""
 
+
+
+    // Add these companion object constants at the top of SetAlarmActivity class
+
     private val soundPickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -113,10 +117,57 @@ class SetAlarmActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_set_alarm)
 
+        repository = AlarmRepositoryImpl(AlarmDatabase.getDatabase(this).alarmDao())
+        scheduler = AlarmSchedulerImpl(this)
+        notificationManager = AlarmNotificationManager(this)
+
         initComponents()
         initViews()
         setupViews()
         loadAlarmIfEdit()
+        // Check if we're restoring from saved state
+        if (savedInstanceState != null) {
+            restoreInstanceState(savedInstanceState)
+        } else {
+            // Only load defaults if we're not restoring state
+            loadAlarmIfEdit()
+        }
+    }
+    private fun restoreInstanceState(savedState: Bundle) {
+        // Restore alarm settings
+        snoozeMinutes = savedState.getInt(KEY_SNOOZE_MINUTES, 5)
+        vibrationPattern = savedState.getString(KEY_VIBRATION_PATTERN, "default") ?: "default"
+        soundType = savedState.getString(KEY_SOUND_TYPE, "default") ?: "default"
+        isSilentModeEnabled = savedState.getBoolean(KEY_IS_SILENT_MODE, false)
+        currentSoundUri = savedState.getString(KEY_SOUND_URI, "")
+        alarmNote = savedState.getString(KEY_ALARM_NOTE, "")
+
+        // Restore time picker values
+        hourPicker.value = savedState.getInt(KEY_HOUR, 6)
+        minutePicker.value = savedState.getInt(KEY_MINUTE, 0)
+        amPmSpinner.value = savedState.getInt(KEY_AM_PM, 0)
+
+        // Restore active days
+        savedState.getBooleanArray(KEY_ACTIVE_DAYS)?.let { activeDays ->
+            val layoutCheckboxes = listOf(cbMonday, cbTuesday, cbWednesday, cbThursday, cbFriday, cbSaturday, cbSunday)
+            layoutCheckboxes.forEachIndexed { index, textView ->
+                if (index < activeDays.size) {
+                    textView.isSelected = activeDays[index]
+                }
+            }
+        }
+
+        // If we're in edit mode, still load the alarm data
+        if (intent.hasExtra(EXTRA_ALARM)) {
+            isEditMode = true
+            currentAlarm = intent.getParcelableExtra(EXTRA_ALARM)
+            tvTitle.setText(R.string.edit_alarm_title)
+        }
+
+        // Update UI with restored values
+        updateAlarmNoteDisplay()
+        updateDisplayTexts()
+        updateSilentModeUI()
     }
 
     private fun initComponents() {
@@ -404,7 +455,7 @@ class SetAlarmActivity : BaseActivity() {
 
         var tempSelectedPosition = currentIndex
 
-        val tealColor = android.graphics.Color.parseColor("#76E0C1")
+        val tealColor = android.graphics.Color.parseColor("#84DCC6")
         val greyColor = android.graphics.Color.parseColor("#808080")
 
         val colorStateList = android.content.res.ColorStateList(
@@ -476,7 +527,7 @@ class SetAlarmActivity : BaseActivity() {
 
         var tempSelectedPosition = currentIndex
 
-        val tealColor = android.graphics.Color.parseColor("#76E0C1")
+        val tealColor = android.graphics.Color.parseColor("#84DCC6")
         val greyColor = android.graphics.Color.parseColor("#808080")
 
         val colorStateList = android.content.res.ColorStateList(
@@ -549,7 +600,7 @@ class SetAlarmActivity : BaseActivity() {
 
         var tempSelectedPosition = currentIndex
 
-        val tealColor = android.graphics.Color.parseColor("#76E0C1")
+        val tealColor = android.graphics.Color.parseColor("#84DCC6")
         val greyColor = android.graphics.Color.parseColor("#808080")
 
         val colorStateList = android.content.res.ColorStateList(
@@ -618,8 +669,44 @@ class SetAlarmActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_ALARM = "extra_alarm"
-        const val RESULT_DELETED = 100
+        const val RESULT_DELETED = Activity.RESULT_FIRST_USER
+
+        // State keys for saving instance
+        private const val KEY_SNOOZE_MINUTES = "snooze_minutes"
+        private const val KEY_VIBRATION_PATTERN = "vibration_pattern"
+        private const val KEY_SOUND_TYPE = "sound_type"
+        private const val KEY_IS_SILENT_MODE = "is_silent_mode"
+        private const val KEY_SOUND_URI = "sound_uri"
+        private const val KEY_ALARM_NOTE = "alarm_note"
+        private const val KEY_HOUR = "hour"
+        private const val KEY_MINUTE = "minute"
+        private const val KEY_AM_PM = "am_pm"
+        private const val KEY_ACTIVE_DAYS = "active_days"
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        // Save all alarm settings
+        outState.putInt(KEY_SNOOZE_MINUTES, snoozeMinutes)
+        outState.putString(KEY_VIBRATION_PATTERN, vibrationPattern)
+        outState.putString(KEY_SOUND_TYPE, soundType)
+        outState.putBoolean(KEY_IS_SILENT_MODE, isSilentModeEnabled)
+        outState.putString(KEY_SOUND_URI, currentSoundUri)
+        outState.putString(KEY_ALARM_NOTE, alarmNote)
+
+        // Save time picker values
+        outState.putInt(KEY_HOUR, hourPicker.value)
+        outState.putInt(KEY_MINUTE, minutePicker.value)
+        outState.putInt(KEY_AM_PM, amPmSpinner.value)
+
+        // Save active days
+        val activeDays = BooleanArray(7)
+        val layoutCheckboxes = listOf(cbMonday, cbTuesday, cbWednesday, cbThursday, cbFriday, cbSaturday, cbSunday)
+        layoutCheckboxes.forEachIndexed { layoutIndex, textView ->
+            activeDays[layoutIndex] = textView.isSelected
+        }
+        outState.putBooleanArray(KEY_ACTIVE_DAYS, activeDays)    }
 
     override fun onResume() {
         super.onResume()
