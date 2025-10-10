@@ -412,9 +412,21 @@ class SetAlarmActivity : BaseActivity() {
                 text = option
                 id = index
                 textSize = 16f
-                setTextColor(resources.getColor(R.color.white, null))
+                setTextColor(android.graphics.Color.WHITE)
                 setPadding(16, 24, 16, 24)
                 isChecked = (index == currentIndex)
+
+                // Set radio button color (the circle)
+                buttonTintList = android.content.res.ColorStateList(
+                    arrayOf(
+                        intArrayOf(android.R.attr.state_checked),
+                        intArrayOf(-android.R.attr.state_checked)
+                    ),
+                    intArrayOf(
+                        android.graphics.Color.parseColor("#84DCC6"), // Checked color
+                        android.graphics.Color.parseColor("#808080")  // Unchecked color
+                    )
+                )
             }
 
             radioButton.setOnClickListener {
@@ -473,9 +485,21 @@ class SetAlarmActivity : BaseActivity() {
                 text = option
                 id = index
                 textSize = 16f
-                setTextColor(resources.getColor(R.color.white, null))
+                setTextColor(android.graphics.Color.WHITE)
                 setPadding(16, 24, 16, 24)
                 isChecked = (index == currentIndex)
+
+                // Set radio button color (the circle)
+                buttonTintList = android.content.res.ColorStateList(
+                    arrayOf(
+                        intArrayOf(android.R.attr.state_checked),
+                        intArrayOf(-android.R.attr.state_checked)
+                    ),
+                    intArrayOf(
+                        android.graphics.Color.parseColor("#84DCC6"), // Checked color
+                        android.graphics.Color.parseColor("#808080")  // Unchecked color
+                    )
+                )
             }
 
             radioButton.setOnClickListener {
@@ -499,6 +523,7 @@ class SetAlarmActivity : BaseActivity() {
 
         dialog.showWithHiddenNavigation()
     }
+
 
 
     private fun showSoundDialog() {
@@ -536,9 +561,21 @@ class SetAlarmActivity : BaseActivity() {
                 text = option
                 id = index
                 textSize = 16f
-                setTextColor(resources.getColor(R.color.white, null))
+                setTextColor(android.graphics.Color.WHITE)
                 setPadding(16, 24, 16, 24)
                 isChecked = (index == currentIndex)
+
+                // Set radio button color (the circle)
+                buttonTintList = android.content.res.ColorStateList(
+                    arrayOf(
+                        intArrayOf(android.R.attr.state_checked),
+                        intArrayOf(-android.R.attr.state_checked)
+                    ),
+                    intArrayOf(
+                        android.graphics.Color.parseColor("#84DCC6"), // Checked color
+                        android.graphics.Color.parseColor("#808080")  // Unchecked color
+                    )
+                )
             }
 
             radioButton.setOnClickListener {
@@ -568,6 +605,7 @@ class SetAlarmActivity : BaseActivity() {
 
         dialog.showWithHiddenNavigation()
     }
+
 
 
     private fun openSoundPicker() {
