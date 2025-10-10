@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import net.android.lastversion.data.IntroPage
 
@@ -53,13 +52,25 @@ class TutorialActivity : BaseActivity() {
         // Set initial dot state
         updateDot(0)
 
+        // ✅ Check if this is first-time flow or subsequent launch
+        val prefs = getSharedPreferences("onboarding_prefs", MODE_PRIVATE)
+        val isFirstTime = !prefs.getBoolean("perm_done", false)
+
         findViewById<Button>(R.id.btnNext).setOnClickListener {
             if (viewPager.currentItem < introPages.size - 1) {
                 viewPager.currentItem += 1
             } else {
-                getSharedPreferences("onboarding_prefs", MODE_PRIVATE)
-                    .edit().putBoolean("intro_done", true).apply()
-                startActivity(Intent(this, PermissionActivity::class.java))
+                // Mark tutorial as done
+                prefs.edit().putBoolean("intro_done", true).apply()
+
+                // ✅ Navigate based on whether it's first time or not
+                if (isFirstTime) {
+                    // First time - go to permission activity
+                    startActivity(Intent(this, PermissionActivity::class.java))
+                } else {
+                    // Subsequent times - go directly to home
+                    startActivity(Intent(this, HomeActivity::class.java))
+                }
                 finish()
             }
         }

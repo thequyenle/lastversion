@@ -45,8 +45,8 @@
                 android:background="@drawable/selected_nav_background">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_alarm_selector"
                     android:contentDescription="@string/alarm"
                     app:tint="#FFFFFF"
@@ -139,8 +139,8 @@
                 android:background="@drawable/selected_nav_background">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_stopwatch_selector"
                     android:contentDescription="@string/stopwatch"
                     app:tint="#FFFFFF"
@@ -186,8 +186,8 @@
 
                 <ImageView
                     android:id="@+id/timer_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:contentDescription="@string/timer"
                     android:src="@drawable/ic_timer_selector"
                     app:tint="#76E0C1"
@@ -234,8 +234,9 @@
                 android:background="@drawable/selected_nav_background">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitXY"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_setting_selector"
                     android:contentDescription="@string/settings"

@@ -43,7 +43,7 @@ class AlarmFragment : Fragment() {
     // Use findViewById instead of binding to match existing layout
     private lateinit var recyclerViewAlarms: RecyclerView
     private lateinit var emptyView: View
-    private lateinit var fabAddAlarm: FloatingActionButton
+    private lateinit var fabAddAlarm: ImageView
 
     private lateinit var alarmAdapter: AlarmAdapter
     private lateinit var permissionHelper: PermissionHelper

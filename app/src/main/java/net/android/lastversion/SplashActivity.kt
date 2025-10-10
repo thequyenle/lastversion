@@ -7,11 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.ImageView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.KeyEvent
 
@@ -28,10 +23,15 @@ class SplashActivity : BaseActivity() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             when {
-                !prefs.getBoolean("lang_done", false) -> startActivity(Intent(this, LanguageActivity::class.java))
-                !prefs.getBoolean("intro_done", false) -> startActivity(Intent(this, TutorialActivity::class.java))
-                !prefs.getBoolean("perm_done", false) -> startActivity(Intent(this, PermissionActivity::class.java))
-                else -> startActivity(Intent(this, HomeActivity::class.java))
+                // ✅ First time: Check if language is done
+                !prefs.getBoolean("lang_done", false) -> {
+                    // First launch - start full onboarding flow
+                    startActivity(Intent(this, LanguageActivity::class.java))
+                }
+                else -> {
+                    // ✅ Subsequent launches - always show tutorial
+                    startActivity(Intent(this, TutorialActivity::class.java))
+                }
             }
             finish()
         }, 4000)
@@ -39,20 +39,21 @@ class SplashActivity : BaseActivity() {
 
     override fun onBackPressed() {
         // Không làm gì cả - ngăn thoát ứng dụng
-     super.onBackPressed() // Bỏ comment dòng này
+        super.onBackPressed()
     }
 
-    // Hoặc dùng cách này cho Android 13+
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             return true // Chặn sự kiện back
         }
         return super.onKeyDown(keyCode, event)
     }
+
     override fun onResume() {
         super.onResume()
-        showSystemUI(white =false)
+        showSystemUI(white = false)
     }
+
     fun Activity.showSystemUI(white: Boolean = false) {
         window.statusBarColor = android.graphics.Color.TRANSPARENT
 

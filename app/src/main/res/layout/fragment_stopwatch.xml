@@ -37,9 +37,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/imgStopwatch"
+        android:visibility="visible"
+        android:layout_marginTop="136dp"
         app:layout_constraintEnd_toEndOf="@id/imgStopwatch"
         app:layout_constraintStart_toStartOf="@id/imgStopwatch"
         app:layout_constraintTop_toTopOf="@id/imgStopwatch">
@@ -54,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/hoursStopwatch"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:textColor="#999999"
                 android:layout_gravity="center" />
             <TextView
@@ -62,10 +61,9 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tvHour"
                 android:text="@string/_00"
-                android:textSize="24sp"
+                android:textSize="40sp"
                 android:textStyle="bold"
-                android:layout_marginEnd="16dp"
-                android:layout_gravity="end" />
+                android:layout_gravity="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -78,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/minutes"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:textColor="#999999"
                 android:layout_gravity="center" />
             <TextView
@@ -86,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tvMinute"
                 android:text="00"
-                android:textSize="24sp"
+                android:textSize="40sp"
                 android:textStyle="bold"
                 android:layout_marginHorizontal="16dp"
                 android:layout_gravity="center" />
@@ -102,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/seconds"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:textColor="#999999"
                 android:layout_gravity="center" />
             <TextView
@@ -110,10 +108,9 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tvSecond"
                 android:text="00"
-                android:textSize="24sp"
+                android:textSize="40sp"
                 android:textStyle="bold"
-                android:layout_marginStart="16dp"
-                android:layout_gravity="start" />
+                android:layout_gravity="center" />
         </LinearLayout>
     </LinearLayout>
 
@@ -138,7 +135,7 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:backgroundTint="#FFA726"
+        android:backgroundTint="#84DCC6"
         android:text="@string/stopP"
         android:textColor="#FFFFFF"
         android:visibility="gone"
@@ -164,7 +161,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:backgroundTint="#76E0C1"
+            android:backgroundTint="#84DCC6"
             android:text="@string/continuee"
             android:textColor="#FFFFFF"
             app:cornerRadius="24dp" />
@@ -175,7 +172,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#D8F6F0"
             android:text="@string/restart"
-            android:textColor="#555555"
+            android:textColor="#84DCC6"
             app:cornerRadius="24dp" />
     </LinearLayout>
 

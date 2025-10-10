@@ -220,7 +220,7 @@
     <string name="start_timer">Start Timer</string>
     <string name="stopTimer">Stop</string>
     <string name="soundTimer">Sound</string>
-    <string name="time_s_up">Time's up!</string>
+    <string name="time_s_up">Time\'s up!</string>
     <string name="keep_my_screen_on">Keep my screen on</string>
     <string name="astro">Astro</string>
 
