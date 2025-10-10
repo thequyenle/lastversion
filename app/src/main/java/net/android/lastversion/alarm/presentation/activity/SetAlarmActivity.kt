@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
+import net.android.lastversion.BaseActivity
 import net.android.lastversion.R
 import net.android.lastversion.alarm.data.local.database.AlarmDatabase
 import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
@@ -23,7 +24,7 @@ import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 import net.android.lastversion.dialog.AlarmNoteDialog
 
 
-class SetAlarmActivity : AppCompatActivity() {
+class SetAlarmActivity : BaseActivity() {
 
     // Views
     private lateinit var btnBack: ImageView

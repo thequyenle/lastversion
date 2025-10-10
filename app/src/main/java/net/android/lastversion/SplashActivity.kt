@@ -15,7 +15,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.KeyEvent
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         window.statusBarColor = android.graphics.Color.TRANSPARENT
         super.onCreate(savedInstanceState)

@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import net.android.lastversion.data.IntroPage
 
-class TutorialActivity : AppCompatActivity() {
+class TutorialActivity : BaseActivity() {
 
     private lateinit var dotsIndicator: ImageView
 

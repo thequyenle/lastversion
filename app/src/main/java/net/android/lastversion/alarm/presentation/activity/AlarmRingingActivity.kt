@@ -21,13 +21,14 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import net.android.lastversion.BaseActivity
 import net.android.lastversion.R
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
 import net.android.lastversion.alarm.infrastructure.receiver.AlarmActionReceiver
 import net.android.lastversion.utils.ThemeManager
 import net.android.lastversion.utils.ThemeType
 
-class AlarmRingingActivity : AppCompatActivity() {
+class AlarmRingingActivity : BaseActivity() {
 
     private lateinit var tvTime: TextView
     private lateinit var tvNote: TextView

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import net.android.lastversion.data.LanguageItem
 import net.android.lastversion.utils.SystemUtils
 
-class LanguageActivity : AppCompatActivity() {
+class LanguageActivity : BaseActivity() {
 
     private lateinit var languageList: MutableList<LanguageItem>
     private var selectedLanguageCode: String = "en"

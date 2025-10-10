@@ -19,7 +19,7 @@ import net.android.lastversion.utils.ThemeType
 import net.android.lastversion.utils.showSystemUI
 import java.io.File
 
-class ThemeActivity : AppCompatActivity() {
+class ThemeActivity : BaseActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var themeAdapter: ThemeAdapter

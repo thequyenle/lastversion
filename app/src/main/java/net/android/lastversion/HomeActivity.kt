@@ -20,7 +20,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import net.android.lastversion.utils.showSystemUI
 
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

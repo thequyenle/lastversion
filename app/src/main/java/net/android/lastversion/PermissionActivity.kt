@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-class PermissionActivity : AppCompatActivity() {
+class PermissionActivity : BaseActivity() {
 
     private val REQ_CODE_CAMERA = 100
     private val REQ_CODE_STORAGE = 101
