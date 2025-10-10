@@ -26,7 +26,7 @@ import net.android.lastversion.utils.showWithHiddenNavigation
 import android.view.LayoutInflater
 import android.widget.RadioGroup
 import android.widget.RadioButton
-import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 
 class SetAlarmActivity : BaseActivity() {
 
@@ -377,6 +377,7 @@ class SetAlarmActivity : BaseActivity() {
         startActivity(intent)
     }
 
+
     private fun showSnoozeDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sound_picker, null)
         val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
@@ -384,7 +385,6 @@ class SetAlarmActivity : BaseActivity() {
 
         tvDialogTitle.text = getString(R.string.choose_snooze_time)
 
-        // Snooze options
         val options = arrayOf(
             getString(R.string.off),
             getString(R.string.five_minutes),
@@ -396,52 +396,51 @@ class SetAlarmActivity : BaseActivity() {
         val values = arrayOf(0, 5, 10, 15, 20, 30)
         val currentIndex = values.indexOf(snoozeMinutes).takeIf { it >= 0 } ?: 1
 
-        // Create the dialog
-        val dialog = AlertDialog.Builder(this)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Track selected position
         var tempSelectedPosition = currentIndex
 
-        // Add radio buttons dynamically
+        val tealColor = android.graphics.Color.parseColor("#76E0C1")
+        val greyColor = android.graphics.Color.parseColor("#808080")
+
+        val colorStateList = android.content.res.ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)
+            ),
+            intArrayOf(tealColor, greyColor)
+        )
+
         options.forEachIndexed { index, option ->
             val radioButton = RadioButton(this).apply {
                 text = option
-                id = index
+                id = View.generateViewId()
                 textSize = 16f
-                setTextColor(android.graphics.Color.WHITE)
+                setTextColor(ContextCompat.getColor(this@SetAlarmActivity, android.R.color.black))
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    buttonTintList = colorStateList
+                }
+
                 setPadding(16, 24, 16, 24)
                 isChecked = (index == currentIndex)
 
-                // Set radio button color (the circle)
-                buttonTintList = android.content.res.ColorStateList(
-                    arrayOf(
-                        intArrayOf(android.R.attr.state_checked),
-                        intArrayOf(-android.R.attr.state_checked)
-                    ),
-                    intArrayOf(
-                        android.graphics.Color.parseColor("#84DCC6"), // Checked color
-                        android.graphics.Color.parseColor("#808080")  // Unchecked color
-                    )
-                )
-            }
-
-            radioButton.setOnClickListener {
-                tempSelectedPosition = index
+                setOnClickListener {
+                    tempSelectedPosition = index
+                }
             }
 
             radioGroup.addView(radioButton)
         }
 
-        // Cancel button
         dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
             dialog.dismiss()
         }
 
-        // OK button
         dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
             snoozeMinutes = values[tempSelectedPosition]
             updateDisplayTexts()
@@ -451,6 +450,7 @@ class SetAlarmActivity : BaseActivity() {
         dialog.showWithHiddenNavigation()
     }
 
+
     private fun showVibrationDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sound_picker, null)
         val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
@@ -458,7 +458,6 @@ class SetAlarmActivity : BaseActivity() {
 
         tvDialogTitle.text = getString(R.string.choose_vibration_type)
 
-        // Vibration options
         val options = arrayOf(
             getString(R.string.off),
             getString(R.string.default_option),
@@ -469,52 +468,51 @@ class SetAlarmActivity : BaseActivity() {
         val values = arrayOf("off", "default", "short", "long", "double")
         val currentIndex = values.indexOf(vibrationPattern).takeIf { it >= 0 } ?: 1
 
-        // Create the dialog
-        val dialog = AlertDialog.Builder(this)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Track selected position
         var tempSelectedPosition = currentIndex
 
-        // Add radio buttons dynamically
+        val tealColor = android.graphics.Color.parseColor("#76E0C1")
+        val greyColor = android.graphics.Color.parseColor("#808080")
+
+        val colorStateList = android.content.res.ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)
+            ),
+            intArrayOf(tealColor, greyColor)
+        )
+
         options.forEachIndexed { index, option ->
             val radioButton = RadioButton(this).apply {
                 text = option
-                id = index
+                id = View.generateViewId()
                 textSize = 16f
-                setTextColor(android.graphics.Color.WHITE)
+                setTextColor(ContextCompat.getColor(this@SetAlarmActivity, android.R.color.black))
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    buttonTintList = colorStateList
+                }
+
                 setPadding(16, 24, 16, 24)
                 isChecked = (index == currentIndex)
 
-                // Set radio button color (the circle)
-                buttonTintList = android.content.res.ColorStateList(
-                    arrayOf(
-                        intArrayOf(android.R.attr.state_checked),
-                        intArrayOf(-android.R.attr.state_checked)
-                    ),
-                    intArrayOf(
-                        android.graphics.Color.parseColor("#84DCC6"), // Checked color
-                        android.graphics.Color.parseColor("#808080")  // Unchecked color
-                    )
-                )
-            }
-
-            radioButton.setOnClickListener {
-                tempSelectedPosition = index
+                setOnClickListener {
+                    tempSelectedPosition = index
+                }
             }
 
             radioGroup.addView(radioButton)
         }
 
-        // Cancel button
         dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
             dialog.dismiss()
         }
 
-        // OK button
         dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
             vibrationPattern = values[tempSelectedPosition]
             updateDisplayTexts()
@@ -525,7 +523,6 @@ class SetAlarmActivity : BaseActivity() {
     }
 
 
-
     private fun showSoundDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sound_picker, null)
         val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
@@ -533,7 +530,6 @@ class SetAlarmActivity : BaseActivity() {
 
         tvDialogTitle.text = getString(R.string.choose_sound_type)
 
-        // Sound options
         val options = arrayOf(
             getString(R.string.off),
             getString(R.string.default_option),
@@ -545,52 +541,51 @@ class SetAlarmActivity : BaseActivity() {
         val values = arrayOf("off", "default", "gentle", "loud", "progressive", "custom")
         val currentIndex = values.indexOf(soundType).takeIf { it >= 0 } ?: 1
 
-        // Create the dialog
-        val dialog = AlertDialog.Builder(this)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Track selected position
         var tempSelectedPosition = currentIndex
 
-        // Add radio buttons dynamically
+        val tealColor = android.graphics.Color.parseColor("#76E0C1")
+        val greyColor = android.graphics.Color.parseColor("#808080")
+
+        val colorStateList = android.content.res.ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)
+            ),
+            intArrayOf(tealColor, greyColor)
+        )
+
         options.forEachIndexed { index, option ->
             val radioButton = RadioButton(this).apply {
                 text = option
-                id = index
+                id = View.generateViewId()
                 textSize = 16f
-                setTextColor(android.graphics.Color.WHITE)
+                setTextColor(ContextCompat.getColor(this@SetAlarmActivity, android.R.color.black))
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    buttonTintList = colorStateList
+                }
+
                 setPadding(16, 24, 16, 24)
                 isChecked = (index == currentIndex)
 
-                // Set radio button color (the circle)
-                buttonTintList = android.content.res.ColorStateList(
-                    arrayOf(
-                        intArrayOf(android.R.attr.state_checked),
-                        intArrayOf(-android.R.attr.state_checked)
-                    ),
-                    intArrayOf(
-                        android.graphics.Color.parseColor("#84DCC6"), // Checked color
-                        android.graphics.Color.parseColor("#808080")  // Unchecked color
-                    )
-                )
-            }
-
-            radioButton.setOnClickListener {
-                tempSelectedPosition = index
+                setOnClickListener {
+                    tempSelectedPosition = index
+                }
             }
 
             radioGroup.addView(radioButton)
         }
 
-        // Cancel button
         dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
             dialog.dismiss()
         }
 
-        // OK button
         dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
             soundType = values[tempSelectedPosition]
 
@@ -605,7 +600,6 @@ class SetAlarmActivity : BaseActivity() {
 
         dialog.showWithHiddenNavigation()
     }
-
 
 
     private fun openSoundPicker() {
