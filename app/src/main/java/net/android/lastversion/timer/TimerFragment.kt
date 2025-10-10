@@ -32,6 +32,7 @@ class TimerFragment : Fragment() {
     private var _binding: FragmentTimerBinding? = null
     private val binding get() = _binding!!
 
+    private val tealColor = android.graphics.Color.parseColor("#84DCC6")
     private var selectedSoundUri: Uri? = null
     private var selectedResId: Int = R.raw.astro
     private var totalSeconds = 0
@@ -159,6 +160,22 @@ class TimerFragment : Fragment() {
             it.second == selectedResId || (it.second == -1 && selectedSoundUri != null)
         }.let { if (it == -1) 0 else it }
 
+        // ✅ Define colors
+        val tealColor = android.graphics.Color.parseColor("#84DCC6")
+        val greyColor = android.graphics.Color.parseColor("#808080")  // Grey for unselected
+
+        // ✅ Create ColorStateList: teal when selected, grey when unselected
+        val colorStateList = android.content.res.ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),   // Selected state
+                intArrayOf(-android.R.attr.state_checked)   // Unselected state
+            ),
+            intArrayOf(
+                tealColor,  // Teal when selected
+                greyColor   // Grey when unselected
+            )
+        )
+
         // Add radio buttons dynamically
         availableSounds.forEachIndexed { index, (name, resId) ->
             val radioButton = RadioButton(requireContext()).apply {
@@ -167,11 +184,9 @@ class TimerFragment : Fragment() {
                 textSize = 16f
                 setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
 
-                // Set button tint to green
+                // ✅ Apply color state list
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    buttonTintList = android.content.res.ColorStateList.valueOf(
-                        ContextCompat.getColor(requireContext(), android.R.color.holo_green_light)
-                    )
+                    buttonTintList = colorStateList
                 }
 
                 setPadding(16, 24, 16, 24)
@@ -208,6 +223,7 @@ class TimerFragment : Fragment() {
 
         dialog.show()
     }
+
 
     private fun setupKeepScreen() {
         binding.switchKeepScreen.setOnClickListener {
