@@ -138,5 +138,83 @@
     <string name="fun">😊</string>
     <string name="let_us_know_your_experience">Let us know your experience</string>
     <string name="do_you_like_the_app">Do you like the app?</string>
+    <!-- Alarm Settings -->
+    <string name="set_alarm_title">Set Alarm</string>
+    <string name="edit_alarm_title">Edit Alarm</string>
+    <string name="wake_up_default">Wake Up!!!</string>
+
+    <!-- Options -->
+    <string name="off">Off</string>
+    <string name="default_option">Default</string>
+    <string name="short_option">Short</string>
+    <string name="long_option">Long</string>
+    <string name="double_vibration">Double</string>
+    <string name="gentle">Gentle</string>
+    <string name="loud">Loud</string>
+    <string name="progressive">Progressive</string>
+    <string name="custom">Custom</string>
+    <string name="custom_ellipsis">Custom…</string>
+
+    <!-- Time formats -->
+    <string name="minutes_format">%d minutes</string>
+    <string name="five_minutes">5 minutes</string>
+    <string name="ten_minutes">10 minutes</string>
+    <string name="fifteen_minutes">15 minutes</string>
+    <string name="twenty_minutes">20 minutes</string>
+    <string name="thirty_minutes">30 minutes</string>
+
+    <!-- Dialog titles -->
+    <string name="choose_snooze_time">Choose snooze time</string>
+    <string name="choose_vibration_type">Choose vibration type</string>
+    <string name="choose_sound_type">Choose sound type</string>
+
+    <!-- Toast messages -->
+    <string name="camera_permission_granted">Camera permission already granted</string>
+    <string name="storage_permission_granted">Storage permission already granted</string>
+    <string name="notification_permission_granted">Notification permission already granted</string>
+    <string name="permission_granted">Permission granted</string>
+    <string name="error_saving_alarm">Error saving alarm: %s</string>
+    <string name="time_to_wake_up">Time to wake up!</string>
+
+    <string name="sun_short">Sun</string>
+    <string name="mon_short">Mon</string>
+    <string name="tue_short">Tue</string>
+    <string name="wed_short">Wed</string>
+    <string name="thu_short">Thu</string>
+    <string name="fri_short">Fri</string>
+    <string name="sat_short">Sat</string>
+
+    <!-- Recurring patterns -->
+    <string name="never">Never</string>
+    <string name="every_day">Every day</string>
+    <string name="weekdays">Weekdays</string>
+    <string name="weekends">Weekends</string>
+
+    <!-- Permission dialog -->
+    <string name="exact_alarm_permission_required">Exact Alarm Permission Required</string>
+    <string name="exact_alarm_permission_message">For alarms to work reliably, please enable \'Alarms &amp; reminders\' permission.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="skip">Skip</string>
+
+    <!-- Snackbar messages -->
+    <string name="alarm_restored">Alarm restored</string>
+    <string name="failed_to_restore">Failed to restore: %s</string>
+    <string name="error_message">Error: %s</string>
+    <string name="permissions_required_message">Some permissions are required for alarms to work properly</string>
+    <string name="failed_to_save_alarm">Failed to save alarm</string>
+
+    <!-- Default labels -->
+    <string name="alarm_label_default">Alarm</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <!-- Permission Dialog -->
+    <string name="permission_required">Permission Required</string>
+    <string name="permission_required_message">%s permission is required for the app to work properly. Please enable it in app settings.</string>
+    <string name="camera">Camera</string>
+    <string name="storage">Storage</string>
+    <string name="notification">Notification</string>
+    <string name="this_permission">This</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="cancel">Cancel</string>
     <string name="welcome_to">Welcome to</string>
 </resources>

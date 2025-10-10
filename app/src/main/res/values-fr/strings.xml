@@ -117,6 +117,85 @@
     <string name="stopwatch_">Chronomètre</string>
     <string name="h">h</string>
     <string name="m">m</string>
+    <!-- Alarm Settings -->
+    <string name="set_alarm_title">Régler l\'alarme</string>
+    <string name="edit_alarm_title">Modifier l\'alarme</string>
+    <string name="wake_up_default">Réveille-toi !</string>
+
+    <!-- Options -->
+    <string name="off">Désactivé</string>
+    <string name="default_option">Par défaut</string>
+    <string name="short_option">Court</string>
+    <string name="long_option">Long</string>
+    <string name="double_vibration">Double vibration</string>
+    <string name="gentle">Doux</string>
+    <string name="loud">Fort</string>
+    <string name="progressive">Progressif</string>
+    <string name="custom">Personnalisé</string>
+    <string name="custom_ellipsis">Personnalisé…</string>
+
+    <!-- Time formats -->
+    <string name="minutes_format">%d minutes</string>
+    <string name="five_minutes">5 minutes</string>
+    <string name="ten_minutes">10 minutes</string>
+    <string name="fifteen_minutes">15 minutes</string>
+    <string name="twenty_minutes">20 minutes</string>
+    <string name="thirty_minutes">30 minutes</string>
+
+    <!-- Dialog titles -->
+    <string name="choose_snooze_time">Choisir le délai de répétition</string>
+    <string name="choose_vibration_type">Choisir le type de vibration</string>
+    <string name="choose_sound_type">Choisir le type de son</string>
+
+    <!-- Toast messages -->
+    <string name="camera_permission_granted">Permission de caméra déjà accordée</string>
+    <string name="storage_permission_granted">Permission de stockage déjà accordée</string>
+    <string name="notification_permission_granted">Permission de notification déjà accordée</string>
+    <string name="permission_granted">Permission accordée</string>
+    <string name="error_saving_alarm">Erreur lors de l\'enregistrement de l\'alarme : %s</string>
+    <string name="time_to_wake_up">Il est temps de se réveiller !</string>
+
+    <!-- Day names (short) -->
+    <string name="sun_short">Dim</string>
+    <string name="mon_short">Lun</string>
+    <string name="tue_short">Mar</string>
+    <string name="wed_short">Mer</string>
+    <string name="thu_short">Jeu</string>
+    <string name="fri_short">Ven</string>
+    <string name="sat_short">Sam</string>
+
+    <!-- Recurring patterns -->
+    <string name="never">Jamais</string>
+    <string name="every_day">Tous les jours</string>
+    <string name="weekdays">Jours de semaine</string>
+    <string name="weekends">Week-ends</string>
+
+    <!-- Permission dialog -->
+    <string name="exact_alarm_permission_required">Autorisation d\'alarme exacte requise</string>
+    <string name="exact_alarm_permission_message">Pour que les alarmes fonctionnent de manière fiable, veuillez activer l\'autorisation \'Alarmes et rappels\'.</string>
+    <string name="open_settings">Ouvrir les paramètres</string>
+    <string name="skip">Ignorer</string>
+
+    <!-- Snackbar messages -->
+    <string name="alarm_restored">Alarme restaurée</string>
+    <string name="failed_to_restore">Échec de la restauration : %s</string>
+    <string name="error_message">Erreur : %s</string>
+    <string name="permissions_required_message">Certaines autorisations sont nécessaires pour que les alarmes fonctionnent correctement</string>
+    <string name="failed_to_save_alarm">Échec de l\'enregistrement de l\'alarme</string>
+
+    <!-- Default labels -->
+    <string name="alarm_label_default">Alarme</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <!-- Permission Dialog -->
+    <string name="permission_required">Permission requise</string>
+    <string name="permission_required_message">La permission %s est nécessaire pour que l\'application fonctionne correctement. Veuillez l\'activer dans les paramètres de l\'application.</string>
+    <string name="camera">Caméra</string>
+    <string name="storage">Stockage</string>
+    <string name="notification">Notification</string>
+    <string name="this_permission">Cette</string>
+    <string name="go_to_settings">Aller aux paramètres</string>
+    <string name="cancel">Annuler</string>
     <string name="s">s</string>
     <string name="keep_my_screen_on">Garder mon écran allumé</string>
     <string name="soundTimer">Son</string>

@@ -30,6 +30,53 @@
     <!-- Permission -->
     <string name="grant_permission">Conceder permiso para continuar</string>
 
+    <!-- Alarm Settings -->
+    <string name="set_alarm_title">Configurar alarma</string>
+    <string name="edit_alarm_title">Editar alarma</string>
+    <string name="wake_up_default">¡Despierta!</string>
+
+    <!-- Options -->
+    <string name="off">Apagado</string>
+    <string name="default_option">Predeterminado</string>
+    <string name="short_option">Corto</string>
+    <string name="long_option">Largo</string>
+    <string name="double_vibration">Doble vibración</string>
+    <string name="gentle">Suave</string>
+    <string name="loud">Fuerte</string>
+    <string name="progressive">Progresivo</string>
+    <string name="custom">Personalizado</string>
+    <string name="custom_ellipsis">Personalizado…</string>
+
+    <!-- Time formats -->
+    <string name="minutes_format">%d minutos</string>
+    <string name="five_minutes">5 minutos</string>
+    <string name="ten_minutes">10 minutos</string>
+    <string name="fifteen_minutes">15 minutos</string>
+    <string name="twenty_minutes">20 minutos</string>
+    <string name="thirty_minutes">30 minutos</string>
+
+    <!-- Dialog titles -->
+    <string name="choose_snooze_time">Elegir tiempo de repetición</string>
+    <string name="choose_vibration_type">Elegir tipo de vibración</string>
+    <string name="choose_sound_type">Elegir tipo de sonido</string>
+
+    <!-- Toast messages -->
+    <string name="camera_permission_granted">Permiso de cámara ya concedido</string>
+    <string name="storage_permission_granted">Permiso de almacenamiento ya concedido</string>
+    <string name="notification_permission_granted">Permiso de notificación ya concedido</string>
+    <string name="permission_granted">Permiso concedido</string>
+    <string name="error_saving_alarm">Error al guardar alarma: %s</string>
+    <string name="time_to_wake_up">¡Hora de despertar!</string>
+
+    <!-- Permission Dialog -->
+    <string name="permission_required">Permiso requerido</string>
+    <string name="permission_required_message">El permiso de %s es necesario para que la aplicación funcione correctamente. Por favor, actívalo en la configuración de la aplicación.</string>
+    <string name="camera">Cámara</string>
+    <string name="storage">Almacenamiento</string>
+    <string name="notification">Notificación</string>
+    <string name="this_permission">Este</string>
+    <string name="go_to_settings">Ir a Configuración</string>
+    <string name="cancel">Cancelar</string>
     <!-- Settings Screen -->
     <string name="settings_title">Ajustes</string>
     <string name="volume">Volumen</string>
@@ -38,6 +85,38 @@
     <string name="share">Compartir</string>
     <string name="privacy">Privacidad</string>
 
+    <!-- Day names (short) -->
+    <string name="sun_short">Dom</string>
+    <string name="mon_short">Lun</string>
+    <string name="tue_short">Mar</string>
+    <string name="wed_short">Mié</string>
+    <string name="thu_short">Jue</string>
+    <string name="fri_short">Vie</string>
+    <string name="sat_short">Sáb</string>
+
+    <!-- Recurring patterns -->
+    <string name="never">Nunca</string>
+    <string name="every_day">Todos los días</string>
+    <string name="weekdays">Días laborables</string>
+    <string name="weekends">Fines de semana</string>
+
+    <!-- Permission dialog -->
+    <string name="exact_alarm_permission_required">Permiso de alarma exacta requerido</string>
+    <string name="exact_alarm_permission_message">Para que las alarmas funcionen de manera confiable, habilite el permiso de \'Alarmas y recordatorios\'.</string>
+    <string name="open_settings">Abrir Configuración</string>
+    <string name="skip">Omitir</string>
+
+    <!-- Snackbar messages -->
+    <string name="alarm_restored">Alarma restaurada</string>
+    <string name="failed_to_restore">Error al restaurar: %s</string>
+    <string name="error_message">Error: %s</string>
+    <string name="permissions_required_message">Se requieren algunos permisos para que las alarmas funcionen correctamente</string>
+    <string name="failed_to_save_alarm">Error al guardar alarma</string>
+
+    <!-- Default labels -->
+    <string name="alarm_label_default">Alarma</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
     <!-- Main -->
     <string name="home_screen">Bienvenido a la pantalla de inicio</string>
     <string name="hello_blank_fragment">Hola fragmento en blanco</string>

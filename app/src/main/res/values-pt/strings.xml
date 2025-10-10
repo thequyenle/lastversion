@@ -80,6 +80,86 @@
     <string name="back">Voltar</string>
     <string name="save">Salvar</string>
     <string name="fri">Sex</string>
+
+    <!-- Alarm Settings -->
+    <string name="set_alarm_title">Configurar alarme</string>
+    <string name="edit_alarm_title">Editar alarme</string>
+    <string name="wake_up_default">Acorde!</string>
+
+    <!-- Options -->
+    <string name="off">Desligado</string>
+    <string name="default_option">Padrão</string>
+    <string name="short_option">Curto</string>
+    <string name="long_option">Longo</string>
+    <string name="double_vibration">Vibração dupla</string>
+    <string name="gentle">Suave</string>
+    <string name="loud">Alto</string>
+    <string name="progressive">Progressivo</string>
+    <string name="custom">Personalizado</string>
+    <string name="custom_ellipsis">Personalizado…</string>
+
+    <!-- Time formats -->
+    <string name="minutes_format">%d minutos</string>
+    <string name="five_minutes">5 minutos</string>
+    <string name="ten_minutes">10 minutos</string>
+    <string name="fifteen_minutes">15 minutos</string>
+    <string name="twenty_minutes">20 minutos</string>
+    <string name="thirty_minutes">30 minutos</string>
+
+    <!-- Dialog titles -->
+    <string name="choose_snooze_time">Escolher tempo de soneca</string>
+    <string name="choose_vibration_type">Escolher tipo de vibração</string>
+    <string name="choose_sound_type">Escolher tipo de som</string>
+
+    <!-- Toast messages -->
+    <string name="camera_permission_granted">Permissão de câmera já concedida</string>
+    <string name="storage_permission_granted">Permissão de armazenamento já concedida</string>
+    <string name="notification_permission_granted">Permissão de notificação já concedida</string>
+    <string name="permission_granted">Permissão concedida</string>
+    <string name="error_saving_alarm">Erro ao salvar alarme: %s</string>
+    <string name="time_to_wake_up">Hora de acordar!</string>
+
+    <!-- Day names (short) -->
+    <string name="sun_short">Dom</string>
+    <string name="mon_short">Seg</string>
+    <string name="tue_short">Ter</string>
+    <string name="wed_short">Qua</string>
+    <string name="thu_short">Qui</string>
+    <string name="fri_short">Sex</string>
+    <string name="sat_short">Sáb</string>
+
+    <!-- Recurring patterns -->
+    <string name="never">Nunca</string>
+    <string name="every_day">Todos os dias</string>
+    <string name="weekdays">Dias úteis</string>
+    <string name="weekends">Fins de semana</string>
+
+    <!-- Permission dialog -->
+    <string name="exact_alarm_permission_required">Permissão de alarme exato necessária</string>
+    <string name="exact_alarm_permission_message">Para que os alarmes funcionem de forma confiável, ative a permissão de \'Alarmes e lembretes\'.</string>
+    <string name="open_settings">Abrir Configurações</string>
+    <string name="skip">Pular</string>
+
+    <!-- Snackbar messages -->
+    <string name="alarm_restored">Alarme restaurado</string>
+    <string name="failed_to_restore">Falha ao restaurar: %s</string>
+    <string name="error_message">Erro: %s</string>
+    <string name="permissions_required_message">Algumas permissões são necessárias para que os alarmes funcionem corretamente</string>
+    <string name="failed_to_save_alarm">Falha ao salvar alarme</string>
+
+    <!-- Default labels -->
+    <string name="alarm_label_default">Alarme</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <!-- Permission Dialog -->
+    <string name="permission_required">Permissão necessária</string>
+    <string name="permission_required_message">A permissão de %s é necessária para o aplicativo funcionar corretamente. Por favor, ative-a nas configurações do aplicativo.</string>
+    <string name="camera">Câmera</string>
+    <string name="storage">Armazenamento</string>
+    <string name="notification">Notificação</string>
+    <string name="this_permission">Esta</string>
+    <string name="go_to_settings">Ir para Configurações</string>
+    <string name="cancel">Cancelar</string>
     <string name="mon">Seg</string>
     <string name="sat">Sáb</string>
     <string name="sun">Dom</string>

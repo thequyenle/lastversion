@@ -115,6 +115,85 @@
     <string name="_00">00</string>
     <string name="stopwatch_">स्टॉपवॉच</string>
     <string name="h">घं</string>
+    <!-- Alarm Settings -->
+    <string name="set_alarm_title">अलार्म सेट करें</string>
+    <string name="edit_alarm_title">अलार्म संपादित करें</string>
+    <string name="wake_up_default">उठो!</string>
+
+    <!-- Options -->
+    <string name="off">बंद</string>
+    <string name="default_option">डिफ़ॉल्ट</string>
+    <string name="short_option">छोटा</string>
+    <string name="long_option">लंबा</string>
+    <string name="double_vibration">डबल वाइब्रेशन</string>
+    <string name="gentle">धीमा</string>
+    <string name="loud">तेज़</string>
+    <string name="progressive">क्रमिक</string>
+    <string name="custom">कस्टम</string>
+    <string name="custom_ellipsis">कस्टम…</string>
+
+    <!-- Time formats -->
+    <string name="minutes_format">%d मिनट</string>
+    <string name="five_minutes">5 मिनट</string>
+    <string name="ten_minutes">10 मिनट</string>
+    <string name="fifteen_minutes">15 मिनट</string>
+    <string name="twenty_minutes">20 मिनट</string>
+    <string name="thirty_minutes">30 मिनट</string>
+
+    <!-- Dialog titles -->
+    <string name="choose_snooze_time">स्नूज़ समय चुनें</string>
+    <string name="choose_vibration_type">वाइब्रेशन प्रकार चुनें</string>
+    <string name="choose_sound_type">ध्वनि प्रकार चुनें</string>
+
+    <!-- Toast messages -->
+    <string name="camera_permission_granted">कैमरा अनुमति पहले से दी गई है</string>
+    <string name="storage_permission_granted">स्टोरेज अनुमति पहले से दी गई है</string>
+    <string name="notification_permission_granted">सूचना अनुमति पहले से दी गई है</string>
+    <string name="permission_granted">अनुमति दी गई</string>
+    <string name="error_saving_alarm">अलार्म सहेजने में त्रुटि: %s</string>
+    <string name="time_to_wake_up">उठने का समय हो गया!</string>
+
+    <!-- Day names (short) -->
+    <string name="sun_short">रवि</string>
+    <string name="mon_short">सोम</string>
+    <string name="tue_short">मंगल</string>
+    <string name="wed_short">बुध</string>
+    <string name="thu_short">गुरु</string>
+    <string name="fri_short">शुक्र</string>
+    <string name="sat_short">शनि</string>
+
+    <!-- Recurring patterns -->
+    <string name="never">कभी नहीं</string>
+    <string name="every_day">हर दिन</string>
+    <string name="weekdays">सप्ताह के दिन</string>
+    <string name="weekends">सप्ताहांत</string>
+
+    <!-- Permission dialog -->
+    <string name="exact_alarm_permission_required">सटीक अलार्म अनुमति आवश्यक है</string>
+    <string name="exact_alarm_permission_message">अलार्म के विश्वसनीय रूप से काम करने के लिए, कृपया \'अलार्म और रिमाइंडर\' अनुमति सक्षम करें।</string>
+    <string name="open_settings">सेटिंग्स खोलें</string>
+    <string name="skip">छोड़ें</string>
+
+    <!-- Snackbar messages -->
+    <string name="alarm_restored">अलार्म पुनर्स्थापित</string>
+    <string name="failed_to_restore">पुनर्स्थापित करने में विफल: %s</string>
+    <string name="error_message">त्रुटि: %s</string>
+    <string name="permissions_required_message">अलार्म के सही तरीके से काम करने के लिए कुछ अनुमतियां आवश्यक हैं</string>
+    <string name="failed_to_save_alarm">अलार्म सहेजने में विफल</string>
+
+    <!-- Default labels -->
+    <string name="alarm_label_default">अलार्म</string>
+    <string name="am">पूर्वाह्न</string>
+    <string name="pm">अपराह्न</string>
+    <!-- Permission Dialog -->
+    <string name="permission_required">अनुमति आवश्यक है</string>
+    <string name="permission_required_message">%s अनुमति ऐप के सही तरीके से काम करने के लिए आवश्यक है। कृपया इसे ऐप सेटिंग्स में सक्षम करें।</string>
+    <string name="camera">कैमरा</string>
+    <string name="storage">स्टोरेज</string>
+    <string name="notification">सूचना</string>
+    <string name="this_permission">यह</string>
+    <string name="go_to_settings">सेटिंग्स में जाएं</string>
+    <string name="cancel">रद्द करें</string>
     <string name="m">मि</string>
     <string name="s">से</string>
     <string name="keep_my_screen_on">मेरी स्क्रीन चालू रखें</string>
