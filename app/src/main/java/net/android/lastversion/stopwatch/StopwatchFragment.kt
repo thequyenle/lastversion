@@ -28,13 +28,23 @@ class StopwatchFragment : Fragment() {
 
     private var seconds = 0
     private var isServiceRunning = false
+    private var isPaused = false  // ✅ Add this to track paused state
 
-    // BroadcastReceiver để nhận tick từ Service
+    // ✅ Enhanced BroadcastReceiver to capture running/paused state
     private val tickReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == StopwatchConst.ACTION_TICK) {
                 seconds = intent.getIntExtra(StopwatchConst.EXTRA_ELAPSED, 0)
+                isServiceRunning = intent.getBooleanExtra("isRunning", false)
+
+                // ✅ Determine if paused based on state
+                val state = intent.getStringExtra("state")
+                isPaused = (state == "PAUSED")
+
                 updateTimerText()
+
+                // ✅ Update UI based on current state
+                updateUIBasedOnState()
             }
         }
     }
@@ -60,22 +70,27 @@ class StopwatchFragment : Fragment() {
 
         btnStart.setOnClickListener {
             startStopwatchService()
+            isPaused = false
             switchToStopUI()
         }
 
         btnStop.setOnClickListener {
             pauseStopwatchService()
+            isPaused = true
             switchToContinueRestartUI()
         }
 
         btnContinue.setOnClickListener {
             resumeStopwatchService()
+            isPaused = false
             switchToStopUI()
         }
 
         btnRestart.setOnClickListener {
             stopStopwatchService()
             seconds = 0
+            isServiceRunning = false
+            isPaused = false
 
             // ✅ Hide time temporarily, then show again
             layoutTimerText.visibility = View.GONE
@@ -97,7 +112,7 @@ class StopwatchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // ✅ Register receiver để nhận updates từ service
+        // ✅ Register receiver to receive updates from service
         val filter = IntentFilter(StopwatchConst.ACTION_TICK)
         requireContext().registerReceiver(tickReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
 
@@ -110,7 +125,7 @@ class StopwatchFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        // ✅ Save current state
+        // ✅ Save current state including paused state
         saveStopwatchState()
     }
 
@@ -118,14 +133,14 @@ class StopwatchFragment : Fragment() {
         val prefs = requireContext().getSharedPreferences("stopwatch_prefs", Context.MODE_PRIVATE)
         seconds = prefs.getInt("seconds", 0)
         isServiceRunning = prefs.getBoolean("is_running", false)
-        val isPaused = prefs.getBoolean("is_paused", false)
+        isPaused = prefs.getBoolean("is_paused", false)  // ✅ Now properly read
 
         updateTimerText()
 
         // ✅ Restore UI state based on saved data
         when {
             isServiceRunning && !isPaused -> switchToStopUI()
-            isServiceRunning && isPaused -> switchToContinueRestartUI()
+            isPaused -> switchToContinueRestartUI()  // ✅ Simplified: if paused, show continue/restart
             else -> switchToStartUI()
         }
     }
@@ -135,7 +150,32 @@ class StopwatchFragment : Fragment() {
         prefs.edit().apply {
             putInt("seconds", seconds)
             putBoolean("is_running", isServiceRunning)
+            putBoolean("is_paused", isPaused)  // ✅ NOW SAVING PAUSED STATE
             apply()
+        }
+    }
+
+    // ✅ New method to update UI based on current state from broadcast
+    private fun updateUIBasedOnState() {
+        when {
+            isServiceRunning && !isPaused -> {
+                // Currently running
+                if (btnStop.visibility != View.VISIBLE) {
+                    switchToStopUI()
+                }
+            }
+            isPaused -> {
+                // Currently paused
+                if (layoutContinueRestart.visibility != View.VISIBLE) {
+                    switchToContinueRestartUI()
+                }
+            }
+            else -> {
+                // Stopped
+                if (btnStart.visibility != View.VISIBLE) {
+                    switchToStartUI()
+                }
+            }
         }
     }
 
@@ -203,11 +243,11 @@ class StopwatchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Cleanup: bỏ đăng ký receiver nếu còn
+        // Cleanup: unregister receiver if still registered
         try {
             requireContext().unregisterReceiver(tickReceiver)
         } catch (e: Exception) {
-            // Receiver có thể đã được unregister rồi
+            // Receiver may have already been unregistered
         }
     }
 }

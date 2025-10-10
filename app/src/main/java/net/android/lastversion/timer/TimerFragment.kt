@@ -12,6 +12,9 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.NumberPicker
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -106,9 +109,27 @@ class TimerFragment : Fragment() {
     }
 
     private fun setupPickers() = with(binding) {
-        npHour.minValue = 0; npHour.maxValue = 23
-        npMinute.minValue = 0; npMinute.maxValue = 59
-        npSecond.minValue = 0; npSecond.maxValue = 59
+        // ✅ Hour: 0-99
+        npHour.minValue = 0
+        npHour.maxValue = 99
+        npHour.value = 0  // Default to 00
+
+        // ✅ Minute: 0-59
+        npMinute.minValue = 0
+        npMinute.maxValue = 59
+        npMinute.value = 0  // Default to 00
+
+        // ✅ Second: 0-59
+        npSecond.minValue = 0
+        npSecond.maxValue = 59
+        npSecond.value = 0  // Default to 00
+
+        // ✅ Format to display as "00", "01", "02", etc.
+        npHour.displayedValues = (0..99).map { String.format("%02d", it) }.toTypedArray()
+        npMinute.displayedValues = (0..59).map { String.format("%02d", it) }.toTypedArray()
+        npSecond.displayedValues = (0..59).map { String.format("%02d", it) }.toTypedArray()
+
+        // Disable keyboard input (only scroll to select)
         npHour.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
         npMinute.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
         npSecond.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
@@ -116,21 +137,76 @@ class TimerFragment : Fragment() {
 
     private fun setupSoundPicker() {
         binding.layoutSound.setOnClickListener {
-            val names = availableSounds.map { it.first }.toTypedArray()
-            AlertDialog.Builder(requireContext())
-                .setTitle("Select Sound")
-                .setItems(names) { _, which ->
-                    val (name, resId) = availableSounds[which]
-                    if (resId == -1) {
-                        soundPickerLauncher.launch(arrayOf("audio/*"))
-                    } else {
-                        binding.tvSoundValue.text = name
-                        selectedResId = resId
-                        selectedSoundUri = null
-                    }
-                }
-                .show()
+            showSoundPickerDialog()
         }
+    }
+
+    private fun showSoundPickerDialog() {
+        // Inflate custom dialog layout
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_sound_picker, null)
+        val radioGroup = dialogView.findViewById<RadioGroup>(R.id.rgSounds)
+
+        // Create the dialog
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        // Make dialog background transparent for rounded corners if needed
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Track selected position
+        var tempSelectedPosition = availableSounds.indexOfFirst {
+            it.second == selectedResId || (it.second == -1 && selectedSoundUri != null)
+        }.let { if (it == -1) 0 else it }
+
+        // Add radio buttons dynamically
+        availableSounds.forEachIndexed { index, (name, resId) ->
+            val radioButton = RadioButton(requireContext()).apply {
+                text = name
+                id = View.generateViewId()
+                textSize = 16f
+                setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+
+                // Set button tint to green
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    buttonTintList = android.content.res.ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), android.R.color.holo_green_light)
+                    )
+                }
+
+                setPadding(16, 24, 16, 24)
+                isChecked = (index == tempSelectedPosition)
+
+                setOnClickListener {
+                    tempSelectedPosition = index
+                }
+            }
+            radioGroup.addView(radioButton)
+        }
+
+        // Cancel button
+        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // OK button
+        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
+            val (name, resId) = availableSounds[tempSelectedPosition]
+
+            if (resId == -1) {
+                // Custom sound from device
+                dialog.dismiss()
+                soundPickerLauncher.launch(arrayOf("audio/*"))
+            } else {
+                // Built-in sound
+                binding.tvSoundValue.text = name
+                selectedResId = resId
+                selectedSoundUri = null
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
     }
 
     private fun setupKeepScreen() {
