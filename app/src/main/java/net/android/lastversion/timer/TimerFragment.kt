@@ -104,10 +104,8 @@ class TimerFragment : Fragment() {
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             selectedResId = when (checkedId) {
                 R.id.radioSoundAstro -> R.raw.astro
-                R.id.radioSoundRain -> R.raw.rainy
-                R.id.radioSoundBird -> R.raw.bird
-                R.id.radioSoundBird2 -> R.raw.bird2
-                R.id.radioSoundSmooth -> R.raw.smooth
+                R.id.radioSoundRain -> R.raw.bell
+                R.id.radioSoundBird -> R.raw.piano
                 else -> R.raw.astro
             }
             selectedSoundUri = null
@@ -137,7 +135,7 @@ class TimerFragment : Fragment() {
             R.raw.astro -> binding.radioSoundAstro.isChecked = true
             R.raw.bell -> binding.radioSoundRain.isChecked = true
             R.raw.piano -> binding.radioSoundBird.isChecked = true
-                    }
+        }
     }
 
     private fun keepScreenOn() {
