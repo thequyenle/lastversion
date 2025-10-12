@@ -11,22 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
-import android.widget.NumberPicker
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import net.android.lastversion.databinding.FragmentTimerBinding
 import net.android.last.service.TimerService
 import net.android.lastversion.R
-import net.android.lastversion.utils.ThemeManager
-import net.android.lastversion.utils.ThemeType
 import net.android.lastversion.utils.showSystemUI
-import net.android.lastversion.utils.showWithHiddenNavigation
 
 class TimerFragment : Fragment() {
 
@@ -47,40 +39,28 @@ class TimerFragment : Fragment() {
     private var syncHandler: Handler? = null
     private var syncRunnable: Runnable? = null
 
-    private var isKeepScreenOn = false
-
     companion object {
         private const val PREFS_NAME = "timer_prefs"
-        private const val KEY_SELECTED_SOUND_URI = "selected_sound_uri"
-        private const val KEY_SELECTED_RES_ID = "selected_res_id"
-        private const val KEY_TIMER_COMPLETED = "timer_completed"
-        private const val KEY_COMPLETED_TOTAL_SECONDS = "completed_total_seconds"
-        private const val KEY_COMPLETION_TIME = "completion_time"
+        private const val KEY_SOUND_URI = "sound_uri"
+        private const val KEY_SOUND_RES_ID = "sound_res_id"
     }
 
-    private val availableSounds = listOf(
-        "Astro" to R.raw.astro,
-        "Bell" to R.raw.bell,
-        "Piano" to R.raw.piano,
-        "Custom (From device)" to -1
-    )
-
-    private val soundPickerLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+    private val soundPickerLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
         uri?.let {
-            try {
-                requireContext().contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                selectedSoundUri = it
-                selectedResId = -1
-                updateSoundDisplay()
-                saveSoundPreferences()
-            } catch (e: Exception) {
-                Log.e("TimerFragment", "Error selecting sound", e)
-                Toast.makeText(requireContext(), "Error selecting sound", Toast.LENGTH_SHORT).show()
-            }
+            requireContext().contentResolver.takePersistableUriPermission(
+                it, Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            selectedSoundUri = it
+            Toast.makeText(requireContext(), "Custom sound selected", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentTimerBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -88,47 +68,20 @@ class TimerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        npHour = binding.npHour
+        npMinute = binding.npMinute
+        npSecond = binding.npSecond
         imgTimerBackground = binding.imgTimerBackground
 
-        setupUI()
-        npHour = view.findViewById(R.id.npHour)
-        npMinute = view.findViewById(R.id.npMinute)
-        npSecond = view.findViewById(R.id.npSecond)
-
-        restoreSoundPreferences()
-
-        // Check completion state first, regardless of service state
-        val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
-        val isCompleted = prefs.getBoolean(KEY_TIMER_COMPLETED, false)
-
-        if (isCompleted) {
-            totalSeconds = prefs.getInt(KEY_COMPLETED_TOTAL_SECONDS, 0)
-            currentSeconds = 0
-            switchToTimesUpState()
-        } else if (TimerService.isServiceRunning) {
-            currentSeconds = TimerService.currentRemainingSeconds
-            totalSeconds = TimerService.currentTotalSeconds
-            isPaused = TimerService.isCurrentlyPaused
-
-            if (currentSeconds > 0) {
-                switchToRunningState()
-                startSyncTimer()
-            } else {
-                switchToTimesUpState()
-            }
-        }
-    }
-
-    private fun setupUI() {
-        setupPickers()
-        setupSoundPicker()
-        setupKeepScreen()
+        setupNumberPickers()
         setupButtons()
+        setupSoundOptions()
+        loadSoundPreferences()
     }
 
-    private fun setupPickers() = with(binding) {
+    private fun setupNumberPickers() {
         npHour.minValue = 0
-        npHour.maxValue = 99
+        npHour.maxValue = 23
         npHour.value = 0
 
         npMinute.minValue = 0
@@ -137,101 +90,65 @@ class TimerFragment : Fragment() {
 
         npSecond.minValue = 0
         npSecond.maxValue = 59
-        npSecond.value = 0
+        npSecond.value = 5
 
-        npHour.displayedValues = (0..99).map { String.format("%02d", it) }.toTypedArray()
-        npMinute.displayedValues = (0..59).map { String.format("%02d", it) }.toTypedArray()
-        npSecond.displayedValues = (0..59).map { String.format("%02d", it) }.toTypedArray()
-
-        npHour.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
-        npMinute.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
-        npSecond.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+        npHour.setSelectedTextColor(tealColor)
+        npMinute.setSelectedTextColor(tealColor)
+        npSecond.setSelectedTextColor(tealColor)
     }
 
-    private fun setupSoundPicker() {
-        binding.layoutSound.setOnClickListener {
-            showSoundPickerDialog()
-        }
-    }
+    private fun setupSoundOptions() {
+        val radioGroup = binding.radioGroupSound
+        val btnCustomSound = binding.btnCustomSound
 
-    private fun showSoundPickerDialog() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_sound_picker, null)
-        val radioGroup = dialogView.findViewById<RadioGroup>(R.id.rgSounds)
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .create()
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        var tempSelectedPosition = availableSounds.indexOfFirst {
-            it.second == selectedResId || (it.second == -1 && selectedSoundUri != null)
-        }.let { if (it == -1) 0 else it }
-
-        val colorStateList = android.content.res.ColorStateList(
-            arrayOf(
-                intArrayOf(android.R.attr.state_checked),
-                intArrayOf(-android.R.attr.state_checked)
-            ),
-            intArrayOf(tealColor, android.graphics.Color.parseColor("#808080"))
-        )
-
-        availableSounds.forEachIndexed { index, (soundName, resId) ->
-            val radioButton = RadioButton(requireContext()).apply {
-                text = soundName
-                id = View.generateViewId()
-                textSize = 16f
-                setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
-
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    buttonTintList = colorStateList
-                }
-
-                setPadding(16, 24, 16, 24)
-                isChecked = (index == tempSelectedPosition)
-
-                setOnClickListener {
-                    tempSelectedPosition = index
-                }
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            selectedResId = when (checkedId) {
+                R.id.radioSoundAstro -> R.raw.astro
+                R.id.radioSoundRain -> R.raw.rainy
+                R.id.radioSoundBird -> R.raw.bird
+                R.id.radioSoundBird2 -> R.raw.bird2
+                R.id.radioSoundSmooth -> R.raw.smooth
+                else -> R.raw.astro
             }
-            radioGroup.addView(radioButton)
+            selectedSoundUri = null
         }
 
-        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
-            val (name, resId) = availableSounds[tempSelectedPosition]
-
-            if (resId == -1) {
-                dialog.dismiss()
-                soundPickerLauncher.launch(arrayOf("audio/*"))
-            } else {
-                selectedResId = resId
-                selectedSoundUri = null
-                updateSoundDisplay()
-                saveSoundPreferences()
-                dialog.dismiss()
-            }
-        }
-
-        dialog.showWithHiddenNavigation()
-    }
-
-    private fun setupKeepScreen() {
-        binding.switchKeepScreen.setOnClickListener {
-            isKeepScreenOn = !isKeepScreenOn
-            updateKeepScreenUI()
+        btnCustomSound.setOnClickListener {
+            soundPickerLauncher.launch(arrayOf("audio/*"))
         }
     }
 
-    private fun updateKeepScreenUI() {
-        if (isKeepScreenOn) {
-            binding.switchKeepScreen.setImageResource(R.drawable.ic_switch_on)
-            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        } else {
-            binding.switchKeepScreen.setImageResource(R.drawable.ic_switch_off)
+    private fun saveSoundPreferences() {
+        val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        prefs.edit().apply {
+            putString(KEY_SOUND_URI, selectedSoundUri?.toString())
+            putInt(KEY_SOUND_RES_ID, selectedResId)
+            apply()
+        }
+    }
+
+    private fun loadSoundPreferences() {
+        val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val uriString = prefs.getString(KEY_SOUND_URI, null)
+        selectedSoundUri = if (uriString != null) Uri.parse(uriString) else null
+        selectedResId = prefs.getInt(KEY_SOUND_RES_ID, R.raw.astro)
+
+        when (selectedResId) {
+            R.raw.astro -> binding.radioSoundAstro.isChecked = true
+            R.raw.bell -> binding.radioSoundRain.isChecked = true
+            R.raw.piano -> binding.radioSoundBird.isChecked = true
+                    }
+    }
+
+    private fun keepScreenOn() {
+        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        binding.imgSwitch.setImageResource(R.drawable.ic_switch_on)
+    }
+
+    private fun clearKeepScreen() {
+        if (binding.imgSwitch.drawable.constantState ==
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_switch_on)?.constantState) {
+            binding.imgSwitch.setImageResource(R.drawable.ic_switch_off)
             requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
@@ -239,7 +156,6 @@ class TimerFragment : Fragment() {
     private fun setupButtons() {
         binding.btnStartTimer.setOnClickListener { startTimer() }
         binding.btnRestart.setOnClickListener { goBackToPicker() }
-        binding.btnStopTimesUp.setOnClickListener { goBackToPicker() }
 
         var lastClickTime = 0L
         val debounceDelay = 500L
@@ -288,19 +204,27 @@ class TimerFragment : Fragment() {
             return
         }
 
-        isPaused = false
+        currentSeconds = totalSeconds
 
         val intent = Intent(requireContext(), TimerService::class.java).apply {
             action = TimerService.ACTION_START
             putExtra(TimerService.EXTRA_SECONDS, totalSeconds)
-            selectedSoundUri?.let { putExtra(TimerService.EXTRA_SOUND_URI, it.toString()) }
-            if (selectedResId != -1) putExtra(TimerService.EXTRA_SOUND_RES_ID, selectedResId)
+            putExtra(TimerService.EXTRA_SOUND_URI, selectedSoundUri?.toString())
+            putExtra(TimerService.EXTRA_SOUND_RES_ID, selectedResId)
         }
-        ContextCompat.startForegroundService(requireContext(), intent)
 
-        currentSeconds = totalSeconds
+        requireContext().startService(intent)
+
+        isPaused = false
         switchToRunningState()
         startSyncTimer()
+        keepScreenOn()
+        hideBottomNavigation()
+    }
+
+    private fun hideBottomNavigation() {
+        val bottomNav = activity?.findViewById<View>(R.id.custom_bottom_navigation)
+        bottomNav?.visibility = View.GONE
     }
 
     private fun startSyncTimer() {
@@ -310,22 +234,18 @@ class TimerFragment : Fragment() {
         syncRunnable = object : Runnable {
             override fun run() {
                 if (TimerService.isServiceRunning) {
-                    currentSeconds = TimerService.currentRemainingSeconds
-                    isPaused = TimerService.isCurrentlyPaused
+                    val remaining = TimerService.currentRemainingSeconds
+                    val total = TimerService.currentTotalSeconds
 
-                    updateUI(currentSeconds, totalSeconds)
-                    binding.btnStop.text = if (isPaused) "Continue" else "Stop"
+                    updateUI(remaining, total)
 
-                    if (currentSeconds == 0 && !isPaused) {
-                        switchToTimesUpState()
+                    if (remaining <= 0) {
                         stopSyncTimer()
-                    } else {
-                        syncHandler?.postDelayed(this, 100)
+                        return
                     }
+
+                    syncHandler?.postDelayed(this, 250)
                 } else {
-                    if (binding.layoutRunning.visibility == View.VISIBLE) {
-                        switchToPickerState()
-                    }
                     stopSyncTimer()
                 }
             }
@@ -361,7 +281,6 @@ class TimerFragment : Fragment() {
         requireContext().startService(intent)
 
         TimerService.reset()
-        clearCompletionState()
 
         stopSyncTimer()
         isPaused = false
@@ -377,7 +296,6 @@ class TimerFragment : Fragment() {
     private fun switchToRunningState() {
         binding.layoutPickers.visibility = View.GONE
         binding.layoutRunning.visibility = View.VISIBLE
-        binding.layoutTimesUp.visibility = View.GONE
         binding.tvTitle.visibility = View.VISIBLE
         binding.btnStop.text = if (isPaused) "Continue" else "Stop"
 
@@ -387,10 +305,8 @@ class TimerFragment : Fragment() {
     private fun switchToPickerState() {
         binding.layoutPickers.visibility = View.VISIBLE
         binding.layoutRunning.visibility = View.GONE
-        binding.layoutTimesUp.visibility = View.GONE
         binding.tvTitle.visibility = View.VISIBLE
         binding.progressRing.setProgress(1f)
-        binding.tvTimesUpSubtitle.text = "00h 00m 00s"
 
         imgTimerBackground.visibility = View.GONE
         showBottomNavigation()
@@ -401,140 +317,12 @@ class TimerFragment : Fragment() {
         bottomNav?.visibility = View.VISIBLE
     }
 
-    private fun switchToTimesUpState() {
-        Log.d("TimerFragment", "🟢 switchToTimesUpState() CALLED")
-        Log.d("TimerFragment", "🟢 Current visibility - Pickers: ${binding.layoutPickers.visibility}, Running: ${binding.layoutRunning.visibility}, TimesUp: ${binding.layoutTimesUp.visibility}")
-
-        binding.layoutPickers.visibility = View.GONE
-        binding.layoutRunning.visibility = View.GONE
-        binding.layoutTimesUp.visibility = View.VISIBLE
-        binding.tvTitle.visibility = View.GONE
-
-        val h = totalSeconds / 3600
-        val m = (totalSeconds % 3600) / 60
-        val s = totalSeconds % 60
-        binding.tvTimesUpSubtitle.text = "%02dh %02dm %02ds".format(h, m, s)
-
-        clearKeepScreen()
-        isPaused = false
-
-        imgTimerBackground.visibility = View.VISIBLE
-        setBackgroundTheme()
-        hideBottomNavigation()
-
-        Log.d("TimerFragment", "🟢 switchToTimesUpState() COMPLETED")
-        Log.d("TimerFragment", "🟢 New visibility - Pickers: ${binding.layoutPickers.visibility}, Running: ${binding.layoutRunning.visibility}, TimesUp: ${binding.layoutTimesUp.visibility}")
-    }
-
-    private fun hideBottomNavigation() {
-        val bottomNav = activity?.findViewById<View>(R.id.custom_bottom_navigation)
-        bottomNav?.visibility = View.GONE
-    }
-    private fun clearKeepScreen() {
-        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        isKeepScreenOn = false
-        updateKeepScreenUI()
-    }
-
-    private fun getFileNameFromUri(uri: Uri): String {
-        return try {
-            requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    val idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    if (idx >= 0) cursor.getString(idx) else "Custom Sound"
-                } else "Custom Sound"
-            } ?: "Custom Sound"
-        } catch (e: Exception) {
-            "Custom Sound"
-        }
-    }
-
-    private fun saveSoundPreferences() {
-        val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
-        prefs.edit().apply {
-            putString(KEY_SELECTED_SOUND_URI, selectedSoundUri?.toString() ?: "")
-            putInt(KEY_SELECTED_RES_ID, selectedResId)
-            apply()
-        }
-    }
-
-    private fun restoreSoundPreferences() {
-        val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
-
-        val uriString = prefs.getString(KEY_SELECTED_SOUND_URI, "")
-        selectedSoundUri = if (uriString.isNullOrEmpty()) null else Uri.parse(uriString)
-
-        selectedResId = prefs.getInt(KEY_SELECTED_RES_ID, R.raw.astro)
-
-        updateSoundDisplay()
-    }
-
-    private fun updateSoundDisplay() {
-        binding.tvSoundValue.text = when {
-            selectedSoundUri != null -> getFileNameFromUri(selectedSoundUri!!)
-            selectedResId == R.raw.astro -> "Astro"
-            selectedResId == R.raw.bell -> "Bell"
-            selectedResId == R.raw.piano -> "Piano"
-            else -> "Astro"
-        }
-    }
-
-    private fun setBackgroundTheme() {
-        val themeManager = ThemeManager(requireContext())
-        val theme = themeManager.getCurrentTheme()
-
-        theme?.let {
-            when (it.type) {
-                ThemeType.PRESET -> {
-                    imgTimerBackground.setImageResource(it.drawableRes)
-                }
-                ThemeType.CUSTOM -> {
-                    val file = themeManager.getCurrentThemeFile()
-                    file?.let { themeFile ->
-                        val bitmap = BitmapFactory.decodeFile(themeFile.absolutePath)
-                        imgTimerBackground.setImageBitmap(bitmap)
-                    }
-                }
-                ThemeType.ADD_NEW -> {
-                }
-            }
-        }
-    }
-
-
-    private fun clearCompletionState() {
-        val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-        editor.remove(KEY_TIMER_COMPLETED)
-        editor.remove(KEY_COMPLETED_TOTAL_SECONDS)
-        editor.remove(KEY_COMPLETION_TIME)
-        val success = editor.commit()  // ✅ Use commit()!
-        Log.d("TimerFragment", "Completion state cleared: $success")
-    }
-
-// KEEP your existing onResume() but ADD logs:
-
     override fun onResume() {
         super.onResume()
         activity?.showSystemUI(white = false)
 
         Log.d("TimerFragment", "🟢 onResume() called")
 
-        val prefs = requireContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
-        val isCompleted = prefs.getBoolean(KEY_TIMER_COMPLETED, false)
-
-        Log.d("TimerFragment", "🟢 onResume - isCompleted: $isCompleted")
-
-        // Always check completion state first - it persists across app restarts
-        if (isCompleted && binding.layoutTimesUp.visibility != View.VISIBLE) {
-            totalSeconds = prefs.getInt(KEY_COMPLETED_TOTAL_SECONDS, 0)
-            currentSeconds = 0
-            Log.d("TimerFragment", "🟢 onResume - Switching to Time's Up")
-            switchToTimesUpState()
-            return
-        }
-
-        // If not completed, sync with running service if exists
         if (TimerService.isServiceRunning && binding.layoutRunning.visibility != View.VISIBLE) {
             currentSeconds = TimerService.currentRemainingSeconds
             totalSeconds = TimerService.currentTotalSeconds
@@ -543,12 +331,9 @@ class TimerFragment : Fragment() {
             if (currentSeconds > 0) {
                 switchToRunningState()
                 startSyncTimer()
-            } else if (currentSeconds == 0) {
-                switchToTimesUpState()
             }
         }
     }
-
 
     override fun onPause() {
         super.onPause()

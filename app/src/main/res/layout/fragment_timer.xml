@@ -308,53 +308,7 @@
                     android:textColor="#555555" />
             </LinearLayout>
 
-            <!-- ========== STATE 3: TIME'S UP ========== -->
-            <LinearLayout
-                android:id="@+id/layoutTimesUp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:layout_marginTop="236dp"
-                android:visibility="gone">
 
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/ic_ringbel"
-                    android:layout_marginBottom="24dp"
-                    />
-
-
-                <TextView
-                    android:id="@+id/tvTimesUpTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/time_s_up"
-                    android:textSize="40dp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <TextView
-                    android:id="@+id/tvTimesUpSubtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/_5_seconds"
-                    android:layout_marginTop="8dp"
-                    android:textSize="24dp"
-                    android:layout_marginBottom="56dp"
-                    />
-
-                <Button
-                    android:id="@+id/btnStopTimesUp"
-                    android:layout_width="180dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/stop_"
-                    android:layout_marginTop="18dp"
-                    android:backgroundTint="#76E0C1"
-                    app:cornerRadius="24dp"
-                    android:textColor="#FFFFFF" />
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
