@@ -44,6 +44,8 @@ class TimerFragment : Fragment() {
     private lateinit var npSecond: com.shawnlin.numberpicker.NumberPicker
     private lateinit var imgTimerBackground: ImageView
 
+    private var lastPauseResumeTime = 0L
+    private val pauseResumeDebounce = 500L
     private var syncHandler: Handler? = null
     private var syncRunnable: Runnable? = null
 
@@ -238,13 +240,7 @@ class TimerFragment : Fragment() {
         }
     }
 
-    private fun togglePauseResume() {
-        if (isPaused) {
-            resumeTimer()
-        } else {
-            pauseTimer()
-        }
-    }
+
 
     private fun pauseTimer() {
         isPaused = true
@@ -290,6 +286,22 @@ class TimerFragment : Fragment() {
         startSyncTimer()
     }
 
+
+    private fun togglePauseResume() {
+        val current = System.currentTimeMillis()
+        if (current - lastPauseResumeTime < pauseResumeDebounce) {
+            Log.d("TimerFragment", "Ignoring rapid pause/resume click")
+            return
+        }
+        lastPauseResumeTime = current
+
+        if (isPaused) {
+            resumeTimer()
+        } else {
+            pauseTimer()
+        }
+    }
+
     private fun startSyncTimer() {
         stopSyncTimer()
 
@@ -306,7 +318,9 @@ class TimerFragment : Fragment() {
                     if (currentSeconds == 0 && !isPaused) {
                         stopSyncTimer()
                     } else {
-                        syncHandler?.postDelayed(this, 100)
+                        // ✅ Sync slower when paused (500ms vs 250ms)
+                        val delay = if (isPaused) 500L else 250L
+                        syncHandler?.postDelayed(this, delay)
                     }
                 } else {
                     if (binding.layoutRunning.visibility == View.VISIBLE) {
@@ -473,7 +487,13 @@ class TimerFragment : Fragment() {
             if (currentSeconds > 0) {
                 switchToRunningState()
                 startSyncTimer()
+            } else {
+                // ✅ Timer completed (0 seconds) - go back to picker
+                goBackToPicker()
             }
+        } else if (!TimerService.isServiceRunning && binding.layoutRunning.visibility == View.VISIBLE) {
+            // ✅ Service stopped but still showing running state - go back to picker
+            switchToPickerState()
         }
     }
 
