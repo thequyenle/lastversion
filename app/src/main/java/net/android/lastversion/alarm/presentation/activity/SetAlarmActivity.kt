@@ -77,7 +77,7 @@ class SetAlarmActivity : BaseActivity() {
     // Alarm settings
     private var snoozeMinutes = 5
     private var vibrationPattern = "default"
-    private var soundType = "default"
+    private var soundType = "astro"
     private var currentSoundUri = ""
 
 
@@ -91,7 +91,7 @@ class SetAlarmActivity : BaseActivity() {
             result.data?.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)?.let { uri ->
                 currentSoundUri = uri.toString()
                 soundType = "custom"
-                textSoundValue.text = "Tùy chỉnh"
+                updateDisplayTexts()  // ✅ CHANGE FROM textSoundValue.text = "Tùy chỉnh"
             }
         }
     }
@@ -281,7 +281,7 @@ class SetAlarmActivity : BaseActivity() {
             // Default settings
             snoozeMinutes = 5
             vibrationPattern = "default"
-            soundType = "default"
+            soundType = "astro"
             isSilentModeEnabled = false  // Hoặc true tùy ý
             updateSilentModeUI()  // ← THÊM DÒNG NÀY
 
@@ -341,17 +341,17 @@ class SetAlarmActivity : BaseActivity() {
             else -> getString(R.string.default_option)
         }
 
-        // Sound
+        // Sound - ✅ ONLY YOUR 3 SOUNDS
         textSoundValue.text = when (soundType) {
             "off" -> getString(R.string.off)
-            "default" -> getString(R.string.default_option)
-            "gentle" -> getString(R.string.gentle)
-            "loud" -> getString(R.string.loud)
-            "progressive" -> getString(R.string.progressive)
+            "astro" -> "Astro"
+            "bell" -> "Bell"
+            "piano" -> "Piano"
             "custom" -> getString(R.string.custom)
-            else -> getString(R.string.default_option)
+            else -> "Astro"  // Default to Astro instead of "Default"
         }
     }
+
 
     private fun updateSilentModeUI() {
         if (isSilentModeEnabled) {
@@ -425,7 +425,7 @@ class SetAlarmActivity : BaseActivity() {
             putExtra("is_silent_mode_enabled", isSilentModeEnabled)
             putExtra("sound_uri", currentSoundUri)
 
-            // Add the raw resource ID based on the sound type
+            // Add sound resource ID for raw files
             when (soundType) {
                 "astro" -> putExtra("sound_res_id", R.raw.astro)
                 "bell" -> putExtra("sound_res_id", R.raw.bell)
@@ -580,6 +580,8 @@ class SetAlarmActivity : BaseActivity() {
     }
 
 
+// In your showSoundDialog() method - update this entire method
+
     private fun showSoundDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sound_picker, null)
         val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
@@ -587,17 +589,17 @@ class SetAlarmActivity : BaseActivity() {
 
         tvDialogTitle.text = getString(R.string.choose_sound_type)
 
-        // Keep the same options and values, but make sure they match your raw folder files
+        // ✅ ONLY YOUR 3 SOUNDS + OFF + CUSTOM
         val options = arrayOf(
             getString(R.string.off),
-            "Astro",  // Match the filename in your raw folder
-            "Bell",   // Match the filename in your raw folder
-            "Piano",  // Match the filename in your raw folder
+            "Astro",
+            "Bell",
+            "Piano",
             getString(R.string.custom_ellipsis)
         )
 
         val values = arrayOf("off", "astro", "bell", "piano", "custom")
-        val currentIndex = values.indexOf(soundType).takeIf { it >= 0 } ?: 1
+        val currentIndex = values.indexOf(soundType).takeIf { it >= 0 } ?: 0
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
@@ -651,7 +653,6 @@ class SetAlarmActivity : BaseActivity() {
                 dialog.dismiss()
                 openSoundPicker()
             } else {
-                // Clear URI when using a preset sound from raw folder
                 currentSoundUri = ""
                 updateDisplayTexts()
                 dialog.dismiss()

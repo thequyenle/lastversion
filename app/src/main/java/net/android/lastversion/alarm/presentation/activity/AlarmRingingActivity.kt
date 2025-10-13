@@ -198,10 +198,21 @@ class AlarmRingingActivity : BaseActivity() {
         try {
             // Check if we received a sound_res_id from SetAlarmActivity
             val soundResId = intent.getIntExtra("sound_res_id", 0)
+            val soundType = intent.getStringExtra("sound_type") ?: "default"
 
-            if (soundResId != 0) {
+            // ✅ FIX: Play correct sound based on soundType
+            val resIdToPlay = when {
+                soundResId != 0 -> soundResId  // Use passed resource ID
+                soundType == "astro" -> R.raw.astro
+                soundType == "bell" -> R.raw.bell
+                soundType == "piano" -> R.raw.piano
+                soundType == "custom" && soundUri.isNotEmpty() -> 0  // Will use URI
+                else -> 0  // Will use default
+            }
+
+            if (resIdToPlay != 0) {
                 // Play from raw resource
-                mediaPlayer = MediaPlayer.create(this, soundResId).apply {
+                mediaPlayer = MediaPlayer.create(this, resIdToPlay).apply {
                     isLooping = true
                     setVolume(1.0f, 1.0f)
                     start()
@@ -238,29 +249,44 @@ class AlarmRingingActivity : BaseActivity() {
             e.printStackTrace()
         }
     }
+
     private fun startVibration(pattern: String) {
-        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
+        try {
+            vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
 
-        val vibrationPattern = when (pattern) {
-            "short" -> longArrayOf(0, 300, 200, 300)
-            "long" -> longArrayOf(0, 1000, 500, 1000)
-            "double" -> longArrayOf(0, 500, 200, 500, 200, 500)
-            else -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
-        }
+            // ✅ CHECK if vibrator exists
+            if (vibrator?.hasVibrator() != true) {
+                android.util.Log.e("AlarmRinging", "Device does not have vibrator")
+                return
+            }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator?.vibrate(
-                VibrationEffect.createWaveform(vibrationPattern, 0)
-            )
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator?.vibrate(vibrationPattern, 0)
+            val vibrationPattern = when (pattern) {
+                "short" -> longArrayOf(0, 300, 200, 300)
+                "long" -> longArrayOf(0, 1000, 500, 1000)
+                "double" -> longArrayOf(0, 500, 200, 500, 200, 500)
+                "default" -> longArrayOf(0, 1000, 500, 1000, 500, 1000)  // ✅ ADD default case
+                else -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator?.vibrate(
+                    VibrationEffect.createWaveform(vibrationPattern, 0)
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator?.vibrate(vibrationPattern, 0)
+            }
+
+            android.util.Log.d("AlarmRinging", "Vibration started with pattern: $pattern")
+        } catch (e: Exception) {
+            android.util.Log.e("AlarmRinging", "Error starting vibration", e)
+            e.printStackTrace()
         }
     }
 
