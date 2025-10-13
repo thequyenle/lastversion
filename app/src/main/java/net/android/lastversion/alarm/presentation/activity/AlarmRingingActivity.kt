@@ -196,37 +196,48 @@ class AlarmRingingActivity : BaseActivity() {
 
     private fun playSound(soundUri: String, bypassSilentMode: Boolean) {
         try {
-            val uri = if (soundUri.isNotEmpty()) {
-                Uri.parse(soundUri)
-            } else {
-                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            }
+            // Check if we received a sound_res_id from SetAlarmActivity
+            val soundResId = intent.getIntExtra("sound_res_id", 0)
 
-            mediaPlayer = MediaPlayer().apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    val audioAttributes = AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .build()
-                    setAudioAttributes(audioAttributes)
+            if (soundResId != 0) {
+                // Play from raw resource
+                mediaPlayer = MediaPlayer.create(this, soundResId).apply {
+                    isLooping = true
+                    setVolume(1.0f, 1.0f)
+                    start()
+                }
+            } else {
+                // Use URI if provided, otherwise fall back to default ringtone
+                val uri = if (soundUri.isNotEmpty()) {
+                    Uri.parse(soundUri)
                 } else {
-                    @Suppress("DEPRECATION")
-                    setAudioStreamType(AudioManager.STREAM_ALARM)
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                 }
 
-                setDataSource(this@AlarmRingingActivity, uri)
-                isLooping = true
-                setVolume(1.0f, 1.0f)
-                prepare()
-                start()
-            }
+                mediaPlayer = MediaPlayer().apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        val audioAttributes = AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build()
+                        setAudioAttributes(audioAttributes)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        setAudioStreamType(AudioManager.STREAM_ALARM)
+                    }
 
+                    setDataSource(this@AlarmRingingActivity, uri)
+                    isLooping = true
+                    setVolume(1.0f, 1.0f)
+                    prepare()
+                    start()
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
-
     private fun startVibration(pattern: String) {
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager

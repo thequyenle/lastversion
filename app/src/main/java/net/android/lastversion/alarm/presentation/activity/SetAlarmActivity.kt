@@ -413,30 +413,25 @@ class SetAlarmActivity : BaseActivity() {
     }
 
     private fun playPreviewSound() {
-        // Create intent for AlarmRingingActivity
         val intent = Intent(this, AlarmRingingActivity::class.java).apply {
             putExtra("alarm_id", 0) // Preview mode
             putExtra("alarm_hour", hourPicker.value)
             putExtra("alarm_minute", minutePicker.value)
             putExtra("alarm_am_pm", if (amPmSpinner.value == 0) "AM" else "PM")
             putExtra("alarm_note", alarmNote.ifBlank { "Wake Up!!!" })
-
-            // Pass the sound type, vibration pattern, and snooze settings
             putExtra("snooze_minutes", snoozeMinutes)
             putExtra("vibration_pattern", vibrationPattern)
             putExtra("sound_type", soundType)
             putExtra("is_silent_mode_enabled", isSilentModeEnabled)
+            putExtra("sound_uri", currentSoundUri)
 
-            // Add a new extra to pass the raw resource ID for preset sounds
+            // Add the raw resource ID based on the sound type
             when (soundType) {
                 "astro" -> putExtra("sound_res_id", R.raw.astro)
                 "bell" -> putExtra("sound_res_id", R.raw.bell)
                 "piano" -> putExtra("sound_res_id", R.raw.piano)
                 else -> putExtra("sound_res_id", 0)
             }
-
-            // Still include the sound URI for custom sounds
-            putExtra("sound_uri", currentSoundUri)
         }
         startActivity(intent)
     }
