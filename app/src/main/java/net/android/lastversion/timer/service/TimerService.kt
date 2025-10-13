@@ -185,6 +185,9 @@ class TimerService : Service() {
             return
         }
 
+        //  CRITICAL: Stop countdown first to prevent multiple runnables
+        stopCountdown()
+
         isPaused = false
         isCurrentlyPaused = false
 
@@ -195,7 +198,7 @@ class TimerService : Service() {
         }
 
         scheduleBackupAlarm()
-        startCountdown()
+        startCountdown()  // Now start fresh countdown
         updateNotification()
 
         Log.d("TimerService", "Timer resumed from $remainingSeconds seconds")
@@ -295,6 +298,7 @@ class TimerService : Service() {
     }
 
     private fun startCountdown() {
+        //  Always stop first to ensure no duplicate runnables
         stopCountdown()
 
         countdownHandler = Handler(Looper.getMainLooper())
@@ -306,7 +310,9 @@ class TimerService : Service() {
                         return
                     }
                     isPaused -> {
-                        countdownHandler?.postDelayed(this, 100)
+                        //  When paused, don't schedule next tick - just return
+                        Log.d("TimerService", "Countdown paused, waiting...")
+                        return
                     }
                     remainingSeconds > 0 -> {
                         remainingSeconds--
@@ -328,6 +334,7 @@ class TimerService : Service() {
             countdownHandler?.removeCallbacks(it)
             countdownRunnable = null
         }
+        countdownHandler = null
     }
 
     private fun onTimerCompleted() {

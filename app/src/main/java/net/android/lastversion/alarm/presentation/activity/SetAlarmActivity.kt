@@ -583,13 +583,12 @@ class SetAlarmActivity : BaseActivity() {
 
         val options = arrayOf(
             getString(R.string.off),
-            getString(R.string.default_option),
-            getString(R.string.gentle),
-            getString(R.string.loud),
-            getString(R.string.progressive),
+            "Astro",
+            "Bell",
+            "Piano",
             getString(R.string.custom_ellipsis)
         )
-        val values = arrayOf("off", "default", "gentle", "loud", "progressive", "custom")
+        val values = arrayOf("off", "astro", "bell", "piano", "custom")
         val currentIndex = values.indexOf(soundType).takeIf { it >= 0 } ?: 1
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)

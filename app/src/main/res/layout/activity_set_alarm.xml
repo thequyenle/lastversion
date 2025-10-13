@@ -44,7 +44,7 @@
         android:layout_marginEnd="16dp"
         android:background="?android:attr/selectableItemBackground"
         android:text="@string/save"
-        android:textColor="#00BCD4"
+        android:textColor="#84DCC6"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
         app:layout_constraintEnd_toEndOf="parent"
@@ -280,8 +280,8 @@
                     android:paddingEnd="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:src="@drawable/ic_snooze" />
 
                     <LinearLayout
@@ -321,8 +321,8 @@
                     android:paddingEnd="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:src="@drawable/ic_vibration" />
 
                     <LinearLayout
@@ -362,8 +362,8 @@
                     android:paddingEnd="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:src="@drawable/ic_sound" />
 
                     <LinearLayout
@@ -403,8 +403,8 @@
                     android:paddingEnd="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:src="@drawable/ic_silent_mode" />
 
                     <LinearLayout
@@ -449,8 +449,8 @@
                     android:paddingEnd="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:src="@drawable/ic_note" />
 
                     <LinearLayout
@@ -493,8 +493,8 @@
                     android:paddingEnd="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:src="@drawable/ic_preview" />
 
                     <TextView

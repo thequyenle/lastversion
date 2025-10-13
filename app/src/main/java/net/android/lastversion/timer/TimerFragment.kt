@@ -45,7 +45,7 @@ class TimerFragment : Fragment() {
     private lateinit var imgTimerBackground: ImageView
 
     private var lastPauseResumeTime = 0L
-    private val pauseResumeDebounce = 500L
+    private val pauseResumeDebounce = 800L
     private var syncHandler: Handler? = null
     private var syncRunnable: Runnable? = null
 
@@ -229,34 +229,24 @@ class TimerFragment : Fragment() {
     private fun setupButtons() {
         binding.btnStartTimer.setOnClickListener { startTimer() }
         binding.btnRestart.setOnClickListener { goBackToPicker() }
-
-        var lastClickTime = 0L
-        val debounceDelay = 500L
-        binding.btnStop.setOnClickListener {
-            val current = System.currentTimeMillis()
-            if (current - lastClickTime < debounceDelay) return@setOnClickListener
-            lastClickTime = current
-            togglePauseResume()
-        }
+        binding.btnStop.setOnClickListener { togglePauseResume() }
     }
 
-
-
     private fun pauseTimer() {
-        isPaused = true
         val intent = Intent(requireContext(), TimerService::class.java).apply {
             action = TimerService.ACTION_PAUSE
         }
         requireContext().startService(intent)
+        isPaused = true
         binding.btnStop.text = "Continue"
     }
 
     private fun resumeTimer() {
-        isPaused = false
         val intent = Intent(requireContext(), TimerService::class.java).apply {
             action = TimerService.ACTION_RESUME
         }
         requireContext().startService(intent)
+        isPaused = false
         binding.btnStop.text = "Stop"
     }
 
@@ -286,7 +276,6 @@ class TimerFragment : Fragment() {
         startSyncTimer()
     }
 
-
     private fun togglePauseResume() {
         val current = System.currentTimeMillis()
         if (current - lastPauseResumeTime < pauseResumeDebounce) {
@@ -312,17 +301,21 @@ class TimerFragment : Fragment() {
                     currentSeconds = TimerService.currentRemainingSeconds
                     isPaused = TimerService.isCurrentlyPaused
 
+                    // ✅ If timer completed (0 seconds), keep syncing until service stops
+                    if (currentSeconds == 0) {
+                        Log.d("TimerFragment", "Timer at 0 - waiting for service to complete")
+                        updateUI(0, totalSeconds)
+                        syncHandler?.postDelayed(this, 250L)
+                        return
+                    }
+
                     updateUI(currentSeconds, totalSeconds)
                     binding.btnStop.text = if (isPaused) "Continue" else "Stop"
 
-                    if (currentSeconds == 0 && !isPaused) {
-                        stopSyncTimer()
-                    } else {
-                        // ✅ Sync slower when paused (500ms vs 250ms)
-                        val delay = if (isPaused) 500L else 250L
-                        syncHandler?.postDelayed(this, delay)
-                    }
+                    val delay = if (isPaused) 500L else 250L
+                    syncHandler?.postDelayed(this, delay)
                 } else {
+                    // ✅ Service stopped - go back to picker
                     if (binding.layoutRunning.visibility == View.VISIBLE) {
                         switchToPickerState()
                     }

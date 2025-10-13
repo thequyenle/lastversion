@@ -49,8 +49,9 @@
             android:layout_marginStart="16dp"
             android:text="@string/volume"
             android:textSize="20sp"
-            android:textColor="@android:color/black"
+            android:textColor="#252525"
             app:layout_constraintStart_toEndOf="@id/icVolume"
+            android:fontFamily="@font/robotomedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -102,6 +103,8 @@
             android:layout_marginStart="16dp"
             android:text="@string/theme_alarm"
             android:textSize="20sp"
+            android:fontFamily="@font/robotomedium"
+
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icTheme"
             app:layout_constraintEnd_toEndOf="parent"
@@ -143,6 +146,8 @@
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icLanguage"
             app:layout_constraintEnd_toEndOf="parent"
+            android:fontFamily="@font/robotomedium"
+
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -178,6 +183,8 @@
             android:layout_marginStart="16dp"
             android:text="@string/rate_us"
             android:textSize="20sp"
+            android:fontFamily="@font/robotomedium"
+
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icRateUs"
             app:layout_constraintEnd_toEndOf="parent"
@@ -216,6 +223,8 @@
             android:layout_marginStart="16dp"
             android:text="@string/share"
             android:textSize="20sp"
+            android:fontFamily="@font/robotomedium"
+
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icShare"
             app:layout_constraintEnd_toEndOf="parent"
@@ -254,6 +263,7 @@
             android:layout_marginStart="16dp"
             android:text="@string/privacy"
             android:textSize="20sp"
+            android:fontFamily="@font/robotomedium"
             android:textColor="@android:color/black"
             app:layout_constraintStart_toEndOf="@id/icPrivacy"
             app:layout_constraintEnd_toEndOf="parent"
