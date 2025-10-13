@@ -37,6 +37,7 @@ import net.android.lastversion.alarm.presentation.utils.PermissionHelper
 import net.android.lastversion.alarm.presentation.viewmodel.AlarmUiState
 import net.android.lastversion.utils.showSystemUI
 import net.android.lastversion.utils.showWithHiddenNavigation
+import android.content.Context
 
 
 class AlarmFragment : Fragment() {
@@ -49,11 +50,15 @@ class AlarmFragment : Fragment() {
     private lateinit var alarmAdapter: AlarmAdapter
     private lateinit var permissionHelper: PermissionHelper
 
+
+
     private val alarmViewModel: AlarmViewModel by viewModels {
         AlarmViewModelFactory(
             repository = AlarmRepositoryImpl(AlarmDatabase.getDatabase(requireContext()).alarmDao()),
             alarmScheduler = AlarmSchedulerImpl(requireContext()),
-            preferences = AlarmPreferences(requireContext())
+            preferences = AlarmPreferences(requireContext()),  // ✅ ADD COMMA
+                    context = requireContext()  // ✅ ADD THIS
+
         )
     }
 

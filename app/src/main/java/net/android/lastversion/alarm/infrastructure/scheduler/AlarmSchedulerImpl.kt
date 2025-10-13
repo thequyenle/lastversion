@@ -75,7 +75,11 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
 
     override fun cancelAlarm(alarmId: Int) {
         try {
-            val intent = Intent(context, AlarmReceiver::class.java)
+            // ✅ Create Intent that matches the one used in scheduleAlarm
+            val intent = Intent(context, AlarmReceiver::class.java).apply {
+                putExtra(EXTRA_ALARM_ID, alarmId)
+            }
+
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
                 alarmId,
@@ -86,10 +90,12 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
             pendingIntent?.let {
                 alarmManager.cancel(it)
                 it.cancel()
-                Log.d(TAG, "Alarm $alarmId cancelled")
+                Log.d(TAG, "✅ Alarm $alarmId cancelled successfully")
+            } ?: run {
+                Log.w(TAG, "⚠️ PendingIntent not found for alarm $alarmId")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to cancel alarm $alarmId", e)
+            Log.e(TAG, "❌ Failed to cancel alarm $alarmId", e)
         }
     }
 

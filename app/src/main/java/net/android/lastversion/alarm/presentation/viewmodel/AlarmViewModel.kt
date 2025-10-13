@@ -1,5 +1,6 @@
 package net.android.lastversion.alarm.presentation.viewmodel
 
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -15,13 +16,16 @@ import net.android.lastversion.alarm.domain.usecase.GetAlarmsUseCase
 import net.android.lastversion.alarm.domain.usecase.SaveAlarmUseCase
 import net.android.lastversion.alarm.domain.usecase.ToggleAlarmUseCase
 import net.android.lastversion.alarm.infrastructure.scheduler.AlarmScheduler
+import android.content.Context
 
 class AlarmViewModel(
     private val getAlarmsUseCase: GetAlarmsUseCase,
     private val saveAlarmUseCase: SaveAlarmUseCase,
     private val deleteAlarmUseCase: DeleteAlarmUseCase,
     private val toggleAlarmUseCase: ToggleAlarmUseCase,
-    private val alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler,
+    private val context: Context  // ✅ ADD THIS LINE
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AlarmUiState())
@@ -89,6 +93,10 @@ class AlarmViewModel(
                 if (alarm != null) {
                     if (alarm.isEnabled) {
                         alarmScheduler.cancelAlarm(alarmId)
+                        // ✅ NEW: Send broadcast to stop currently ringing alarm
+                        val stopIntent = Intent("ACTION_STOP_ALARM")
+                        stopIntent.putExtra("alarm_id", alarmId)
+                        context.sendBroadcast(stopIntent)
                     } else {
                         alarmScheduler.scheduleAlarm(alarm.copy(isEnabled = true))
                     }
