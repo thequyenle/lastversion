@@ -51,7 +51,11 @@
             android:exported="false" />
         <activity
             android:name=".alarm.presentation.activity.AlarmRingingActivity"
-            android:exported="false" /> <!-- QUAN TRỌNG: Đăng ký receivers -->
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance" />
         <receiver
             android:name=".alarm.infrastructure.receiver.AlarmReceiver"
             android:enabled="true"

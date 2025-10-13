@@ -3,14 +3,14 @@
     <!-- Trạng thái được chọn -->
     <item android:state_selected="true">
         <shape android:shape="oval">
-            <solid android:color="#4DD0E1"/>
+            <solid android:color="#84DCC6"/>
         </shape>
     </item>
 
     <!-- Trạng thái bình thường -->
     <item>
         <shape android:shape="oval">
-            <solid android:color="#E0E0E0"/>
+            <solid android:color="#D9D9D9"/>
         </shape>
     </item>
 </selector>

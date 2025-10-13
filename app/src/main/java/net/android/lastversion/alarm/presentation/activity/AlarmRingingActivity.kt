@@ -44,6 +44,11 @@ class AlarmRingingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Remove dim/overlay from window
+
+        // ✅ IMPORTANT: Make alarm show over lock screen and turn screen on
+
+
+
         window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         // Show on lock screen
@@ -253,15 +258,20 @@ class AlarmRingingActivity : BaseActivity() {
     private fun startVibration(pattern: String) {
         try {
             vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                vibratorManager.defaultVibrator
+                val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+                vibratorManager?.defaultVibrator
             } else {
                 @Suppress("DEPRECATION")
-                getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
             }
 
-            // ✅ CHECK if vibrator exists
-            if (vibrator?.hasVibrator() != true) {
+            // ✅ CHECK if vibrator exists and has vibrator capability
+            if (vibrator == null) {
+                android.util.Log.e("AlarmRinging", "Vibrator service is null")
+                return
+            }
+
+            if (!vibrator!!.hasVibrator()) {
                 android.util.Log.e("AlarmRinging", "Device does not have vibrator")
                 return
             }
@@ -270,22 +280,21 @@ class AlarmRingingActivity : BaseActivity() {
                 "short" -> longArrayOf(0, 300, 200, 300)
                 "long" -> longArrayOf(0, 1000, 500, 1000)
                 "double" -> longArrayOf(0, 500, 200, 500, 200, 500)
-                "default" -> longArrayOf(0, 1000, 500, 1000, 500, 1000)  // ✅ ADD default case
+                "default" -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
                 else -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator?.vibrate(
-                    VibrationEffect.createWaveform(vibrationPattern, 0)
-                )
+                val effect = VibrationEffect.createWaveform(vibrationPattern, 0)  // 0 = repeat
+                vibrator?.vibrate(effect)
             } else {
                 @Suppress("DEPRECATION")
-                vibrator?.vibrate(vibrationPattern, 0)
+                vibrator?.vibrate(vibrationPattern, 0)  // 0 = repeat
             }
 
-            android.util.Log.d("AlarmRinging", "Vibration started with pattern: $pattern")
+            android.util.Log.d("AlarmRinging", "✅ Vibration started successfully with pattern: $pattern")
         } catch (e: Exception) {
-            android.util.Log.e("AlarmRinging", "Error starting vibration", e)
+            android.util.Log.e("AlarmRinging", "❌ Error starting vibration", e)
             e.printStackTrace()
         }
     }
