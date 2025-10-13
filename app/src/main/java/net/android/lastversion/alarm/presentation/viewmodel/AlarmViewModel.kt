@@ -17,6 +17,7 @@ import net.android.lastversion.alarm.domain.usecase.SaveAlarmUseCase
 import net.android.lastversion.alarm.domain.usecase.ToggleAlarmUseCase
 import net.android.lastversion.alarm.infrastructure.scheduler.AlarmScheduler
 import android.content.Context
+import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 
 class AlarmViewModel(
     private val getAlarmsUseCase: GetAlarmsUseCase,
@@ -92,21 +93,30 @@ class AlarmViewModel(
                 val alarm = _uiState.value.alarms.find { it.id == alarmId }
                 if (alarm != null) {
                     if (alarm.isEnabled) {
+                        // Cancel the scheduled alarm
                         alarmScheduler.cancelAlarm(alarmId)
-                        // ✅ NEW: Send broadcast to stop currently ringing alarm
+                        Log.d(TAG, "🔴 Alarm $alarmId is being turned OFF")
+
+                        // ✅ Stop currently ringing alarm directly via companion object
+                        AlarmRingingActivity.stopAlarmById(alarmId)
+                        Log.d(TAG, "🔇 Called stopAlarmById for alarm $alarmId")
+
+                        // Also send broadcast as backup
                         val stopIntent = Intent("ACTION_STOP_ALARM")
                         stopIntent.putExtra("alarm_id", alarmId)
                         context.sendBroadcast(stopIntent)
+                        Log.d(TAG, "📡 Broadcast sent to stop alarm $alarmId")
                     } else {
+                        Log.d(TAG, "🟢 Alarm $alarmId is being turned ON")
                         alarmScheduler.scheduleAlarm(alarm.copy(isEnabled = true))
                     }
                 }
 
                 toggleAlarmUseCase(alarmId)
-                Log.d(TAG, "Alarm toggled successfully")
+                Log.d(TAG, "✅ Alarm toggled successfully")
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = e.message)
-                Log.e(TAG, "Error toggling alarm", e)
+                Log.e(TAG, "❌ Error toggling alarm", e)
             }
         }
     }

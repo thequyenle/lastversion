@@ -18,11 +18,13 @@ import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "AlarmReceiver triggered")
+        Log.d(TAG, "🔔 AlarmReceiver triggered")
 
         val alarmId = intent.getIntExtra("alarm_id", -1)
+        Log.d(TAG, "📋 Received alarm_id from intent: $alarmId")
+
         if (alarmId == -1) {
-            Log.e(TAG, "Invalid alarm ID")
+            Log.e(TAG, "❌ Invalid alarm ID")
             return
         }
 
@@ -37,6 +39,8 @@ class AlarmReceiver : BroadcastReceiver() {
         val hour = intent.getIntExtra("alarm_hour", 0)
         val minute = intent.getIntExtra("alarm_minute", 0)
         val amPm = intent.getStringExtra("alarm_am_pm") ?: "AM"
+
+        Log.d(TAG, "📋 Starting AlarmRingingActivity with alarm_id: $alarmId")
 
         // ✅ FIX: Add sound resource ID based on sound type
         val soundResId = when (soundType) {

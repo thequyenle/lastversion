@@ -108,6 +108,8 @@ class SetAlarmViewModel(
         viewModelScope.launch {
             try {
                 val state = _uiState.value
+                android.util.Log.d("SetAlarmViewModel", "🔵 saveAlarm called with state.alarmId: ${state.alarmId}")
+
                 val alarm = Alarm(
                     id = state.alarmId,
                     hour = state.hour,
@@ -124,13 +126,19 @@ class SetAlarmViewModel(
                     soundUri = state.soundUri
                 )
 
+                android.util.Log.d("SetAlarmViewModel", "🔵 Created alarm object with id: ${alarm.id}")
+
                 val savedId = saveAlarmUseCase(alarm)
+                android.util.Log.d("SetAlarmViewModel", "🔵 saveAlarmUseCase returned savedId: $savedId")
+
                 val savedAlarm = if (alarm.id == 0) alarm.copy(id = savedId.toInt()) else alarm
+                android.util.Log.d("SetAlarmViewModel", "🔵 Final savedAlarm.id: ${savedAlarm.id}")
 
                 alarmScheduler.scheduleAlarm(savedAlarm)
                 onSuccess()
 
             } catch (e: Exception) {
+                android.util.Log.e("SetAlarmViewModel", "❌ Error saving alarm", e)
                 onError(e.message ?: "Failed to save alarm")
             }
         }

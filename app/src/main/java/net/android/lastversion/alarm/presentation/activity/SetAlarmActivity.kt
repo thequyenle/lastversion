@@ -394,14 +394,19 @@ class SetAlarmActivity : BaseActivity() {
                     soundUri = currentSoundUri
                 )
 
-                if (isEditMode) {
+                // ✅ FIX: Get the actual alarm ID after saving to database
+                val alarmToSchedule = if (isEditMode) {
                     repository.updateAlarm(alarm)
                     scheduler.cancelAlarm(alarm.id)
+                    alarm
                 } else {
-                    repository.insertAlarm(alarm)
+                    val newId = repository.insertAlarm(alarm)
+                    android.util.Log.d("SetAlarmActivity", "🔵 New alarm inserted with ID: $newId")
+                    alarm.copy(id = newId.toInt())
                 }
 
-                scheduler.scheduleAlarm(alarm)
+                android.util.Log.d("SetAlarmActivity", "🔵 Scheduling alarm with ID: ${alarmToSchedule.id}")
+                scheduler.scheduleAlarm(alarmToSchedule)
 
                 setResult(Activity.RESULT_OK)
                 finish()

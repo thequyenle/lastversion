@@ -96,6 +96,14 @@ class AlarmNotificationManager(private val context: Context) {
             val systemNotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+            // ✅ Delete existing channel to update settings
+            try {
+                systemNotificationManager.deleteNotificationChannel(ALARM_CHANNEL_ID)
+                android.util.Log.d(TAG, "Deleted old alarm notification channel")
+            } catch (e: Exception) {
+                android.util.Log.d(TAG, "No existing channel to delete")
+            }
+
             // Alarm channel
             val alarmChannel = NotificationChannel(
                 ALARM_CHANNEL_ID,
@@ -103,8 +111,8 @@ class AlarmNotificationManager(private val context: Context) {
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Alarm notifications"
-                enableVibration(true)
-                setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM), null)
+                enableVibration(false) // ✅ Disable notification vibration (AlarmRingingActivity handles it)
+                setSound(null, null) // ✅ Disable notification sound (AlarmRingingActivity handles it)
                 setBypassDnd(true)
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }
@@ -122,6 +130,7 @@ class AlarmNotificationManager(private val context: Context) {
 
             systemNotificationManager.createNotificationChannel(alarmChannel)
             systemNotificationManager.createNotificationChannel(snoozeChannel)
+            android.util.Log.d(TAG, "✅ Notification channels created (no sound/vibration)")
         }
     }
 
@@ -215,24 +224,9 @@ class AlarmNotificationManager(private val context: Context) {
             }
         }
 
-        // Sound - dựa vào soundType
-        if (soundType != "off") {
-            val alarmUri = when {
-                soundType == "custom" && soundUri.isNotEmpty() -> Uri.parse(soundUri)
-                else -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            }
-            builder.setSound(alarmUri)
-        }
-
-        // Vibration - dựa vào vibrationPattern
-        when (vibrationPattern) {
-            "off" -> { }
-            "short" -> builder.setVibrate(longArrayOf(0, 300, 200, 300))
-            "long" -> builder.setVibrate(longArrayOf(0, 1000, 500, 1000))
-            "double" -> builder.setVibrate(longArrayOf(0, 500, 200, 500, 200, 500))
-            "default" -> builder.setVibrate(longArrayOf(0, 1000, 500, 1000, 500, 1000))
-        }
+        // ✅ DON'T set sound or vibration on notification
+        // AlarmRingingActivity handles all sound and vibration
+        // This prevents the device ringtone from playing
 
         Log.d(TAG, "✅ Notification built successfully")
         Log.d(TAG, "========================================")

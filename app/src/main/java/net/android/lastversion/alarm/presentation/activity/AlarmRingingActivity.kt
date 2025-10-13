@@ -21,6 +21,10 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.android.lastversion.BaseActivity
 import net.android.lastversion.R
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
@@ -41,8 +45,44 @@ class AlarmRingingActivity : BaseActivity() {
     private var alarmId: Int = -1
     private var snoozeMinutes: Int = 5
 
-    // ✅ ADD THIS: Broadcast receiver for stopping alarm
-    private lateinit var stopAlarmReceiver: BroadcastReceiver
+    // ✅ Broadcast receiver for stopping alarm
+    private var stopAlarmReceiver: BroadcastReceiver? = null
+
+    companion object {
+        // Store reference to current instance
+        private var currentInstance: AlarmRingingActivity? = null
+
+        // Function to stop alarm from outside
+        fun stopAlarmById(alarmId: Int) {
+            android.util.Log.d("AlarmRinging", "🔴 stopAlarmById called for alarm $alarmId")
+            android.util.Log.d("AlarmRinging", "   Current instance: ${currentInstance != null}")
+            android.util.Log.d("AlarmRinging", "   Current instance alarmId: ${currentInstance?.alarmId}")
+
+            if (currentInstance == null) {
+                android.util.Log.w("AlarmRinging", "⚠️ No current instance found!")
+                return
+            }
+
+            currentInstance?.let { activity ->
+                if (activity.alarmId == alarmId) {
+                    android.util.Log.d("AlarmRinging", "✅ IDs match! Stopping alarm $alarmId")
+
+                    // Stop alarm sound and vibration
+                    activity.stopAlarm()
+                    activity.stopBellAnimation()
+
+                    // Cancel notification
+                    val notificationManager = AlarmNotificationManager(activity)
+                    notificationManager.cancelNotification(alarmId)
+
+                    // Close activity
+                    activity.finish()
+                } else {
+                    android.util.Log.w("AlarmRinging", "⚠️ IDs don't match! Requested: $alarmId, Current: ${activity.alarmId}")
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,23 +112,35 @@ class AlarmRingingActivity : BaseActivity() {
         setBackgroundTheme()
         initViews()
         loadAlarmData()
+
+        // ✅ Set this as current instance AFTER alarmId is loaded
+        currentInstance = this
+        android.util.Log.d("AlarmRinging", "📱 AlarmRingingActivity created for alarm $alarmId, instance set")
+
         startAlarm()
 
-        // ✅ ADD THIS: Register broadcast receiver
+        // ✅ Register broadcast receiver
         registerStopAlarmReceiver()
     }
 
-    // ✅ ADD THIS NEW FUNCTION
+    // ✅ Register broadcast receiver to stop alarm when switch is turned off
     private fun registerStopAlarmReceiver() {
         stopAlarmReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 val receivedAlarmId = intent.getIntExtra("alarm_id", -1)
-                android.util.Log.d("AlarmRinging", "Received stop broadcast for alarm $receivedAlarmId, current alarm: $alarmId")
+                android.util.Log.d("AlarmRinging", "🔴 Received stop broadcast for alarm $receivedAlarmId, current alarm: $alarmId")
 
                 if (receivedAlarmId == alarmId) {
-                    android.util.Log.d("AlarmRinging", "IDs match! Stopping alarm and closing activity")
+                    android.util.Log.d("AlarmRinging", "✅ IDs match! Stopping alarm and closing activity")
                     stopAlarm()
+
+                    // Cancel notification
+                    val notificationManager = AlarmNotificationManager(this@AlarmRingingActivity)
+                    notificationManager.cancelNotification(alarmId)
+
                     finish()
+                } else {
+                    android.util.Log.d("AlarmRinging", "⚠️ IDs don't match, ignoring broadcast")
                 }
             }
         }
@@ -100,7 +152,7 @@ class AlarmRingingActivity : BaseActivity() {
             registerReceiver(stopAlarmReceiver, filter)
         }
 
-        android.util.Log.d("AlarmRinging", "Broadcast receiver registered for alarm $alarmId")
+        android.util.Log.d("AlarmRinging", "📡 Broadcast receiver registered for alarm $alarmId")
     }
 
     private fun hideSystemBars() {
@@ -170,6 +222,8 @@ class AlarmRingingActivity : BaseActivity() {
 
     private fun loadAlarmData() {
         alarmId = intent.getIntExtra("alarm_id", -1)
+        android.util.Log.d("AlarmRinging", "📋 loadAlarmData: Received alarm_id from intent: $alarmId")
+
         val hour = intent.getIntExtra("alarm_hour", 0)
         val minute = intent.getIntExtra("alarm_minute", 0)
         val amPm = intent.getStringExtra("alarm_am_pm") ?: "AM"
@@ -350,18 +404,60 @@ class AlarmRingingActivity : BaseActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        // ✅ Check if alarm is still enabled when activity resumes
+        // This handles the case where user toggles switch while activity is in background
+        if (alarmId != 0) { // Skip for preview mode
+            checkAlarmStatus()
+        }
+    }
+
+    private fun checkAlarmStatus() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val repository = net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl(
+                    net.android.lastversion.alarm.data.local.database.AlarmDatabase.getDatabase(this@AlarmRingingActivity).alarmDao()
+                )
+                val alarm = repository.getAlarmById(alarmId)
+
+                withContext(Dispatchers.Main) {
+                    if (alarm == null || !alarm.isEnabled) {
+                        android.util.Log.d("AlarmRinging", "⚠️ Alarm $alarmId is disabled or deleted, closing activity")
+                        stopAlarm()
+                        stopBellAnimation()
+                        finish()
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("AlarmRinging", "Error checking alarm status", e)
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+
+        // Clear current instance
+        if (currentInstance == this) {
+            currentInstance = null
+        }
+
         stopAlarm()
         stopBellAnimation()
 
-        // ✅ ADD THIS: Unregister receiver
+        // ✅ Unregister receiver
         try {
-            unregisterReceiver(stopAlarmReceiver)
-            android.util.Log.d("AlarmRinging", "Broadcast receiver unregistered")
+            stopAlarmReceiver?.let {
+                unregisterReceiver(it)
+                android.util.Log.d("AlarmRinging", "📡 Broadcast receiver unregistered")
+            }
         } catch (e: Exception) {
-            android.util.Log.e("AlarmRinging", "Error unregistering receiver", e)
+            android.util.Log.e("AlarmRinging", "❌ Error unregistering receiver", e)
         }
+
+        android.util.Log.d("AlarmRinging", "📱 AlarmRingingActivity destroyed for alarm $alarmId")
     }
 
     private fun startBellAnimation() {
