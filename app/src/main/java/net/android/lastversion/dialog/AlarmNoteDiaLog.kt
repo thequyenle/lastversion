@@ -38,8 +38,15 @@ class AlarmNoteDialog(
         btnCancel = findViewById(R.id.btnCancel)
         btnOK = findViewById(R.id.btnOK)
 
-        etAlarmNote.setText(currentNote)
-        etAlarmNote.setSelection(currentNote.length)
+        // Nếu currentNote rỗng, dùng giá trị mặc định từ strings
+        val noteToDisplay = if (currentNote.isEmpty()) {
+            context.getString(R.string.wake_up_default)
+        } else {
+            currentNote
+        }
+
+        etAlarmNote.setText(noteToDisplay)
+        etAlarmNote.setSelection(noteToDisplay.length)
     }
 
     private fun setupClickListeners() {

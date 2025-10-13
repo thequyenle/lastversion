@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="280dp"
-    android:layout_height="wrap_content"
+    android:layout_width="240dp"
+    android:layout_height="152dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@drawable/bg_dialog_rounded"
-    android:padding="24dp">
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginHorizontal="50dp"
+    android:background="@drawable/bg_dialog_rounded">
 
     <TextView
         android:layout_width="wrap_content"
@@ -12,7 +15,8 @@
         android:text="@string/delete"
         android:textColor="#F44336"
         android:textSize="20sp"
-        android:textStyle="bold"
+android:fontFamily="@font/robotomedium"
+        android:layout_marginTop="15dp"
         android:layout_gravity="center"/>
 
     <TextView
@@ -23,13 +27,13 @@
         android:textSize="16sp"
         android:gravity="center"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="15dp"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#E0E0E0"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="12dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,12 +43,13 @@
         <TextView
             android:id="@+id/btnNo"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="43dp"
             android:layout_weight="1"
             android:text="@string/no"
             android:textColor="@android:color/black"
             android:textSize="16sp"
             android:gravity="center"
+            android:fontFamily="@font/robotomedium"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"/>
@@ -57,11 +62,12 @@
         <TextView
             android:id="@+id/btnYes"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="43dp"
             android:layout_weight="1"
             android:text="@string/yes"
             android:textColor="@android:color/black"
             android:textSize="16sp"
+            android:fontFamily="@font/robotomedium"
             android:gravity="center"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"

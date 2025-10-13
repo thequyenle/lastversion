@@ -30,7 +30,7 @@
     <!-- ==================== PERMISSIONS ==================== -->
     <string name="permission">Permission</string>
     <string name="grant_permission">Accorder la permission pour continuer</string>
-    <string name="permission_text">"Réveil" nécessite la permission d\'utiliser\nla caméra et les photos</string>
+    <string name="permission_text">"Alarm Clock" nécessite la permission d\'utiliser\nla caméra et les photos</string>
     <string name="camera_permission">Permission de caméra</string>
     <string name="notification_permission">Permission de notification</string>
     <string name="storage_permission">Permission de stockage</string>

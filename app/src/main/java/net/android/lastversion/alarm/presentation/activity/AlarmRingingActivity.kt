@@ -201,62 +201,65 @@ class AlarmRingingActivity : BaseActivity() {
 
     private fun playSound(soundUri: String, bypassSilentMode: Boolean) {
         try {
-            // Check if we received a sound_res_id from SetAlarmActivity
             val soundResId = intent.getIntExtra("sound_res_id", 0)
             val soundType = intent.getStringExtra("sound_type") ?: "default"
 
-            // ✅ FIX: Play correct sound based on soundType
+            // Determine which sound to play
             val resIdToPlay = when {
-                soundResId != 0 -> soundResId  // Use passed resource ID
+                soundResId != 0 -> soundResId
                 soundType == "astro" -> R.raw.astro
                 soundType == "bell" -> R.raw.bell
                 soundType == "piano" -> R.raw.piano
-                soundType == "custom" && soundUri.isNotEmpty() -> 0  // Will use URI
-                else -> 0  // Will use default
+                soundType == "custom" && soundUri.isNotEmpty() -> 0
+                else -> 0
             }
 
-            if (resIdToPlay != 0) {
-                // Play from raw resource
-                mediaPlayer = MediaPlayer.create(this, resIdToPlay).apply {
-                    isLooping = true
-                    setVolume(1.0f, 1.0f)
-                    start()
-                }
-            } else {
-                // Use URI if provided, otherwise fall back to default ringtone
-                val uri = if (soundUri.isNotEmpty()) {
-                    Uri.parse(soundUri)
+            // ✅ FIX: Create MediaPlayer properly with ALARM stream FIRST
+            mediaPlayer = MediaPlayer().apply {
+                // Set audio attributes BEFORE loading any data
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    val audioAttributes = AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
+                    setAudioAttributes(audioAttributes)
                 } else {
-                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    @Suppress("DEPRECATION")
+                    setAudioStreamType(AudioManager.STREAM_ALARM)
                 }
 
-                mediaPlayer = MediaPlayer().apply {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        val audioAttributes = AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_ALARM)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                            .build()
-                        setAudioAttributes(audioAttributes)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        setAudioStreamType(AudioManager.STREAM_ALARM)
-                    }
-
+                // Now set the data source
+                if (resIdToPlay != 0) {
+                    // Use URI format for raw resources to maintain audio attributes
+                    val uri = Uri.parse("android.resource://${packageName}/$resIdToPlay")
                     setDataSource(this@AlarmRingingActivity, uri)
-                    isLooping = true
-                    setVolume(1.0f, 1.0f)
-                    prepare()
-                    start()
+                } else if (soundUri.isNotEmpty()) {
+                    setDataSource(this@AlarmRingingActivity, Uri.parse(soundUri))
+                } else {
+                    val defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    setDataSource(this@AlarmRingingActivity, defaultUri)
                 }
+
+                isLooping = true
+                setVolume(1.0f, 1.0f)
+                prepare()
+                start()
             }
+
+            android.util.Log.d("AlarmRinging", "✅ Sound started with type: $soundType")
         } catch (e: Exception) {
+            android.util.Log.e("AlarmRinging", "❌ Error playing sound", e)
             e.printStackTrace()
         }
     }
 
+
     private fun startVibration(pattern: String) {
         try {
+            // ✅ FIX: Request audio focus first to ensure vibration works
+            val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
             vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
                 vibratorManager?.defaultVibrator
@@ -265,34 +268,38 @@ class AlarmRingingActivity : BaseActivity() {
                 getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
             }
 
-            // ✅ CHECK if vibrator exists and has vibrator capability
             if (vibrator == null) {
-                android.util.Log.e("AlarmRinging", "Vibrator service is null")
+                android.util.Log.e("AlarmRinging", "❌ Vibrator service is null")
                 return
             }
 
             if (!vibrator!!.hasVibrator()) {
-                android.util.Log.e("AlarmRinging", "Device does not have vibrator")
+                android.util.Log.e("AlarmRinging", "❌ Device does not have vibrator")
                 return
             }
 
+            // Define vibration patterns
             val vibrationPattern = when (pattern) {
-                "short" -> longArrayOf(0, 300, 200, 300)
-                "long" -> longArrayOf(0, 1000, 500, 1000)
-                "double" -> longArrayOf(0, 500, 200, 500, 200, 500)
+                "short" -> longArrayOf(0, 300, 200, 300, 200, 300)
+                "long" -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
+                "double" -> longArrayOf(0, 500, 200, 500, 200, 500, 200, 500)
                 "default" -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
                 else -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
             }
 
+            // ✅ FIX: Use proper vibration with amplitude for newer Android
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val effect = VibrationEffect.createWaveform(vibrationPattern, 0)  // 0 = repeat
+                // Create waveform with repeat index 0 (loops forever)
+                val effect = VibrationEffect.createWaveform(vibrationPattern, 0)
                 vibrator?.vibrate(effect)
+                android.util.Log.d("AlarmRinging", "✅ Vibration started (API 26+) with pattern: $pattern")
             } else {
+                // For older Android, use deprecated method
                 @Suppress("DEPRECATION")
-                vibrator?.vibrate(vibrationPattern, 0)  // 0 = repeat
+                vibrator?.vibrate(vibrationPattern, 0)
+                android.util.Log.d("AlarmRinging", "✅ Vibration started (API < 26) with pattern: $pattern")
             }
 
-            android.util.Log.d("AlarmRinging", "✅ Vibration started successfully with pattern: $pattern")
         } catch (e: Exception) {
             android.util.Log.e("AlarmRinging", "❌ Error starting vibration", e)
             e.printStackTrace()

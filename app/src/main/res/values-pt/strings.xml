@@ -30,7 +30,7 @@
     <!-- ==================== PERMISSIONS ==================== -->
     <string name="permission">Permissão</string>
     <string name="grant_permission">Conceder permissão para continuar</string>
-    <string name="permission_text">"Despertador" requer permissão para usar\na câmera e fotos</string>
+    <string name="permission_text">"Alarm Clock" requer permissão para usar\na câmera e fotos</string>
     <string name="camera_permission">Permissão de câmera</string>
     <string name="notification_permission">Permissão de notificação</string>
     <string name="storage_permission">Permissão de armazenamento</string>

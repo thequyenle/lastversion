@@ -30,7 +30,7 @@
     <!-- ==================== PERMISSIONS ==================== -->
     <string name="permission">अनुमति</string>
     <string name="grant_permission">जारी रखने के लिए अनुमति दें</string>
-    <string name="permission_text">"अलार्म घड़ी" को कैमरा और\nफ़ोटो का उपयोग करने की अनुमति चाहिए</string>
+    <string name="permission_text">"Alarm Clock" को कैमरा और\nफ़ोटो का उपयोग करने की अनुमति चाहिए</string>
     <string name="camera_permission">कैमरा अनुमति</string>
     <string name="notification_permission">सूचना अनुमति</string>
     <string name="storage_permission">स्टोरेज अनुमति</string>
