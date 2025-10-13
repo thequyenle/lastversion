@@ -27,12 +27,13 @@ class ThemeActivity : BaseActivity() {
     private lateinit var btnSave: TextView
     private val themes = mutableListOf<Theme>()
 
+    // In the pickImageLauncher function, modify to:
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
             val themeId = themeManager.addCustomTheme(it)
-            themeManager.saveSelectedTheme(themeId, ThemeType.CUSTOM)
+            // Don't save the selected theme yet, just add it
             loadThemes()
             Toast.makeText(this, "Theme added!", Toast.LENGTH_SHORT).show()
         }
@@ -51,7 +52,22 @@ class ThemeActivity : BaseActivity() {
         }
 
         btnSave = findViewById(R.id.btnSave)
+
+        // Initially disable save button until a theme is selected
+        btnSave.isEnabled = false
+        btnSave.alpha = 0.5f
+
         btnSave.setOnClickListener {
+            // Get the temporarily selected theme ID from the adapter
+            val selectedThemeId = themeAdapter.getSelectedThemeId()
+            val selectedTheme = themes.find { it.id == selectedThemeId }
+
+            // Save the selected theme
+            if (selectedTheme != null) {
+                themeManager.saveSelectedTheme(selectedTheme.id, selectedTheme.type)
+                Toast.makeText(this, "Theme saved!", Toast.LENGTH_SHORT).show()
+            }
+
             finish()
         }
 
@@ -72,23 +88,30 @@ class ThemeActivity : BaseActivity() {
     private fun loadThemes() {
         themes.clear()
 
-        // Thêm empty slot cho nút Add
-        themes.add(Theme("add_new", 0, ThemeType.ADD_NEW))
+        // Thêm ảnh custom
+        themes.addAll(themeManager.getCustomThemes())
 
         // Thêm ảnh có sẵn
         themes.addAll(ThemeManager.PRESET_THEMES)
 
-        // Thêm ảnh custom
-        themes.addAll(themeManager.getCustomThemes())
+        // Thêm empty slot cho nút Add ở vị trí đầu tiên
+        themes.add(0, Theme("add_new", 0, ThemeType.ADD_NEW))
 
         themeAdapter.submitList(themes.toList())
     }
+
 
     // ========== ADAPTER ==========
     // ✅ BỎ "inner" để có thể dùng companion object
     private inner class ThemeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private var themes = listOf<Theme>()
+        private var tempSelectedThemeId = themeManager.getCurrentTheme()?.id
+
+        // Add this method to get the selected theme ID
+        fun getSelectedThemeId(): String? {
+            return tempSelectedThemeId
+        }
 
         // ✅ Constants ở ngoài companion object
         private val VIEW_TYPE_ADD = 0
@@ -143,9 +166,8 @@ class ThemeActivity : BaseActivity() {
             private val selectedIndicator: ImageView = itemView.findViewById(R.id.selectedIndicator)
 
             fun bind(theme: Theme) {
-                // Hiển thị selected indicator
-                val currentThemeId = themeManager.getCurrentTheme()?.id
-                selectedIndicator.visibility = if (theme.id == currentThemeId) {
+                // Hiển thị selected indicator based on temporary selection
+                selectedIndicator.visibility = if (theme.id == tempSelectedThemeId) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -172,8 +194,13 @@ class ThemeActivity : BaseActivity() {
                 }
 
                 itemView.setOnClickListener {
-                    themeManager.saveSelectedTheme(theme.id, theme.type)
+                    // Only update temporary selection
+                    tempSelectedThemeId = theme.id
                     notifyDataSetChanged()
+
+                    // Enable the save button
+                    btnSave.isEnabled = true
+                    btnSave.alpha = 1.0f
                 }
             }
         }

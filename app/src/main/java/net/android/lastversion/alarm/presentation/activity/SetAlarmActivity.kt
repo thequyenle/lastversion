@@ -413,22 +413,33 @@ class SetAlarmActivity : BaseActivity() {
     }
 
     private fun playPreviewSound() {
+        // Create intent for AlarmRingingActivity
         val intent = Intent(this, AlarmRingingActivity::class.java).apply {
             putExtra("alarm_id", 0) // Preview mode
             putExtra("alarm_hour", hourPicker.value)
             putExtra("alarm_minute", minutePicker.value)
-            putExtra("alarm_am_pm", if (amPmSpinner.value == 0) "AM" else "PM")  // ĐỔI DÒNG NÀY
-            putExtra("alarm_note", alarmNote.ifBlank { "Wake Up!!!" })  // ← Thêm .ifEmpty
+            putExtra("alarm_am_pm", if (amPmSpinner.value == 0) "AM" else "PM")
+            putExtra("alarm_note", alarmNote.ifBlank { "Wake Up!!!" })
+
+            // Pass the sound type, vibration pattern, and snooze settings
             putExtra("snooze_minutes", snoozeMinutes)
             putExtra("vibration_pattern", vibrationPattern)
             putExtra("sound_type", soundType)
             putExtra("is_silent_mode_enabled", isSilentModeEnabled)
+
+            // Add a new extra to pass the raw resource ID for preset sounds
+            when (soundType) {
+                "astro" -> putExtra("sound_res_id", R.raw.astro)
+                "bell" -> putExtra("sound_res_id", R.raw.bell)
+                "piano" -> putExtra("sound_res_id", R.raw.piano)
+                else -> putExtra("sound_res_id", 0)
+            }
+
+            // Still include the sound URI for custom sounds
             putExtra("sound_uri", currentSoundUri)
         }
         startActivity(intent)
     }
-
-
     private fun showSnoozeDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sound_picker, null)
         val tvDialogTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
@@ -581,13 +592,15 @@ class SetAlarmActivity : BaseActivity() {
 
         tvDialogTitle.text = getString(R.string.choose_sound_type)
 
+        // Keep the same options and values, but make sure they match your raw folder files
         val options = arrayOf(
             getString(R.string.off),
-            "Astro",
-            "Bell",
-            "Piano",
+            "Astro",  // Match the filename in your raw folder
+            "Bell",   // Match the filename in your raw folder
+            "Piano",  // Match the filename in your raw folder
             getString(R.string.custom_ellipsis)
         )
+
         val values = arrayOf("off", "astro", "bell", "piano", "custom")
         val currentIndex = values.indexOf(soundType).takeIf { it >= 0 } ?: 1
 
@@ -643,6 +656,8 @@ class SetAlarmActivity : BaseActivity() {
                 dialog.dismiss()
                 openSoundPicker()
             } else {
+                // Clear URI when using a preset sound from raw folder
+                currentSoundUri = ""
                 updateDisplayTexts()
                 dialog.dismiss()
             }
@@ -650,7 +665,6 @@ class SetAlarmActivity : BaseActivity() {
 
         dialog.showWithHiddenNavigation()
     }
-
 
     private fun openSoundPicker() {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
