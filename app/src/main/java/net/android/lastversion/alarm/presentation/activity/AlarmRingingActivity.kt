@@ -1,10 +1,11 @@
 package net.android.lastversion.alarm.presentation.activity
 
 import android.app.KeyguardManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -20,7 +21,6 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import net.android.lastversion.BaseActivity
 import net.android.lastversion.R
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
@@ -41,16 +41,15 @@ class AlarmRingingActivity : BaseActivity() {
     private var alarmId: Int = -1
     private var snoozeMinutes: Int = 5
 
+    // ✅ ADD THIS: Broadcast receiver for stopping alarm
+    private lateinit var stopAlarmReceiver: BroadcastReceiver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Remove dim/overlay from window
-
-        // ✅ IMPORTANT: Make alarm show over lock screen and turn screen on
-
-
 
         window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+
         // Show on lock screen
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
@@ -69,26 +68,48 @@ class AlarmRingingActivity : BaseActivity() {
 
         setContentView(R.layout.activity_alarm_ringing)
 
-        // Hide system bars for full screen
         hideSystemBars()
-
-        // Set theme background
         setBackgroundTheme()
-
         initViews()
         loadAlarmData()
         startAlarm()
+
+        // ✅ ADD THIS: Register broadcast receiver
+        registerStopAlarmReceiver()
+    }
+
+    // ✅ ADD THIS NEW FUNCTION
+    private fun registerStopAlarmReceiver() {
+        stopAlarmReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                val receivedAlarmId = intent.getIntExtra("alarm_id", -1)
+                android.util.Log.d("AlarmRinging", "Received stop broadcast for alarm $receivedAlarmId, current alarm: $alarmId")
+
+                if (receivedAlarmId == alarmId) {
+                    android.util.Log.d("AlarmRinging", "IDs match! Stopping alarm and closing activity")
+                    stopAlarm()
+                    finish()
+                }
+            }
+        }
+
+        val filter = IntentFilter("ACTION_STOP_ALARM")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(stopAlarmReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(stopAlarmReceiver, filter)
+        }
+
+        android.util.Log.d("AlarmRinging", "Broadcast receiver registered for alarm $alarmId")
     }
 
     private fun hideSystemBars() {
-        // Set window to draw edge-to-edge (no rounded corners)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.attributes.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // Android 11+ (API 30+)
             window.setDecorFitsSystemWindows(false)
             window.insetsController?.let { controller ->
                 controller.hide(
@@ -99,7 +120,6 @@ class AlarmRingingActivity : BaseActivity() {
                     android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else {
-            // Android 10 and below
             @Suppress("DEPRECATION")
             window.decorView.systemUiVisibility = (
                     View.SYSTEM_UI_FLAG_FULLSCREEN or
@@ -114,22 +134,18 @@ class AlarmRingingActivity : BaseActivity() {
 
     private fun setBackgroundTheme() {
         val themeManager = ThemeManager(this)
-
-        // ✅ CRITICAL: Use ImageView instead of root layout background
         val imgBackground = findViewById<ImageView>(R.id.imgBackground)
 
         val theme = themeManager.getCurrentTheme()
         theme?.let {
             when (it.type) {
                 ThemeType.PRESET -> {
-                    // ✅ Set image resource (not background)
                     imgBackground.setImageResource(it.drawableRes)
                 }
                 ThemeType.CUSTOM -> {
                     val file = themeManager.getCurrentThemeFile()
                     file?.let { themeFile ->
                         val bitmap = BitmapFactory.decodeFile(themeFile.absolutePath)
-                        // ✅ Set bitmap (not background)
                         imgBackground.setImageBitmap(bitmap)
                     }
                 }
@@ -162,10 +178,8 @@ class AlarmRingingActivity : BaseActivity() {
 
         android.util.Log.d("AlarmRinging", "Received note: '$note'")
 
-        // Display time
         tvTime.text = String.format("%02d:%02d %s", hour, minute, amPm)
 
-        // Display note - hide TextView if note is empty
         if (note.isNotEmpty()) {
             android.util.Log.d("AlarmRinging", "Showing note")
             tvNote.text = note
@@ -174,7 +188,6 @@ class AlarmRingingActivity : BaseActivity() {
             tvNote.visibility = View.GONE
         }
 
-        // Hide snooze button if snooze disabled
         if (snoozeMinutes == 0) {
             btnSnooze.visibility = View.GONE
         } else {
@@ -188,12 +201,10 @@ class AlarmRingingActivity : BaseActivity() {
         val vibrationPattern = intent.getStringExtra("vibration_pattern") ?: "default"
         val isSilentModeEnabled = intent.getBooleanExtra("is_silent_mode_enabled", false)
 
-        // Play sound
         if (soundType != "off") {
             playSound(soundUri, isSilentModeEnabled)
         }
 
-        // Start vibration
         if (vibrationPattern != "off") {
             startVibration(vibrationPattern)
         }
@@ -204,7 +215,6 @@ class AlarmRingingActivity : BaseActivity() {
             val soundResId = intent.getIntExtra("sound_res_id", 0)
             val soundType = intent.getStringExtra("sound_type") ?: "default"
 
-            // Determine which sound to play
             val resIdToPlay = when {
                 soundResId != 0 -> soundResId
                 soundType == "astro" -> R.raw.astro
@@ -214,9 +224,7 @@ class AlarmRingingActivity : BaseActivity() {
                 else -> 0
             }
 
-            // ✅ FIX: Create MediaPlayer properly with ALARM stream FIRST
             mediaPlayer = MediaPlayer().apply {
-                // Set audio attributes BEFORE loading any data
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     val audioAttributes = AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_ALARM)
@@ -228,9 +236,7 @@ class AlarmRingingActivity : BaseActivity() {
                     setAudioStreamType(AudioManager.STREAM_ALARM)
                 }
 
-                // Now set the data source
                 if (resIdToPlay != 0) {
-                    // Use URI format for raw resources to maintain audio attributes
                     val uri = Uri.parse("android.resource://${packageName}/$resIdToPlay")
                     setDataSource(this@AlarmRingingActivity, uri)
                 } else if (soundUri.isNotEmpty()) {
@@ -254,12 +260,8 @@ class AlarmRingingActivity : BaseActivity() {
         }
     }
 
-
     private fun startVibration(pattern: String) {
         try {
-            // ✅ FIX: Request audio focus first to ensure vibration works
-            val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
             vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
                 vibratorManager?.defaultVibrator
@@ -278,7 +280,6 @@ class AlarmRingingActivity : BaseActivity() {
                 return
             }
 
-            // Define vibration patterns
             val vibrationPattern = when (pattern) {
                 "short" -> longArrayOf(0, 300, 200, 300, 200, 300)
                 "long" -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
@@ -287,14 +288,11 @@ class AlarmRingingActivity : BaseActivity() {
                 else -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
             }
 
-            // ✅ FIX: Use proper vibration with amplitude for newer Android
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Create waveform with repeat index 0 (loops forever)
                 val effect = VibrationEffect.createWaveform(vibrationPattern, 0)
                 vibrator?.vibrate(effect)
                 android.util.Log.d("AlarmRinging", "✅ Vibration started (API 26+) with pattern: $pattern")
             } else {
-                // For older Android, use deprecated method
                 @Suppress("DEPRECATION")
                 vibrator?.vibrate(vibrationPattern, 0)
                 android.util.Log.d("AlarmRinging", "✅ Vibration started (API < 26) with pattern: $pattern")
@@ -356,6 +354,14 @@ class AlarmRingingActivity : BaseActivity() {
         super.onDestroy()
         stopAlarm()
         stopBellAnimation()
+
+        // ✅ ADD THIS: Unregister receiver
+        try {
+            unregisterReceiver(stopAlarmReceiver)
+            android.util.Log.d("AlarmRinging", "Broadcast receiver unregistered")
+        } catch (e: Exception) {
+            android.util.Log.e("AlarmRinging", "Error unregistering receiver", e)
+        }
     }
 
     private fun startBellAnimation() {
