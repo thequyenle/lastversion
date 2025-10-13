@@ -42,6 +42,8 @@
     <string name="notification_permission_granted">Permissão de notificação já concedida</string>
     <string name="permission_granted">Permissão concedida</string>
     <string name="permission_required">Permissão necessária</string>
+    <string name="alarm_duplicated_">Alarme duplicado</string>
+
     <string name="permission_required_message">A permissão de %s é necessária para o aplicativo funcionar corretamente. Por favor, ative-a nas configurações do aplicativo.</string>
     <string name="camera">Câmera</string>
     <string name="storage">Armazenamento</string>

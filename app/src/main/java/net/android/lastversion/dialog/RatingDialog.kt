@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import com.willy.ratingbar.ScaleRatingBar
 import net.android.lastversion.R
+import net.android.lastversion.utils.setOnClickListenerWithDebounce
 
 class RatingDialog(
     context: Context,
@@ -41,6 +42,9 @@ class RatingDialog(
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
         }
+
+        setCancelable(false)
+        setCanceledOnTouchOutside(false)
 
         initViews()
         setupInitialState()
@@ -107,7 +111,7 @@ class RatingDialog(
         }
 
         // Vote button click
-        btnVote.setOnClickListener {
+        btnVote.setOnClickListenerWithDebounce {
             if (selectedRating > 0) {
                 onRatingSubmitted?.invoke(selectedRating)
                 dismiss()
@@ -115,7 +119,7 @@ class RatingDialog(
         }
 
         // Cancel button click
-        btnCancel.setOnClickListener {
+        btnCancel.setOnClickListenerWithDebounce {
             dismiss()
         }
 

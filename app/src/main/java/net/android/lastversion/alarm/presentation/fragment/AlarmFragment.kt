@@ -37,6 +37,7 @@ import net.android.lastversion.alarm.presentation.utils.PermissionHelper
 import net.android.lastversion.alarm.presentation.viewmodel.AlarmUiState
 import net.android.lastversion.utils.showSystemUI
 import net.android.lastversion.utils.showWithHiddenNavigation
+import net.android.lastversion.utils.setOnClickListenerWithDebounce
 import android.content.Context
 
 
@@ -165,7 +166,7 @@ class AlarmFragment : Fragment() {
         itemTouchHelper.attachToRecyclerView(recyclerViewAlarms)
     }
     private fun setupFab() {
-        fabAddAlarm.setOnClickListener {
+        fabAddAlarm.setOnClickListenerWithDebounce {
             openSetAlarmActivity(null)
         }
     }
@@ -236,12 +237,19 @@ class AlarmFragment : Fragment() {
                 }
                 dialog.dismiss()
             }
+            .setCancelable(true)
             .create()
 
-        // Bo góc cho dialog
         dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_rounded)
 
         dialog.showWithHiddenNavigation()
+
+        // Convert dp to pixels
+        val width = (200 * resources.displayMetrics.density).toInt()
+        val height = (108 * resources.displayMetrics.density).toInt()
+
+        // Set fixed dimensions
+        dialog.window?.setLayout(width, height)
     }
 
     // Thay thế hàm deleteAlarmWithUndo trong AlarmFragment.kt
@@ -252,15 +260,16 @@ class AlarmFragment : Fragment() {
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setView(dialogView)
+            .setCancelable(false)
             .create()
 
         dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_rounded)
 
-        dialogView.findViewById<View>(R.id.btnNo).setOnClickListener {
+        dialogView.findViewById<View>(R.id.btnNo).setOnClickListenerWithDebounce {
             dialog.dismiss()
         }
 
-        dialogView.findViewById<View>(R.id.btnYes).setOnClickListener {
+        dialogView.findViewById<View>(R.id.btnYes).setOnClickListenerWithDebounce {
             // ✅ Lưu bản copy đầy đủ của alarm trước khi xóa
             val deletedAlarm = alarm.copy()
 
@@ -300,6 +309,11 @@ class AlarmFragment : Fragment() {
         }
 
         dialog.show()
+
+        // Convert dp to pixels and set fixed dimensions
+        val width = (240 * resources.displayMetrics.density).toInt()
+        val height = (152 * resources.displayMetrics.density).toInt()
+        dialog.window?.setLayout(width, height)
     }
 
     private fun duplicateAlarm(alarm: Alarm) {
@@ -309,7 +323,7 @@ class AlarmFragment : Fragment() {
                 label = "${alarm.label}"
             )
             alarmViewModel.saveAlarm(duplicatedAlarm)
-            showSnackbar("Alarm duplicated")
+            showSnackbar(getString(R.string.alarm_duplicated_))
         }
     }
 }

@@ -41,6 +41,8 @@
     <string name="storage_permission_granted">Permiso de almacenamiento ya otorgado</string>
     <string name="notification_permission_granted">Permiso de notificación ya otorgado</string>
     <string name="permission_granted">Permiso otorgado</string>
+    <string name="alarm_duplicated_">Alarma duplicada</string>
+
     <string name="permission_required">Permiso requerido</string>
     <string name="permission_required_message">El permiso de %s es necesario para que la aplicación funcione correctamente. Por favor, actívalo en la configuración de la aplicación.</string>
     <string name="camera">Cámara</string>

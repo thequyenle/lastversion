@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.TextView
 import net.android.lastversion.R
 import net.android.lastversion.utils.hideNavigationBar
+import net.android.lastversion.utils.setOnClickListenerWithDebounce
 
 class AlarmNoteDialog(
     context: Context,
@@ -27,6 +28,8 @@ class AlarmNoteDialog(
         setContentView(R.layout.dialog_alarm_note)
 
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        setCancelable(false)
+        setCanceledOnTouchOutside(false)
         hideNavigationBar()
 
         initViews()
@@ -50,11 +53,11 @@ class AlarmNoteDialog(
     }
 
     private fun setupClickListeners() {
-        btnCancel.setOnClickListener {
+        btnCancel.setOnClickListenerWithDebounce {
             dismiss()
         }
 
-        btnOK.setOnClickListener {
+        btnOK.setOnClickListenerWithDebounce {
             val note = etAlarmNote.text.toString().trim()
             onNoteSet(note)
             dismiss()

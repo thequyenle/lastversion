@@ -23,6 +23,7 @@ import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificati
 import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 import net.android.lastversion.dialog.AlarmNoteDialog
 import net.android.lastversion.utils.showWithHiddenNavigation
+import net.android.lastversion.utils.setOnClickListenerWithDebounce
 import android.view.LayoutInflater
 import android.widget.RadioGroup
 import android.widget.RadioButton
@@ -236,33 +237,33 @@ class SetAlarmActivity : BaseActivity() {
     }
 
     private fun setupClickListeners() {
-        btnBack.setOnClickListener { finish() }
+        btnBack.setOnClickListenerWithDebounce { finish() }
 
-        btnSave.setOnClickListener {
+        btnSave.setOnClickListenerWithDebounce {
             saveAlarm()
         }
 
-        tvPreview.setOnClickListener {
+        tvPreview.setOnClickListenerWithDebounce {
             playPreviewSound()
         }
 
-        layoutSnooze.setOnClickListener {
+        layoutSnooze.setOnClickListenerWithDebounce {
             showSnoozeDialog()
         }
 
-        layoutVibration.setOnClickListener {
+        layoutVibration.setOnClickListenerWithDebounce {
             showVibrationDialog()
         }
 
-        layoutSound.setOnClickListener {
+        layoutSound.setOnClickListenerWithDebounce {
             showSoundDialog()
         }
 
-        switchSilentMode.setOnClickListener {
+        switchSilentMode.setOnClickListenerWithDebounce {
             isSilentModeEnabled = !isSilentModeEnabled
             updateSilentModeUI()
         }
-        layoutAlarmNote.setOnClickListener {
+        layoutAlarmNote.setOnClickListenerWithDebounce {
             showAlarmNoteDialog()
         }
     }
@@ -460,6 +461,7 @@ class SetAlarmActivity : BaseActivity() {
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
+            .setCancelable(false)
             .create()
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -499,11 +501,11 @@ class SetAlarmActivity : BaseActivity() {
             radioGroup.addView(radioButton)
         }
 
-        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListenerWithDebounce {
             dialog.dismiss()
         }
 
-        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
+        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListenerWithDebounce {
             snoozeMinutes = values[tempSelectedPosition]
             updateDisplayTexts()
             dialog.dismiss()
@@ -532,6 +534,7 @@ class SetAlarmActivity : BaseActivity() {
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
+            .setCancelable(false)
             .create()
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -571,11 +574,11 @@ class SetAlarmActivity : BaseActivity() {
             radioGroup.addView(radioButton)
         }
 
-        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListenerWithDebounce {
             dialog.dismiss()
         }
 
-        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
+        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListenerWithDebounce {
             vibrationPattern = values[tempSelectedPosition]
             updateDisplayTexts()
             dialog.dismiss()
@@ -608,6 +611,7 @@ class SetAlarmActivity : BaseActivity() {
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
+            .setCancelable(false)
             .create()
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -647,11 +651,11 @@ class SetAlarmActivity : BaseActivity() {
             radioGroup.addView(radioButton)
         }
 
-        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListenerWithDebounce {
             dialog.dismiss()
         }
 
-        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
+        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListenerWithDebounce {
             soundType = values[tempSelectedPosition]
 
             if (soundType == "custom") {

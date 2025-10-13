@@ -31,6 +31,7 @@ import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificati
 import net.android.lastversion.alarm.infrastructure.receiver.AlarmActionReceiver
 import net.android.lastversion.utils.ThemeManager
 import net.android.lastversion.utils.ThemeType
+import net.android.lastversion.utils.setOnClickListenerWithDebounce
 
 class AlarmRingingActivity : BaseActivity() {
 
@@ -215,8 +216,8 @@ class AlarmRingingActivity : BaseActivity() {
         btnDismiss = findViewById(R.id.btnDismiss)
         btnSnooze = findViewById(R.id.btnSnooze)
 
-        btnDismiss.setOnClickListener { dismissAlarm() }
-        btnSnooze.setOnClickListener { snoozeAlarm() }
+        btnDismiss.setOnClickListenerWithDebounce { dismissAlarm() }
+        btnSnooze.setOnClickListenerWithDebounce { snoozeAlarm() }
         startBellAnimation()
     }
 

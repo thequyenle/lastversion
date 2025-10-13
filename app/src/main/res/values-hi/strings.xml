@@ -41,6 +41,8 @@
     <string name="storage_permission_granted">स्टोरेज अनुमति पहले से दी गई है</string>
     <string name="notification_permission_granted">सूचना अनुमति पहले से दी गई है</string>
     <string name="permission_granted">अनुमति दी गई</string>
+    <string name="alarm_duplicated_">अलार्म डुप्लिकेट किया गया</string>
+
     <string name="permission_required">अनुमति आवश्यक है</string>
     <string name="permission_required_message">%s अनुमति ऐप के सही तरीके से काम करने के लिए आवश्यक है। कृपया इसे ऐप सेटिंग्स में सक्षम करें।</string>
     <string name="camera">कैमरा</string>

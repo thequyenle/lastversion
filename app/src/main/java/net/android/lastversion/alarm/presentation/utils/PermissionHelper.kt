@@ -88,6 +88,7 @@ class PermissionHelper(private val fragment: Fragment) {
             .setNegativeButton(R.string.skip) { _, _ ->
                 onPermissionResult?.invoke(false)
             }
+            .setCancelable(false)
             .show()
     }
 }

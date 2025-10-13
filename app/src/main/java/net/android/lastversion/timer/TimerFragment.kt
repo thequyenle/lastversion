@@ -27,6 +27,7 @@ import net.android.lastversion.utils.ThemeManager
 import net.android.lastversion.utils.ThemeType
 import net.android.lastversion.utils.showSystemUI
 import net.android.lastversion.utils.showWithHiddenNavigation
+import net.android.lastversion.utils.setOnClickListenerWithDebounce
 
 class TimerFragment : Fragment() {
 
@@ -139,7 +140,7 @@ class TimerFragment : Fragment() {
     }
 
     private fun setupSoundPicker() {
-        binding.layoutSound.setOnClickListener {
+        binding.layoutSound.setOnClickListenerWithDebounce {
             showSoundPickerDialog()
         }
     }
@@ -150,6 +151,7 @@ class TimerFragment : Fragment() {
 
         val dialog = AlertDialog.Builder(requireContext())
             .setView(dialogView)
+            .setCancelable(false)
             .create()
 
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -187,11 +189,11 @@ class TimerFragment : Fragment() {
             radioGroup.addView(radioButton)
         }
 
-        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+        dialogView.findViewById<TextView>(R.id.btnCancel).setOnClickListenerWithDebounce {
             dialog.dismiss()
         }
 
-        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListener {
+        dialogView.findViewById<TextView>(R.id.btnOk).setOnClickListenerWithDebounce {
             val (name, resId) = availableSounds[tempSelectedPosition]
 
             if (resId == -1) {
@@ -210,7 +212,7 @@ class TimerFragment : Fragment() {
     }
 
     private fun setupKeepScreen() {
-        binding.switchKeepScreen.setOnClickListener {
+        binding.switchKeepScreen.setOnClickListenerWithDebounce {
             isKeepScreenOn = !isKeepScreenOn
             updateKeepScreenUI()
         }
@@ -227,9 +229,9 @@ class TimerFragment : Fragment() {
     }
 
     private fun setupButtons() {
-        binding.btnStartTimer.setOnClickListener { startTimer() }
-        binding.btnRestart.setOnClickListener { goBackToPicker() }
-        binding.btnStop.setOnClickListener { togglePauseResume() }
+        binding.btnStartTimer.setOnClickListenerWithDebounce { startTimer() }
+        binding.btnRestart.setOnClickListenerWithDebounce { goBackToPicker() }
+        binding.btnStop.setOnClickListenerWithDebounce { togglePauseResume() }
     }
 
     private fun pauseTimer() {
