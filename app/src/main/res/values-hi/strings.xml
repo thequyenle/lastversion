@@ -42,6 +42,9 @@
     <string name="notification_permission_granted">सूचना अनुमति पहले से दी गई है</string>
     <string name="permission_granted">अनुमति दी गई</string>
     <string name="alarm_duplicated_">अलार्म डुप्लिकेट किया गया</string>
+    <string name="theme_saved">थीम सहेजी गई!</string>
+    <string name="please_select_a_rating_first">कृपया पहले एक रेटिंग चुनें!</string>
+    <string name="alarm_saved">अलार्म सहेजा गया</string>
 
     <string name="permission_required">अनुमति आवश्यक है</string>
     <string name="permission_required_message">%s अनुमति ऐप के सही तरीके से काम करने के लिए आवश्यक है। कृपया इसे ऐप सेटिंग्स में सक्षम करें।</string>

@@ -42,6 +42,9 @@
     <string name="notification_permission_granted">Permission de notification déjà accordée</string>
     <string name="permission_granted">Permission accordée</string>
     <string name="alarm_duplicated_">Alarme dupliquée</string>
+    <string name="theme_saved">Thème enregistré!</string>
+    <string name="please_select_a_rating_first">Veuillez d\'abord sélectionner une note !</string>
+    <string name="alarm_saved">Alarme enregistrée</string>
 
     <string name="permission_required">Permission requise</string>
     <string name="permission_required_message">La permission %s est nécessaire pour que l\'application fonctionne correctement. Veuillez l\'activer dans les paramètres de l\'application.</string>

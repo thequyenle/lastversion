@@ -53,6 +53,7 @@
     <string name="exact_alarm_permission_message">Para que las alarmas funcionen de manera confiable, habilite el permiso de \'Alarmas y recordatorios\'.</string>
     <string name="permissions_required_message">Se requieren algunos permisos para que las alarmas funcionen correctamente</string>
 
+    <string name="theme_saved">¡Tema guardado!</string>
     <!-- ==================== SETTINGS ==================== -->
     <string name="settings">Ajustes</string>
     <string name="settings_title">Ajustes</string>
@@ -235,6 +236,9 @@
     <string name="alarm_restored">Alarma restaurada</string>
     <string name="failed_to_restore">Error al restaurar: %s</string>
     <string name="error_message">Error: %s</string>
+    <string name="alarm_saved">Alarma guardada</string>
+
+    <string name="please_select_a_rating_first">¡Por favor, selecciona una calificación primero!</string>
 
     <!-- ==================== MISCELLANEOUS ==================== -->
     <string name="this_action_can_contain_ads">Esta acción puede contener anuncios</string>

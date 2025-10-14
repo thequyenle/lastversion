@@ -39,6 +39,7 @@ import net.android.lastversion.utils.showSystemUI
 import net.android.lastversion.utils.showWithHiddenNavigation
 import net.android.lastversion.utils.setOnClickListenerWithDebounce
 import android.content.Context
+import net.android.lastversion.utils.hideNavigationBar
 
 
 class AlarmFragment : Fragment() {
@@ -68,12 +69,16 @@ class AlarmFragment : Fragment() {
     ) { result ->
         when (result.resultCode) {
             Activity.RESULT_OK -> {
-                showSnackbar("Alarm saved")
+                showSnackbar(getString(R.string.alarm_saved))
             }
             SetAlarmActivity.RESULT_DELETED -> {
-                showSnackbar("Alarm deleted")
+                showSnackbar(getString(R.string.alarm_deleted))
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onCreateView(
@@ -308,8 +313,7 @@ class AlarmFragment : Fragment() {
             dialog.dismiss()
         }
 
-        dialog.show()
-
+        dialog.showWithHiddenNavigation()
         // Convert dp to pixels and set fixed dimensions
         val width = (240 * resources.displayMetrics.density).toInt()
         val height = (152 * resources.displayMetrics.density).toInt()
@@ -325,5 +329,14 @@ class AlarmFragment : Fragment() {
             alarmViewModel.saveAlarm(duplicatedAlarm)
             showSnackbar(getString(R.string.alarm_duplicated_))
         }
+    }
+
+    private fun Fragment.hideNavigationBar() {
+        activity?.window?.decorView?.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                )
     }
 }

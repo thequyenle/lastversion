@@ -7,12 +7,15 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import com.willy.ratingbar.ScaleRatingBar
 import net.android.lastversion.R
+import net.android.lastversion.utils.hideNavigationBar
 import net.android.lastversion.utils.setOnClickListenerWithDebounce
+import net.android.lastversion.utils.showWithHiddenNavigation
 
 class RatingDialog(
     context: Context,
@@ -53,6 +56,8 @@ class RatingDialog(
 
     override fun onStart() {
         super.onStart()
+        hideNavigationBar() // ẩn lại khi dialog được show lại
+
         // Reset về trạng thái ban đầu mỗi khi dialog hiển thị
         resetToInitialState()
     }
@@ -115,6 +120,9 @@ class RatingDialog(
             if (selectedRating > 0) {
                 onRatingSubmitted?.invoke(selectedRating)
                 dismiss()
+            } else {
+                Toast.makeText(context,
+                    context.getString(R.string.please_select_a_rating_first), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -175,7 +183,7 @@ class RatingDialog(
             onDismiss: (() -> Unit)? = null
         ): RatingDialog {
             val dialog = RatingDialog(context, onRatingSubmitted, onDismiss)
-            dialog.show()
+            dialog.showWithHiddenNavigation()   // 👈 dùng extension bạn đã viết
             return dialog
         }
     }

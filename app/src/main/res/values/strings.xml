@@ -240,6 +240,9 @@
     <string name="let_us_know_your_experience">Let us know your experience</string>
     <string name="do_you_like_the_app">Do you like the app?</string>
     <string name="alarm_duplicated_">Alarm duplicated</string>
+    <string name="theme_saved">Theme saved!</string>
+    <string name="please_select_a_rating_first">Please select a rating first!</string>
+    <string name="alarm_saved">Alarm saved</string>
 
     <!-- Dialog Titles -->
 

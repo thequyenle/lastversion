@@ -65,7 +65,7 @@ class ThemeActivity : BaseActivity() {
             // Save the selected theme
             if (selectedTheme != null) {
                 themeManager.saveSelectedTheme(selectedTheme.id, selectedTheme.type)
-                Toast.makeText(this, "Theme saved!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.theme_saved), Toast.LENGTH_SHORT).show()
             }
 
             finish()
@@ -88,14 +88,15 @@ class ThemeActivity : BaseActivity() {
     private fun loadThemes() {
         themes.clear()
 
-        // Thêm ảnh custom
-        themes.addAll(themeManager.getCustomThemes())
+        // Add "add new" item first
+        themes.add(Theme("add_new", 0, ThemeType.ADD_NEW))
 
-        // Thêm ảnh có sẵn
-        themes.addAll(ThemeManager.PRESET_THEMES)
+        // Append others
+        val custom = themeManager.getCustomThemes()
+        val preset = ThemeManager.PRESET_THEMES
 
-        // Thêm empty slot cho nút Add ở vị trí đầu tiên
-        themes.add(0, Theme("add_new", 0, ThemeType.ADD_NEW))
+        themes.addAll(custom)
+        themes.addAll(preset)
 
         themeAdapter.submitList(themes.toList())
     }

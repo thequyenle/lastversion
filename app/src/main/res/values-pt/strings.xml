@@ -43,6 +43,8 @@
     <string name="permission_granted">Permissão concedida</string>
     <string name="permission_required">Permissão necessária</string>
     <string name="alarm_duplicated_">Alarme duplicado</string>
+    <string name="theme_saved">Tema guardado!</string>
+    <string name="please_select_a_rating_first">Por favor, selecione uma avaliação primeiro!</string>
 
     <string name="permission_required_message">A permissão de %s é necessária para o aplicativo funcionar corretamente. Por favor, ative-a nas configurações do aplicativo.</string>
     <string name="camera">Câmera</string>
