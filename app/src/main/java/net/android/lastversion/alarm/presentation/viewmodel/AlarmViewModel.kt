@@ -57,19 +57,35 @@ class AlarmViewModel(
         }
     }
 
+    // In AlarmViewModel.kt, replace the saveAlarm() function:
+
     fun saveAlarm(alarm: Alarm) {
         viewModelScope.launch {
             try {
-                saveAlarmUseCase(alarm)
-
-                if (alarm.isEnabled) {
-                    alarmScheduler.scheduleAlarm(alarm)
+                // ✅ FIX: Get the saved alarm ID
+                val savedId = if (alarm.id == 0) {
+                    saveAlarmUseCase(alarm)  // Returns the new ID for new alarms
+                } else {
+                    saveAlarmUseCase(alarm)  // Returns the existing ID for updates
+                    alarm.id.toLong()
                 }
 
-                Log.d(TAG, "Alarm saved successfully")
+                // ✅ FIX: Create alarm with correct ID before scheduling
+                val alarmToSchedule = if (alarm.id == 0) {
+                    alarm.copy(id = savedId.toInt())
+                } else {
+                    alarm
+                }
+
+                if (alarmToSchedule.isEnabled) {
+                    android.util.Log.d(TAG, "🔵 Scheduling alarm with ID: ${alarmToSchedule.id}")
+                    alarmScheduler.scheduleAlarm(alarmToSchedule)
+                }
+
+                Log.d(TAG, "✅ Alarm saved successfully with ID: ${alarmToSchedule.id}")
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = e.message)
-                Log.e(TAG, "Error saving alarm", e)
+                Log.e(TAG, "❌ Error saving alarm", e)
             }
         }
     }

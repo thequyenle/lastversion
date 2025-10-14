@@ -55,7 +55,10 @@
             android:showWhenLocked="true"
             android:turnScreenOn="true"
             android:excludeFromRecents="true"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleInstance"
+            android:taskAffinity=".alarm.AlarmTask"
+            android:allowTaskReparenting="false"
+            android:noHistory="true" />
         <receiver
             android:name=".alarm.infrastructure.receiver.AlarmReceiver"
             android:enabled="true"

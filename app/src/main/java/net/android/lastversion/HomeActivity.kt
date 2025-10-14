@@ -36,6 +36,10 @@ class HomeActivity : BaseActivity() {
         if (intent.getBooleanExtra("open_settings", false)) {
             navController.navigate(R.id.settingsFragment)
         }
+
+        // ✅ Mark that app is running so SplashActivity won't show tutorial again
+        val prefs = getSharedPreferences("onboarding_prefs", MODE_PRIVATE)
+        prefs.edit().putBoolean("app_was_running", true).apply()
     }
 
     private fun setupCustomNavigation(navController: androidx.navigation.NavController) {
@@ -182,6 +186,15 @@ class HomeActivity : BaseActivity() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // ✅ Clear the flag if app is finishing (user closed it)
+        if (isFinishing) {
+            val prefs = getSharedPreferences("onboarding_prefs", MODE_PRIVATE)
+            prefs.edit().putBoolean("app_was_running", false).apply()
+        }
+    }
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {

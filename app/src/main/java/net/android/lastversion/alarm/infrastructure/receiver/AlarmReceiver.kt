@@ -14,7 +14,6 @@ import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificati
 import net.android.lastversion.alarm.infrastructure.scheduler.AlarmSchedulerImpl
 import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 
-
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -30,7 +29,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val title = intent.getStringExtra("alarm_label") ?: "Alarm"
         val note = intent.getStringExtra("alarm_note") ?: ""
-
         val snoozeMinutes = intent.getIntExtra("snooze_minutes", 5)
         val vibrationPattern = intent.getStringExtra("vibration_pattern") ?: "default"
         val soundType = intent.getStringExtra("sound_type") ?: "default"
@@ -42,16 +40,30 @@ class AlarmReceiver : BroadcastReceiver() {
 
         Log.d(TAG, "📋 Starting AlarmRingingActivity with alarm_id: $alarmId")
 
-        // ✅ FIX: Add sound resource ID based on sound type
+        // ✅ Get sound resource ID based on sound type
         val soundResId = when (soundType) {
             "astro" -> R.raw.astro
             "bell" -> R.raw.bell
             "piano" -> R.raw.piano
             else -> 0
         }
-        // Open AlarmRingingActivity
+
+        // ✅ Create Intent with proper flags to bypass SplashActivity/Tutorial
         val alarmIntent = Intent(context, AlarmRingingActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            // ✅ CRITICAL: These flags ensure AlarmRingingActivity opens directly
+            // even when app is killed, bypassing SplashActivity/Tutorial
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_NO_HISTORY or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+
+            // ✅ Set explicit component to ensure it goes directly to this activity
+            component = android.content.ComponentName(
+                context.packageName,
+                "net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity"
+            )
+
             putExtra("alarm_id", alarmId)
             putExtra("alarm_hour", hour)
             putExtra("alarm_minute", minute)
@@ -63,19 +75,17 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra("sound_type", soundType)
             putExtra("is_silent_mode_enabled", isSilentModeEnabled)
             putExtra("sound_uri", soundUri)
-            putExtra("sound_res_id", soundResId)  // ✅ ADD THIS LINE
-
+            putExtra("sound_res_id", soundResId)
         }
+
         try {
             context.startActivity(alarmIntent)
             Log.d(TAG, "✅ AlarmRingingActivity started successfully")
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to start AlarmRingingActivity", e)
         }
-        context.startActivity(alarmIntent)
 
-        // ✅ FIX: Chỉ show notification nếu KHÔNG phải preview mode
-        // Preview mode có alarmId = 0, alarm thật có alarmId > 0
+        // ✅ Show notification for real alarms (not preview mode)
         if (alarmId != 0) {
             Log.d(TAG, "✅ Real alarm - showing notification with functional snooze button")
             val notificationManager = AlarmNotificationManager(context)
@@ -93,19 +103,11 @@ class AlarmReceiver : BroadcastReceiver() {
             Log.d(TAG, "⚠️ Preview mode - skipping notification (alarmId = 0)")
         }
 
-        // ✅ FIX: KHÔNG xử lý post-trigger logic ngay lập tức
-        // Để tránh race condition khi user bấm Snooze
-        // Logic này sẽ được xử lý khi user bấm Dismiss hoặc sau khi Snooze xong
-        // COMMENT OUT CODE NÀY:
-        /*
-        CoroutineScope(Dispatchers.IO).launch {
-            handleAlarmTriggered(context, alarmId)
-        }
-        */
+        // ✅ NOTE: Post-trigger logic (disable/reschedule) is handled in AlarmActionReceiver
+        // when user dismisses the alarm, to avoid race conditions with snooze
     }
 
-    // ✅ THÊM: Function mới để xử lý sau khi Dismiss
-    // Gọi function này từ AlarmActionReceiver khi user bấm Dismiss
+    // ✅ Function to handle alarm dismissal - called from AlarmActionReceiver
     suspend fun handleAlarmDismissed(context: Context, alarmId: Int) {
         try {
             if (alarmId == 0) {
@@ -122,15 +124,15 @@ class AlarmReceiver : BroadcastReceiver() {
             if (alarm != null && alarm.hasRecurringDays()) {
                 // Reschedule recurring alarm
                 scheduler.scheduleAlarm(alarm)
-                Log.d(TAG, "Recurring alarm ${alarm.id} rescheduled")
+                Log.d(TAG, "✅ Recurring alarm ${alarm.id} rescheduled")
             } else if (alarm != null) {
                 // Disable one-time alarm
                 repository.updateAlarm(alarm.copy(isEnabled = false))
-                Log.d(TAG, "One-time alarm ${alarm.id} disabled")
+                Log.d(TAG, "✅ One-time alarm ${alarm.id} disabled")
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "Error handling alarm dismiss", e)
+            Log.e(TAG, "❌ Error handling alarm dismiss", e)
         }
     }
 
