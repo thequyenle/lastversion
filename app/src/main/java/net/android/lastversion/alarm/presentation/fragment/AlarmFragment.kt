@@ -160,7 +160,7 @@ class AlarmFragment : Fragment() {
                                 scheduler.scheduleAlarm(deletedAlarm)
                             }
 
-                            showSnackbar("Alarm restored")
+                            showSnackbar(getString(R.string.alarm_restored))
                         } catch (e: Exception) {
                             showSnackbar("Failed to restore: ${e.message}")
                         }

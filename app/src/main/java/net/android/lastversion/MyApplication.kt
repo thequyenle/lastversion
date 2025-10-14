@@ -1,7 +1,7 @@
 package net.android.lastversion
 
 import android.app.Application
-import net.android.lastversion.utils.SystemUtils
+import net.android.lastversion.utils.LocaleHelper
 
 class MyApplication : Application() {
 
@@ -9,6 +9,6 @@ class MyApplication : Application() {
         super.onCreate()
 
         // Apply ngôn ngữ đã lưu khi app khởi động
-        SystemUtils.setLocale(this)
+        LocaleHelper.setLocale(this)
     }
 }

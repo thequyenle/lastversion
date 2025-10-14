@@ -13,8 +13,8 @@ import net.android.lastversion.utils.SystemUtils
 open class BaseActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        // Apply saved language
-        SystemUtils.setLocale(newBase)
-        super.attachBaseContext(newBase)
+        // Apply saved language using LocaleHelper
+        val context = LocaleHelper.setLocale(newBase)
+        super.attachBaseContext(context)
     }
 }

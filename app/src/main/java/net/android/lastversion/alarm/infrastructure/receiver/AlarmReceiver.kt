@@ -115,7 +115,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setCategory(Notification.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setDefaults(Notification.DEFAULT_ALL)
+            .setDefaults(0)
             .setOngoing(true)
             .setFullScreenIntent(fullScreenPi, true)
             .build()
@@ -129,7 +129,7 @@ class AlarmReceiver : BroadcastReceiver() {
         } else {
             try {
                 if (alarmId != 0) {
-                    NotificationManagerCompat.from(context).notify(alarmId, noti)
+                    NotificationManagerCompat.from(context).notify(FULLSCREEN_ID_OFFSET + alarmId, noti)
                     Log.d(TAG, "✅ Full-screen notification posted for alarm $alarmId")
                 } else {
                     Log.d(TAG, "⚠️ Preview mode - skipping full-screen notification (alarmId = 0)")
@@ -203,5 +203,7 @@ class AlarmReceiver : BroadcastReceiver() {
     companion object {
         private const val TAG = "AlarmReceiver"
         private const val CHANNEL_ID = "alarm_channel_v2"
+        private const val FULLSCREEN_ID_OFFSET = 50000 // thêm vào companion object
+
     }
 }

@@ -36,11 +36,15 @@ object LocaleHelper {
     }
 
     /**
-     * Thay đổi ngôn ngữ và restart app
+     * Thay đổi ngôn ngữ và restart activity
      */
     fun changeLanguage(context: Context, languageCode: String) {
         setLanguage(context, languageCode)
-        updateResources(context, languageCode)
+
+        // Restart activity để apply ngôn ngữ mới
+        if (context is android.app.Activity) {
+            context.recreate()
+        }
     }
 
     /**

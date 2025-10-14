@@ -86,8 +86,11 @@ class AlarmNotificationManager(private val context: Context) {
 
     fun cancelNotification(alarmId: Int) {
         try {
+
             notificationManager.cancel(alarmId)
             notificationManager.cancel(alarmId + SNOOZE_ID_OFFSET)
+            notificationManager.cancel(alarmId + FULLSCREEN_ID_OFFSET) // ← THÊM
+
         } catch (e: Exception) {
             Log.e(TAG, "Failed to cancel notification", e)
         }
@@ -193,7 +196,6 @@ class AlarmNotificationManager(private val context: Context) {
             .setAutoCancel(false)
             .setOngoing(true)
             .setContentIntent(contentPendingIntent)
-            .setFullScreenIntent(contentPendingIntent, true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .addAction(R.drawable.ic_clock_disable, "Dismiss", dismissPendingIntent)
             .setDefaults(0)
@@ -281,6 +283,7 @@ class AlarmNotificationManager(private val context: Context) {
         const val ALARM_CHANNEL_ID = "alarm_channel"
         const val SNOOZE_CHANNEL_ID = "snooze_channel"
         const val SNOOZE_ID_OFFSET = 10000
+        const val FULLSCREEN_ID_OFFSET = 50000   // ← THÊM
 
         const val ACTION_DISMISS = "ACTION_DISMISS"
         const val ACTION_SNOOZE = "ACTION_SNOOZE"

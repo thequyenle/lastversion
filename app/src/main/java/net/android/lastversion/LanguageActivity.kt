@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.android.lastversion.data.LanguageItem
+import net.android.lastversion.utils.LocaleHelper
 import net.android.lastversion.utils.SystemUtils
 
 class LanguageActivity : BaseActivity() {
@@ -24,7 +25,7 @@ class LanguageActivity : BaseActivity() {
         setContentView(R.layout.activity_language)
 
         // Lấy ngôn ngữ hiện tại
-        val currentLang = SystemUtils.getPreLanguage(this) ?: "en"
+        val currentLang = LocaleHelper.getLanguage(this)
         selectedLanguageCode = currentLang
 
         // Danh sách ngôn ngữ với mã ngôn ngữ chuẩn ISO
@@ -47,7 +48,7 @@ class LanguageActivity : BaseActivity() {
 
         findViewById<ImageButton>(R.id.btnDone).setOnClickListener {
             // Lưu ngôn ngữ đã chọn
-            SystemUtils.changeLang(selectedLanguageCode, this)
+            LocaleHelper.changeLanguage(this, selectedLanguageCode)
 
             // Kiểm tra xem có phải mở từ Settings không
             val fromSettings = intent.getBooleanExtra("from_settings", false)
