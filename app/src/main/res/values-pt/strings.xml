@@ -46,6 +46,40 @@
     <string name="theme_saved">Tema guardado!</string>
     <string name="please_select_a_rating_first">Por favor, selecione uma avaliação primeiro!</string>
 
+    <string name="alarm_receiver_triggered">AlarmReceiver acionado</string>
+    <string name="received_alarm_id_from_intent">Recebido alarm_id do intent: %d</string>
+    <string name="invalid_alarm_id">ID de alarme inválido</string>
+    <string name="is_snooze_alarm">É alarme de soneca: %b</string>
+    <string name="starting_immediate_sound_and_vibration">Iniciando som e vibração imediatos</string>
+    <string name="snooze_alarm_showing_interactive_notification">Alarme adiado — mostrando notificação interativa (sem activity)</string>
+    <string name="prepare_fullscreen_ui">Preparar UI em tela cheia com alarm_id: %d</string>
+    <string name="is_app_foreground">isAppForeground=%b</string>
+    <string name="app_foreground_launch_activity">App em primeiro plano → abrir AlarmRingingActivity diretamente</string>
+    <string name="app_foreground_no_notification">App em primeiro plano — SEM notificação (AlarmRingingActivity está visível)</string>
+    <string name="preview_mode_skip_notification">Modo de pré-visualização — ignorando notificação (alarmId = 0)</string>
+    <string name="fullscreen_notification_posted">Notificação em tela cheia enviada para o alarme %d</string>
+    <string name="post_notifications_not_granted">POST_NOTIFICATIONS não concedida; ignorar notificação em tela cheia</string>
+    <string name="cannot_post_notification">Não foi possível enviar notificação (permissão/política)</string>
+    <string name="app_background_fullscreen_notification_only">App em segundo plano — usando apenas notificação em tela cheia (sem ações)</string>
+    <string name="snooze_alarm_background_fullscreen_notification">Alarme adiado em segundo plano — usando apenas notificação em tela cheia</string>
+    <string name="immediate_sound_started_with_type">Som imediato iniciado com o tipo: %s</string>
+    <string name="error_playing_immediate_sound">Erro ao reproduzir som imediato</string>
+    <string name="immediate_sound_and_vibration_started_cleanup_scheduled">Som e vibração imediatos iniciados; limpeza agendada em 30s</string>
+    <string name="error_playing_immediate_sound_and_vibration">Erro ao reproduzir som e vibração imediatos</string>
+    <string name="immediate_vibration_started_api_26">Vibração imediata iniciada (API 26+) com padrão: %s</string>
+    <string name="immediate_vibration_started_api_below_26">Vibração imediata iniciada (API &lt; 26) com padrão: %s</string>
+    <string name="error_starting_immediate_vibration">Erro ao iniciar vibração imediata</string>
+    <string name="immediate_sound_and_vibration_stopped">Som e vibração imediatos interrompidos (método estático)</string>
+    <string name="error_stopping_immediate_sound_and_vibration">Erro ao interromper som e vibração imediatos (método estático)</string>
+    <string name="vibrator_service_is_null">Serviço de vibração é nulo</string>
+    <string name="device_does_not_have_vibrator">O dispositivo não possui vibrador</string>
+    <string name="snooze_notification_shown">Notificação de soneca exibida para o alarme %d</string>
+    <string name="error_showing_snooze_notification">Erro ao exibir notificação de soneca</string>
+    <string name="ringing">Tocando…</string>
+    <string name="alarm_ringing">Alarme tocando</string>
+    <string name="alarms">Alarmes</string>
+    <string name="channel_importance">Canal \'%s\' importância=%d</string>
+
     <string name="permission_required_message">A permissão de %s é necessária para o aplicativo funcionar corretamente. Por favor, ative-a nas configurações do aplicativo.</string>
     <string name="camera">Câmera</string>
     <string name="storage">Armazenamento</string>

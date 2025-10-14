@@ -238,6 +238,40 @@
     <string name="error_message">Error: %s</string>
     <string name="alarm_saved">Alarma guardada</string>
 
+        <string name="alarm_receiver_triggered">AlarmReceiver activado</string>
+        <string name="received_alarm_id_from_intent">alarm_id recibido desde el intent: %d</string>
+        <string name="invalid_alarm_id">ID de alarma no válido</string>
+        <string name="is_snooze_alarm">Es alarma de posponer: %b</string>
+        <string name="starting_immediate_sound_and_vibration">Iniciando sonido y vibración inmediatos</string>
+        <string name="snooze_alarm_showing_interactive_notification">Alarma pospuesta: mostrando notificación interactiva (sin actividad)</string>
+        <string name="prepare_fullscreen_ui">Preparar interfaz de pantalla completa con alarm_id: %d</string>
+        <string name="is_app_foreground">isAppForeground=%b</string>
+        <string name="app_foreground_launch_activity">App en primer plano → abrir AlarmRingingActivity directamente</string>
+        <string name="app_foreground_no_notification">App en primer plano — SIN notificación (AlarmRingingActivity visible)</string>
+        <string name="preview_mode_skip_notification">Modo vista previa: omitiendo notificación (alarmId = 0)</string>
+        <string name="fullscreen_notification_posted">Notificación de pantalla completa publicada para la alarma %d</string>
+        <string name="post_notifications_not_granted">POST_NOTIFICATIONS no concedido; omitir notificación de pantalla completa</string>
+        <string name="cannot_post_notification">No se puede publicar la notificación (permiso/política)</string>
+        <string name="app_background_fullscreen_notification_only">App en segundo plano: usando solo notificación de pantalla completa (sin acciones)</string>
+        <string name="snooze_alarm_background_fullscreen_notification">Alarma pospuesta en segundo plano: usando solo notificación de pantalla completa</string>
+        <string name="immediate_sound_started_with_type">Sonido inmediato iniciado con tipo: %s</string>
+        <string name="error_playing_immediate_sound">Error al reproducir el sonido inmediato</string>
+        <string name="immediate_sound_and_vibration_started_cleanup_scheduled">Sonido y vibración inmediatos iniciados; limpieza programada en 30 s</string>
+        <string name="error_playing_immediate_sound_and_vibration">Error al reproducir sonido y vibración inmediatos</string>
+        <string name="immediate_vibration_started_api_26">Vibración inmediata iniciada (API 26+) con patrón: %s</string>
+        <string name="immediate_vibration_started_api_below_26">Vibración inmediata iniciada (API &lt; 26) con patrón: %s</string>
+        <string name="error_starting_immediate_vibration">Error al iniciar la vibración inmediata</string>
+        <string name="immediate_sound_and_vibration_stopped">Sonido y vibración inmediatos detenidos (método estático)</string>
+        <string name="error_stopping_immediate_sound_and_vibration">Error al detener sonido y vibración inmediatos (método estático)</string>
+        <string name="vibrator_service_is_null">El servicio de vibración es nulo</string>
+        <string name="device_does_not_have_vibrator">El dispositivo no tiene vibrador</string>
+        <string name="snooze_notification_shown">Notificación de posponer mostrada para la alarma %d</string>
+        <string name="error_showing_snooze_notification">Error al mostrar la notificación de posponer</string>
+        <string name="ringing">Sonando…</string>
+        <string name="alarm_ringing">Alarma sonando</string>
+        <string name="alarms">Alarmas</string>
+        <string name="channel_importance">Canal \'%s\' importancia=%d</string>
+
     <string name="please_select_a_rating_first">¡Por favor, selecciona una calificación primero!</string>
 
     <!-- ==================== MISCELLANEOUS ==================== -->

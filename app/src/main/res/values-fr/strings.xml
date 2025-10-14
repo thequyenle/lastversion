@@ -44,7 +44,40 @@
     <string name="alarm_duplicated_">Alarme dupliquée</string>
     <string name="theme_saved">Thème enregistré!</string>
     <string name="please_select_a_rating_first">Veuillez d\'abord sélectionner une note !</string>
-    <string name="alarm_saved">Alarme enregistrée</string>
+
+    <string name="alarm_receiver_triggered">AlarmReceiver déclenché</string>
+    <string name="received_alarm_id_from_intent">alarm_id reçu depuis l\'intent : %d</string>
+    <string name="invalid_alarm_id">ID d\'alarme invalide</string>
+    <string name="is_snooze_alarm">En mode répétition : %b</string>
+    <string name="starting_immediate_sound_and_vibration">Démarrage immédiat du son et de la vibration</string>
+    <string name="snooze_alarm_showing_interactive_notification">Alarme en répétition — affichage d’une notification interactive (pas d’activité)</string>
+    <string name="prepare_fullscreen_ui">Préparation de l’UI plein écran avec alarm_id : %d</string>
+    <string name="is_app_foreground">isAppForeground=%b</string>
+    <string name="app_foreground_launch_activity">Application au premier plan → ouvrir directement AlarmRingingActivity</string>
+    <string name="app_foreground_no_notification">Application au premier plan — AUCUNE notification (AlarmRingingActivity affichée)</string>
+    <string name="preview_mode_skip_notification">Mode aperçu — notification ignorée (alarmId = 0)</string>
+    <string name="fullscreen_notification_posted">Notification plein écran publiée pour l’alarme %d</string>
+    <string name="post_notifications_not_granted">POST_NOTIFICATIONS non accordée ; ignorer la notification plein écran</string>
+    <string name="cannot_post_notification">Impossible de publier la notification (permission/politique)</string>
+    <string name="app_background_fullscreen_notification_only">Application en arrière-plan — notification plein écran uniquement (aucune action)</string>
+    <string name="snooze_alarm_background_fullscreen_notification">Alarme en répétition en arrière-plan — notification plein écran uniquement</string>
+    <string name="immediate_sound_started_with_type">Son immédiat démarré avec le type : %s</string>
+    <string name="error_playing_immediate_sound">Erreur lors de la lecture du son immédiat</string>
+    <string name="immediate_sound_and_vibration_started_cleanup_scheduled">Son et vibration immédiats démarrés ; nettoyage prévu dans 30 s</string>
+    <string name="error_playing_immediate_sound_and_vibration">Erreur lors de la lecture du son et de la vibration immédiats</string>
+    <string name="immediate_vibration_started_api_26">Vibration immédiate démarrée (API 26+) avec le motif : %s</string>
+    <string name="immediate_vibration_started_api_below_26">Vibration immédiate démarrée (API &lt; 26) avec le motif : %s</string>
+    <string name="error_starting_immediate_vibration">Erreur lors du démarrage de la vibration immédiate</string>
+    <string name="immediate_sound_and_vibration_stopped">Son et vibration immédiats arrêtés (méthode statique)</string>
+    <string name="error_stopping_immediate_sound_and_vibration">Erreur lors de l’arrêt du son et de la vibration immédiats (méthode statique)</string>
+    <string name="vibrator_service_is_null">Le service de vibration est nul</string>
+    <string name="device_does_not_have_vibrator">L’appareil n’a pas de vibreur</string>
+    <string name="snooze_notification_shown">Notification de répétition affichée pour l’alarme %d</string>
+    <string name="error_showing_snooze_notification">Erreur lors de l’affichage de la notification de répétition</string>
+    <string name="ringing">Sonnerie…</string>
+    <string name="alarm_ringing">Alarme en sonnerie</string>
+    <string name="alarms">Alarmes</string>
+    <string name="channel_importance">Canal \'%s\' importance=%d</string>
 
     <string name="permission_required">Permission requise</string>
     <string name="permission_required_message">La permission %s est nécessaire pour que l\'application fonctionne correctement. Veuillez l\'activer dans les paramètres de l\'application.</string>
@@ -244,7 +277,6 @@
     <string name="fun">😊</string>
     <string name="let_us_know_your_experience">Faites-nous part de votre expérience</string>
     <string name="do_you_like_the_app">Aimez-vous l\'application ?</string>
-
 
 
 </resources>

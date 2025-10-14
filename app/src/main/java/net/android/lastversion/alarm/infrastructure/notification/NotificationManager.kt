@@ -90,6 +90,7 @@ class AlarmNotificationManager(private val context: Context) {
             notificationManager.cancel(alarmId)
             notificationManager.cancel(alarmId + SNOOZE_ID_OFFSET)
             notificationManager.cancel(alarmId + FULLSCREEN_ID_OFFSET) // ← THÊM
+            notificationManager.cancel(alarmId + 20000) // Cancel status notification
 
         } catch (e: Exception) {
             Log.e(TAG, "Failed to cancel notification", e)

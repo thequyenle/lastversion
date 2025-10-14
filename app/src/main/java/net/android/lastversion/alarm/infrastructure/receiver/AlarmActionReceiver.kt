@@ -1,12 +1,19 @@
 package net.android.lastversion.alarm.infrastructure.receiver
 
+import android.Manifest
+import android.app.Notification
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.android.lastversion.R
 import net.android.lastversion.alarm.data.local.database.AlarmDatabase
 import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
@@ -126,6 +133,13 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
         val notificationManager = AlarmNotificationManager(context)
         notificationManager.cancelNotification(alarmId)
+        // Also cancel the status notification if it exists
+        try {
+            val nm = NotificationManagerCompat.from(context)
+            nm.cancel(alarmId + 20000)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cancelling status notification", e)
+        }
         Log.d(TAG, "✅ Notification cancelled")
 
         val title = intent.getStringExtra("alarm_title") ?: "Alarm"
@@ -136,9 +150,9 @@ class AlarmActionReceiver : BroadcastReceiver() {
         Log.d(TAG, "Snooze minutes: $snoozeMinutes")
         Log.d(TAG, "Snooze time: ${java.util.Date(snoozeTime)}")
 
-        // Show snooze notification
-        notificationManager.showSnoozeNotification(alarmId, title, snoozeTime)
-        Log.d(TAG, "✅ Snooze notification shown")
+        // Show simple snooze status notification (non-interactive)
+        showSnoozeStatusNotification(context, alarmId, title, snoozeTime)
+        Log.d(TAG, "✅ Snooze status notification shown")
 
         // Schedule snooze alarm
         CoroutineScope(Dispatchers.IO).launch {
@@ -222,6 +236,13 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
         val notificationManager = AlarmNotificationManager(context)
         notificationManager.cancelNotification(alarmId)
+        // Also cancel the status notification if it exists
+        try {
+            val nm = NotificationManagerCompat.from(context)
+            nm.cancel(alarmId + 20000)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cancelling status notification", e)
+        }
         Log.d(TAG, "✅ Notification cancelled")
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -235,6 +256,39 @@ class AlarmActionReceiver : BroadcastReceiver() {
             } catch (e: Exception) {
                 Log.e(TAG, "❌ Error cancelling snooze:", e)
             }
+        }
+    }
+
+    /**
+     * Show simple snooze status notification (non-interactive)
+     * This shows when user first snoozes the alarm
+     */
+    private fun showSnoozeStatusNotification(context: Context, alarmId: Int, title: String, snoozeTime: Long) {
+        try {
+            val snoozeText = "Snoozed until ${java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(java.util.Date(snoozeTime))}"
+
+            val notification = NotificationCompat.Builder(context, "snooze_channel")
+                .setSmallIcon(R.drawable.ic_snooze)
+                .setContentTitle(title)
+                .setContentText(snoozeText)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setOngoing(false)
+                .setAutoCancel(true)
+                .setShowWhen(true)
+                .setWhen(snoozeTime)
+                .build()
+
+            val notificationManager = NotificationManagerCompat.from(context)
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                notificationManager.notify(alarmId + 20000, notification) // Different ID to avoid conflict
+                Log.d(TAG, "✅ Snooze status notification shown with ID: ${alarmId + 20000}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error showing snooze status notification", e)
         }
     }
 

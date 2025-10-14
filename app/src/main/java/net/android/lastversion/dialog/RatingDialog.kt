@@ -106,26 +106,37 @@ class RatingDialog(
         ratingBar.setOnRatingChangeListener { _, rating, fromUser ->
             if (fromUser) {
                 selectedRating = rating.toInt()
+
+                // Always ensure button state matches rating
                 if (selectedRating == 0) {
                     // Reset về trạng thái ban đầu khi rating = 0
                     resetToInitialState()
                 } else {
                     updateUIForRating(selectedRating)
                 }
+
+                // Debug log to track rating changes
+                android.util.Log.d("RatingDialog", "Rating changed: $selectedRating, Button enabled: ${btnVote.isEnabled}")
             }
         }
 
-        // Vote button click
         btnVote.setOnClickListenerWithDebounce {
-            if (selectedRating > 0) {
-                onRatingSubmitted?.invoke(selectedRating)
-                dismiss()
-            } else {
-                Toast.makeText(context,
-                    context.getString(R.string.please_select_a_rating_first), Toast.LENGTH_SHORT).show()
-            }
-        }
+            // Double-check rating from rating bar to ensure accuracy
+            val currentRating = ratingBar.rating.toInt()
 
+            if (currentRating <= 0) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.please_select_a_rating_first),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListenerWithDebounce
+            }
+
+            // Proceed when rating > 0
+            onRatingSubmitted?.invoke(currentRating)
+            dismiss()
+        }
         // Cancel button click
         btnCancel.setOnClickListenerWithDebounce {
             dismiss()
@@ -167,7 +178,10 @@ class RatingDialog(
         }
 
         // Enable button vote (không đổi background, không làm mờ)
-        btnVote.isEnabled = true
+        btnVote.isEnabled = rating > 0
+
+        // Debug log to confirm button state
+        android.util.Log.d("RatingDialog", "UI updated for rating $rating, Button enabled: ${btnVote.isEnabled}")
     }
 
     companion object {

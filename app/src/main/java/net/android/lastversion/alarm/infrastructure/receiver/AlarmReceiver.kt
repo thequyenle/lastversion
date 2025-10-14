@@ -57,9 +57,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 vibrator?.cancel()
                 vibrator = null
 
-                Log.d(TAG, "✅ Immediate sound and vibration stopped (static method)")
+                Log.d(TAG, "Immediate sound and vibration stopped (static method)")
             } catch (e: Exception) {
-                Log.e(TAG, "❌ Error stopping immediate sound and vibration (static method)", e)
+                Log.e(TAG, "Error stopping immediate sound and vibration (static method)", e)
             }
         }
     }
@@ -70,21 +70,21 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        Log.d(TAG, "🔔 AlarmReceiver triggered")
+        Log.d(TAG, context.getString(R.string.alarm_receiver_triggered))
 
         // 1) Lấy extras trước
         val alarmId = intent.getIntExtra("alarm_id", -1)
-        Log.d(TAG, "📋 Received alarm_id from intent: $alarmId")
+        Log.d(TAG, context.getString(R.string.received_alarm_id_from_intent, alarmId))
         if (alarmId == -1) {
-            Log.e(TAG, "❌ Invalid alarm ID")
+            Log.e(TAG, context.getString(R.string.invalid_alarm_id))
             return
         }
 
         // Check if this is a snooze alarm (ID >= 50000)
         val isSnoozeAlarm = alarmId >= 50000
-        Log.d(TAG, "🔔 Is snooze alarm: $isSnoozeAlarm")
+        Log.d(TAG, context.getString(R.string.is_snooze_alarm, isSnoozeAlarm))
 
-        val title = intent.getStringExtra("alarm_label") ?: "Alarm"
+        val title = intent.getStringExtra("alarm_label") ?: context.getString(R.string.alarm)
         val note = intent.getStringExtra("alarm_note") ?: ""
         val snoozeMinutes = intent.getIntExtra("snooze_minutes", 5)
         val vibrationPattern = intent.getStringExtra("vibration_pattern") ?: "default"
@@ -103,12 +103,22 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
         // 🔊 PLAY IMMEDIATE SOUND AND VIBRATION (even when app is in background)
-        Log.d(TAG, "🔊 Starting immediate sound and vibration")
+        Log.d(TAG, context.getString(R.string.starting_immediate_sound_and_vibration))
         playImmediateSoundAndVibration(context, soundType, soundUri, isSilentModeEnabled, vibrationPattern, soundResId)
 
         // 🚫 SNOOZE ALARMS: Don't launch activity, only show notification
         if (isSnoozeAlarm) {
-            Log.d(TAG, "🔔 Snooze alarm - showing notification only (no activity)")
+            Log.d(TAG, context.getString(R.string.snooze_alarm_showing_interactive_notification))
+
+            // Cancel the status notification first
+            val notificationManager = NotificationManagerCompat.from(context)
+            notificationManager.cancel(alarmId + 20000) // Cancel status notification
+
+            // Also cancel any existing snooze notification to prevent duplicates
+            val originalAlarmId = alarmId - 50000
+            notificationManager.cancel(originalAlarmId + 10000) // Cancel existing snooze notification
+
+            // Show interactive snooze notification
             showSnoozeNotification(context, alarmId, title, note, snoozeMinutes, vibrationPattern, soundType, soundUri, isSilentModeEnabled)
             return
         }
@@ -139,24 +149,24 @@ class AlarmReceiver : BroadcastReceiver() {
                     it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_PERCEPTIBLE
                     )
         } == true
-        Log.d(TAG, "👀 isAppForeground=$isAppForeground")
+        Log.d(TAG, context.getString(R.string.is_app_foreground, isAppForeground))
 
         if (isAppForeground) {
             // App đang mở → bật thẳng activity (được phép trên Android 10+)
             context.startActivity(alarmActivityIntent)
-            Log.d(TAG, "✅ App foreground → launch AlarmRingingActivity directly")
+            Log.d(TAG, context.getString(R.string.app_foreground_launch_activity))
 
             // KHÔNG hiển thị notification khi app foreground vì activity đã hiển thị
             if (alarmId != 0) {
-                Log.d(TAG, "✅ App foreground - NO notification (AlarmRingingActivity is showing)")
+                Log.d(TAG, context.getString(R.string.app_foreground_no_notification))
             } else {
-                Log.d(TAG, "⚠️ Preview mode - skipping notification (alarmId = 0)")
+                Log.d(TAG, context.getString(R.string.preview_mode_skip_notification))
             }
             return
         }
 
         // 3) App nền/khóa → full-screen notification
-        Log.d(TAG, "📋 Prepare full-screen UI with alarm_id: $alarmId")
+        Log.d(TAG, context.getString(R.string.prepare_fullscreen_ui, alarmId))
 
         val fullScreenPi = PendingIntent.getActivity(
             context, alarmId, alarmActivityIntent,
@@ -168,19 +178,19 @@ class AlarmReceiver : BroadcastReceiver() {
         if (nm.getNotificationChannel(channelId) == null) {
             nm.createNotificationChannel(
                 NotificationChannel(
-                    channelId, "Alarms", NotificationManager.IMPORTANCE_HIGH
+                    channelId, context.getString(R.string.alarms), NotificationManager.IMPORTANCE_HIGH
                 ).apply {
-                    description = "Alarm ringing"
+                    description = context.getString(R.string.alarm_ringing)
                     setBypassDnd(true) // hiệu lực nếu user cho phép DND access
                 }
             )
         }
-        Log.d(TAG, "🔎 Channel '$channelId' importance=${nm.getNotificationChannel(channelId)?.importance}")
+        Log.d(TAG, context.getString(R.string.channel_importance, channelId, nm.getNotificationChannel(channelId)?.importance))
 
         val noti = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_alarm_enable)
             .setContentTitle(title)
-            .setContentText(if (note.isNotEmpty()) note else "Ringing…")
+            .setContentText(if (note.isNotEmpty()) note else context.getString(R.string.ringing))
             .setCategory(Notification.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -194,17 +204,17 @@ class AlarmReceiver : BroadcastReceiver() {
                     ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
         if (!canNotify) {
-            Log.w(TAG, "⚠️ POST_NOTIFICATIONS not granted; skip full-screen notification")
+            Log.w(TAG, context.getString(R.string.post_notifications_not_granted))
         } else {
             try {
                 if (alarmId != 0) {
                     NotificationManagerCompat.from(context).notify(FULLSCREEN_ID_OFFSET + alarmId, noti)
-                    Log.d(TAG, "✅ Full-screen notification posted for alarm $alarmId")
+                    Log.d(TAG, context.getString(R.string.fullscreen_notification_posted, alarmId))
                 } else {
-                    Log.d(TAG, "⚠️ Preview mode - skipping full-screen notification (alarmId = 0)")
+                    Log.d(TAG, context.getString(R.string.preview_mode_skip_notification))
                 }
             } catch (se: SecurityException) {
-                Log.e(TAG, "❌ Cannot post notification (permission/policy)", se)
+                Log.e(TAG, context.getString(R.string.cannot_post_notification), se)
             }
         }
 
@@ -212,12 +222,12 @@ class AlarmReceiver : BroadcastReceiver() {
         // Full-screen notification đã đủ để xử lý alarm và launch activity
         if (alarmId != 0) {
             if (isSnoozeAlarm) {
-                Log.d(TAG, "✅ Snooze alarm background - using full-screen notification only")
+                Log.d(TAG, context.getString(R.string.snooze_alarm_background_fullscreen_notification))
             } else {
-                Log.d(TAG, "✅ App background - using full-screen notification only (no action notification)")
+                Log.d(TAG, context.getString(R.string.app_background_fullscreen_notification_only))
             }
         } else {
-            Log.d(TAG, "⚠️ Preview mode - skipping notifications (alarmId = 0)")
+            Log.d(TAG, context.getString(R.string.preview_mode_skip_notification))
         }
     }
 
@@ -305,10 +315,10 @@ class AlarmReceiver : BroadcastReceiver() {
                 cleanupPendingIntent
             )
 
-            Log.d(TAG, "✅ Immediate sound and vibration started, cleanup scheduled in 30s")
+            Log.d(TAG, context.getString(R.string.immediate_sound_and_vibration_started_cleanup_scheduled))
 
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error playing immediate sound and vibration", e)
+            Log.e(TAG, context.getString(R.string.error_playing_immediate_sound_and_vibration), e)
         }
     }
 
@@ -355,9 +365,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 start()
             }
 
-            Log.d(TAG, "✅ Immediate sound started with type: $soundType")
+            Log.d(TAG, context.getString(R.string.immediate_sound_started_with_type, soundType))
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error playing immediate sound", e)
+            Log.e(TAG, context.getString(R.string.error_playing_immediate_sound), e)
         }
     }
 
@@ -375,12 +385,12 @@ class AlarmReceiver : BroadcastReceiver() {
             }
 
             if (vibrator == null) {
-                Log.e(TAG, "❌ Vibrator service is null")
+                Log.e(TAG, context.getString(R.string.vibrator_service_is_null))
                 return
             }
 
             if (!vibrator!!.hasVibrator()) {
-                Log.e(TAG, "❌ Device does not have vibrator")
+                Log.e(TAG, context.getString(R.string.device_does_not_have_vibrator))
                 return
             }
 
@@ -395,15 +405,15 @@ class AlarmReceiver : BroadcastReceiver() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val effect = VibrationEffect.createWaveform(vibrationPattern, 0)
                 vibrator?.vibrate(effect)
-                Log.d(TAG, "✅ Immediate vibration started (API 26+) with pattern: $pattern")
+                Log.d(TAG, context.getString(R.string.immediate_vibration_started_api_26, pattern))
             } else {
                 @Suppress("DEPRECATION")
                 vibrator?.vibrate(vibrationPattern, 0)
-                Log.d(TAG, "✅ Immediate vibration started (API < 26) with pattern: $pattern")
+                Log.d(TAG, context.getString(R.string.immediate_vibration_started_api_below_26, pattern))
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error starting immediate vibration", e)
+            Log.e(TAG, context.getString(R.string.error_starting_immediate_vibration), e)
         }
     }
 
@@ -434,10 +444,12 @@ class AlarmReceiver : BroadcastReceiver() {
         try {
             val snoozeTime = System.currentTimeMillis() + (snoozeMinutes * 60 * 1000L)
             val notificationManager = AlarmNotificationManager(context)
-            notificationManager.showSnoozeNotification(alarmId, title, snoozeTime)
-            Log.d(TAG, "✅ Snooze notification shown for alarm $alarmId")
+            // Use the original alarm ID for notification to maintain consistency
+            val originalAlarmId = alarmId - 50000
+            notificationManager.showSnoozeNotification(originalAlarmId, title, snoozeTime)
+            Log.d(TAG, context.getString(R.string.snooze_notification_shown, alarmId))
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error showing snooze notification", e)
+            Log.e(TAG, context.getString(R.string.error_showing_snooze_notification), e)
         }
     }
 }

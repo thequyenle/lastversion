@@ -44,7 +44,40 @@
     <string name="alarm_duplicated_">अलार्म डुप्लिकेट किया गया</string>
     <string name="theme_saved">थीम सहेजी गई!</string>
     <string name="please_select_a_rating_first">कृपया पहले एक रेटिंग चुनें!</string>
-    <string name="alarm_saved">अलार्म सहेजा गया</string>
+
+    <string name="alarm_receiver_triggered">अलार्म रिसीवर ट्रिगर हुआ</string>
+    <string name="received_alarm_id_from_intent">इंटेंट से alarm_id प्राप्त: %d</string>
+    <string name="invalid_alarm_id">अमान्य अलार्म ID</string>
+    <string name="is_snooze_alarm">क्या स्नूज़ अलार्म है: %b</string>
+    <string name="starting_immediate_sound_and_vibration">तुरंत ध्वनि और वाइब्रेशन शुरू हो रहे हैं</string>
+    <string name="snooze_alarm_showing_interactive_notification">स्नूज़ अलार्म — इंटरैक्टिव नोटिफिकेशन दिखाया जा रहा है (कोई activity नहीं)</string>
+    <string name="prepare_fullscreen_ui">alarm_id: %d के साथ फुल-स्क्रीन UI तैयार करें</string>
+    <string name="is_app_foreground">isAppForeground=%b</string>
+    <string name="app_foreground_launch_activity">ऐप फ़ोरग्राउंड में → सीधे AlarmRingingActivity खोलें</string>
+    <string name="app_foreground_no_notification">ऐप फ़ोरग्राउंड में — कोई नोटिफिकेशन नहीं (AlarmRingingActivity दिख रही है)</string>
+    <string name="preview_mode_skip_notification">प्रिव्यू मोड — नोटिफिकेशन स्किप (alarmId = 0)</string>
+    <string name="fullscreen_notification_posted">अलार्म %d के लिए फुल-स्क्रीन नोटिफिकेशन पोस्ट किया गया</string>
+    <string name="post_notifications_not_granted">POST_NOTIFICATIONS अनुमति नहीं — फुल-स्क्रीन नोटिफिकेशन स्किप</string>
+    <string name="cannot_post_notification">नोटिफिकेशन पोस्ट नहीं कर सकते (अनुमति/नीति)</string>
+    <string name="app_background_fullscreen_notification_only">ऐप बैकग्राउंड में — केवल फुल-स्क्रीन नोटिफिकेशन (कोई एक्शन नोटिफिकेशन नहीं)</string>
+    <string name="snooze_alarm_background_fullscreen_notification">स्नूज़ अलार्म बैकग्राउंड — केवल फुल-स्क्रीन नोटिफिकेशन</string>
+    <string name="immediate_sound_started_with_type">तुरंत ध्वनि शुरू — प्रकार: %s</string>
+    <string name="error_playing_immediate_sound">तुरंत ध्वनि चलाने में त्रुटि</string>
+    <string name="immediate_sound_and_vibration_started_cleanup_scheduled">तुरंत ध्वनि व वाइब्रेशन शुरू; 30 सेकंड में क्लीन-अप अनुसूचित</string>
+    <string name="error_playing_immediate_sound_and_vibration">तुरंत ध्वनि व वाइब्रेशन चलाने में त्रुटि</string>
+    <string name="immediate_vibration_started_api_26">तुरंत वाइब्रेशन शुरू (API 26+) — पैटर्न: %s</string>
+    <string name="immediate_vibration_started_api_below_26">तुरंत वाइब्रेशन शुरू (API &lt; 26) — पैटर्न: %s</string>
+    <string name="error_starting_immediate_vibration">तुरंत वाइब्रेशन शुरू करने में त्रुटि</string>
+    <string name="immediate_sound_and_vibration_stopped">तुरंत ध्वनि व वाइब्रेशन रोके गए (स्थिर विधि)</string>
+    <string name="error_stopping_immediate_sound_and_vibration">तुरंत ध्वनि व वाइब्रेशन रोकने में त्रुटि (स्थिर विधि)</string>
+    <string name="vibrator_service_is_null">वाइब्रेटर सेवा null है</string>
+    <string name="device_does_not_have_vibrator">डिवाइस में वाइब्रेटर नहीं है</string>
+    <string name="snooze_notification_shown">अलार्म %d के लिए स्नूज़ नोटिफिकेशन दिखाया गया</string>
+    <string name="error_showing_snooze_notification">स्नूज़ नोटिफिकेशन दिखाने में त्रुटि</string>
+    <string name="ringing">बज रहा है…</string>
+    <string name="alarm_ringing">अलार्म बज रहा है</string>
+    <string name="alarms">अलार्म</string>
+    <string name="channel_importance">चैनल \'%s\' महत्व=%d</string>
 
     <string name="permission_required">अनुमति आवश्यक है</string>
     <string name="permission_required_message">%s अनुमति ऐप के सही तरीके से काम करने के लिए आवश्यक है। कृपया इसे ऐप सेटिंग्स में सक्षम करें।</string>
@@ -238,6 +271,8 @@
     <string name="alarm_restored">अलार्म पुनर्स्थापित</string>
     <string name="failed_to_restore">पुनर्स्थापित करने में विफल: %s</string>
     <string name="error_message">त्रुटि: %s</string>
+    <string name="alarm_saved">अलार्म सहेजा गया</string>
+
 
     <!-- ==================== MISCELLANEOUS ==================== -->
     <string name="this_action_can_contain_ads">इस क्रिया में विज्ञापन हो सकते हैं</string>

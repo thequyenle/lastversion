@@ -242,8 +242,44 @@
     <string name="alarm_duplicated_">Alarm duplicated</string>
     <string name="theme_saved">Theme saved!</string>
     <string name="please_select_a_rating_first">Please select a rating first!</string>
-    <string name="alarm_saved">Alarm saved</string>
 
     <!-- Dialog Titles -->
+
+    <!-- ==================== ALARM RECEIVER ==================== -->
+    <string name="alarm_receiver_triggered">AlarmReceiver triggered</string>
+    <string name="received_alarm_id_from_intent">Received alarm_id from intent: %d</string>
+    <string name="invalid_alarm_id">Invalid alarm ID</string>
+    <string name="is_snooze_alarm">Is snooze alarm: %b</string>
+    <string name="starting_immediate_sound_and_vibration">Starting immediate sound and vibration</string>
+    <string name="snooze_alarm_showing_interactive_notification">Snooze alarm - showing interactive notification (no activity)</string>
+    <string name="prepare_fullscreen_ui">Prepare full-screen UI with alarm_id: %d</string>
+    <string name="is_app_foreground">isAppForeground=%b</string>
+    <string name="app_foreground_launch_activity">App foreground → launch AlarmRingingActivity directly</string>
+    <string name="app_foreground_no_notification">App foreground - NO notification (AlarmRingingActivity is showing)</string>
+    <string name="preview_mode_skip_notification">Preview mode - skipping notification (alarmId = 0)</string>
+    <string name="fullscreen_notification_posted">Full-screen notification posted for alarm %d</string>
+    <string name="post_notifications_not_granted">POST_NOTIFICATIONS not granted; skip full-screen notification</string>
+    <string name="cannot_post_notification">Cannot post notification (permission/policy)</string>
+    <string name="app_background_fullscreen_notification_only">App background - using full-screen notification only (no action notification)</string>
+    <string name="snooze_alarm_background_fullscreen_notification">Snooze alarm background - using full-screen notification only</string>
+    <string name="immediate_sound_started_with_type">Immediate sound started with type: %s</string>
+    <string name="error_playing_immediate_sound">Error playing immediate sound</string>
+    <string name="immediate_sound_and_vibration_started_cleanup_scheduled">Immediate sound and vibration started, cleanup scheduled in 30s</string>
+    <string name="error_playing_immediate_sound_and_vibration">Error playing immediate sound and vibration</string>
+    <string name="immediate_vibration_started_api_26">Immediate vibration started (API 26+) with pattern: %s</string>
+    <string name="immediate_vibration_started_api_below_26">Immediate vibration started (API  26) with pattern: %s</string>
+    <string name="error_starting_immediate_vibration">Error starting immediate vibration</string>
+    <string name="immediate_sound_and_vibration_stopped">Immediate sound and vibration stopped (static method)</string>
+    <string name="error_stopping_immediate_sound_and_vibration">Error stopping immediate sound and vibration (static method)</string>
+    <string name="vibrator_service_is_null">Vibrator service is null</string>
+    <string name="device_does_not_have_vibrator">Device does not have vibrator</string>
+    <string name="snooze_notification_shown">Snooze notification shown for alarm %d</string>
+    <string name="error_showing_snooze_notification">Error showing snooze notification</string>
+    <string name="ringing">Ringing…</string>
+    <string name="alarm_ringing">Alarm ringing</string>
+    <string name="alarms">Alarms</string>
+    <string name="alarm_saved">Alarms saved</string>
+
+    <string name="channel_importance">Channel \'%s\' importance=%d</string>
 
 </resources>
