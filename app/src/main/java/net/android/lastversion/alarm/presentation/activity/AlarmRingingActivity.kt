@@ -29,6 +29,7 @@ import net.android.lastversion.BaseActivity
 import net.android.lastversion.R
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
 import net.android.lastversion.alarm.infrastructure.receiver.AlarmActionReceiver
+import net.android.lastversion.alarm.infrastructure.receiver.AlarmReceiver
 import net.android.lastversion.utils.ThemeManager
 import net.android.lastversion.utils.ThemeType
 import net.android.lastversion.utils.setOnClickListenerWithDebounce
@@ -117,6 +118,9 @@ class AlarmRingingActivity : BaseActivity() {
         // ✅ Set this as current instance AFTER alarmId is loaded
         currentInstance = this
         android.util.Log.d("AlarmRinging", "📱 AlarmRingingActivity created for alarm $alarmId, instance set")
+
+        // 🔊 Stop immediate sound and vibration from AlarmReceiver
+        AlarmReceiver.stopImmediateSoundAndVibrationStatic()
 
         startAlarm()
 
@@ -362,6 +366,9 @@ class AlarmRingingActivity : BaseActivity() {
     }
 
     private fun dismissAlarm() {
+        // 🔊 Stop immediate sound from AlarmReceiver
+        AlarmReceiver.stopImmediateSoundAndVibrationStatic()
+
         stopAlarm()
         stopBellAnimation()
 
@@ -372,6 +379,9 @@ class AlarmRingingActivity : BaseActivity() {
     }
 
     private fun snoozeAlarm() {
+        // 🔊 Stop immediate sound from AlarmReceiver
+        AlarmReceiver.stopImmediateSoundAndVibrationStatic()
+
         stopAlarm()
         stopBellAnimation()
 
@@ -446,6 +456,9 @@ class AlarmRingingActivity : BaseActivity() {
         if (currentInstance == this) {
             currentInstance = null
         }
+
+        // 🔊 Stop immediate sound from AlarmReceiver
+        AlarmReceiver.stopImmediateSoundAndVibrationStatic()
 
         stopAlarm()
         stopBellAnimation()

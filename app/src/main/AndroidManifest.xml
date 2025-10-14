@@ -13,19 +13,12 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
 
-    <!-- Android 13+ -->
-   <!-- Exact alarm permissions for reliable timer (Android 12+) -->
+    <!-- Exact alarm permissions for reliable timer (Android 12+) -->
     <uses-permission
         android:name="android.permission.SCHEDULE_EXACT_ALARM"
         tools:ignore="UnusedAttribute" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    <uses-permission
-        android:name="android.permission.USE_EXACT_ALARM"
-        tools:ignore="UnusedAttribute" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" /> <!-- Battery optimization bypass (optional but recommended) -->
-    <uses-permission
-        android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
-        tools:ignore="UnusedAttribute" />
     <uses-permission
         android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
         tools:ignore="UnusedAttribute" /> <!-- Other existing permissions -->
@@ -74,6 +67,10 @@
             android:enabled="true"
             android:exported="false" />
         <receiver
+            android:name=".alarm.infrastructure.receiver.AlarmCleanupReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
             android:name=".alarm.infrastructure.receiver.BootReceiver"
             android:enabled="true"
             android:exported="true">
@@ -87,7 +84,12 @@
 
         <activity
             android:name=".alarm.presentation.activity.SetAlarmActivity"
-            android:exported="false" /> <!-- Timer Service - handles background timer execution -->
+            android:exported="false" /> <!-- Alarm Foreground Service - ensures alarm reliability on Android 9-13 -->
+        <service
+            android:name=".alarm.infrastructure.service.AlarmForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" /> <!-- Timer Service - handles background timer execution -->
         <service
             android:name="net.android.last.service.TimerService"
             android:enabled="true"

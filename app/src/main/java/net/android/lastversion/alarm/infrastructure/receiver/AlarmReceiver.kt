@@ -2,6 +2,7 @@ package net.android.lastversion.alarm.infrastructure.receiver
 
 import android.Manifest
 import android.app.ActivityManager
+import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,7 +11,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -24,6 +33,41 @@ import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 
 class AlarmReceiver : BroadcastReceiver() {
 
+    companion object {
+        private const val TAG = "AlarmReceiver"
+        private const val CHANNEL_ID = "alarm_channel_v2"
+        private const val FULLSCREEN_ID_OFFSET = 50000
+
+        // Static media player and vibrator for immediate sound/vibration
+        private var mediaPlayer: MediaPlayer? = null
+        private var vibrator: Vibrator? = null
+
+        /**
+         * Stop immediate sound and vibration from any instance
+         * This is a static method that can be called from anywhere
+         */
+        fun stopImmediateSoundAndVibrationStatic() {
+            try {
+                mediaPlayer?.apply {
+                    if (isPlaying) stop()
+                    release()
+                }
+                mediaPlayer = null
+
+                vibrator?.cancel()
+                vibrator = null
+
+                Log.d(TAG, "✅ Immediate sound and vibration stopped (static method)")
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Error stopping immediate sound and vibration (static method)", e)
+            }
+        }
+    }
+
+    // Instance variables for backward compatibility
+    private var instanceMediaPlayer: MediaPlayer? = null
+    private var instanceVibrator: Vibrator? = null
+
     override fun onReceive(context: Context, intent: Intent) {
 
         Log.d(TAG, "🔔 AlarmReceiver triggered")
@@ -35,6 +79,10 @@ class AlarmReceiver : BroadcastReceiver() {
             Log.e(TAG, "❌ Invalid alarm ID")
             return
         }
+
+        // Check if this is a snooze alarm (ID >= 50000)
+        val isSnoozeAlarm = alarmId >= 50000
+        Log.d(TAG, "🔔 Is snooze alarm: $isSnoozeAlarm")
 
         val title = intent.getStringExtra("alarm_label") ?: "Alarm"
         val note = intent.getStringExtra("alarm_note") ?: ""
@@ -52,6 +100,17 @@ class AlarmReceiver : BroadcastReceiver() {
             "bell"  -> R.raw.bell
             "piano" -> R.raw.piano
             else    -> 0
+        }
+
+        // 🔊 PLAY IMMEDIATE SOUND AND VIBRATION (even when app is in background)
+        Log.d(TAG, "🔊 Starting immediate sound and vibration")
+        playImmediateSoundAndVibration(context, soundType, soundUri, isSilentModeEnabled, vibrationPattern, soundResId)
+
+        // 🚫 SNOOZE ALARMS: Don't launch activity, only show notification
+        if (isSnoozeAlarm) {
+            Log.d(TAG, "🔔 Snooze alarm - showing notification only (no activity)")
+            showSnoozeNotification(context, alarmId, title, note, snoozeMinutes, vibrationPattern, soundType, soundUri, isSilentModeEnabled)
+            return
         }
 
         // Intent mở Activity chuông (dùng cho cả foreground và full-screen)
@@ -74,8 +133,11 @@ class AlarmReceiver : BroadcastReceiver() {
         // 2) DÙNG ACTIVITYMANAGER để kiểm tra app đang foreground
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val isAppForeground = am.runningAppProcesses?.any {
-            it.pid == android.os.Process.myPid() &&
-                    it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+            it.pid == android.os.Process.myPid() && (
+                    it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND ||
+                    it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE ||
+                    it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_PERCEPTIBLE
+                    )
         } == true
         Log.d(TAG, "👀 isAppForeground=$isAppForeground")
 
@@ -83,6 +145,13 @@ class AlarmReceiver : BroadcastReceiver() {
             // App đang mở → bật thẳng activity (được phép trên Android 10+)
             context.startActivity(alarmActivityIntent)
             Log.d(TAG, "✅ App foreground → launch AlarmRingingActivity directly")
+
+            // KHÔNG hiển thị notification khi app foreground vì activity đã hiển thị
+            if (alarmId != 0) {
+                Log.d(TAG, "✅ App foreground - NO notification (AlarmRingingActivity is showing)")
+            } else {
+                Log.d(TAG, "⚠️ Preview mode - skipping notification (alarmId = 0)")
+            }
             return
         }
 
@@ -139,22 +208,16 @@ class AlarmReceiver : BroadcastReceiver() {
             }
         }
 
-        // 4) Giữ nguyên notification hành động (snooze/dismiss)
+        // 4) App background - KHÔNG hiển thị action notification
+        // Full-screen notification đã đủ để xử lý alarm và launch activity
         if (alarmId != 0) {
-            Log.d(TAG, "✅ Real alarm - showing action notification (AlarmNotificationManager)")
-            val notificationManager = AlarmNotificationManager(context)
-            notificationManager.showAlarmNotification(
-                alarmId = alarmId,
-                title = title,
-                note = note,
-                snoozeMinutes = snoozeMinutes,
-                vibrationPattern = vibrationPattern,
-                soundType = soundType,
-                soundUri = soundUri,
-                isSilentModeEnabled = isSilentModeEnabled
-            )
+            if (isSnoozeAlarm) {
+                Log.d(TAG, "✅ Snooze alarm background - using full-screen notification only")
+            } else {
+                Log.d(TAG, "✅ App background - using full-screen notification only (no action notification)")
+            }
         } else {
-            Log.d(TAG, "⚠️ Preview mode - skipping action notification (alarmId = 0)")
+            Log.d(TAG, "⚠️ Preview mode - skipping notifications (alarmId = 0)")
         }
     }
 
@@ -200,10 +263,181 @@ class AlarmReceiver : BroadcastReceiver() {
             }
         } catch (_: Exception) { false }
     }
-    companion object {
-        private const val TAG = "AlarmReceiver"
-        private const val CHANNEL_ID = "alarm_channel_v2"
-        private const val FULLSCREEN_ID_OFFSET = 50000 // thêm vào companion object
 
+    /**
+     * Play immediate sound and vibration when alarm triggers
+     * This ensures audio feedback even when app is in background
+     */
+    private fun playImmediateSoundAndVibration(
+        context: Context,
+        soundType: String,
+        soundUri: String,
+        isSilentModeEnabled: Boolean,
+        vibrationPattern: String,
+        soundResId: Int
+    ) {
+        try {
+            // Play sound if not disabled
+            if (soundType != "off") {
+                playSound(context, soundUri, isSilentModeEnabled, soundResId, soundType)
+            }
+
+            // Play vibration if not disabled
+            if (vibrationPattern != "off") {
+                startVibration(context, vibrationPattern)
+            }
+
+            // Schedule cleanup after 30 seconds to prevent infinite playback
+            // AlarmRingingActivity will take over and stop this when it starts
+            val cleanupIntent = Intent(context, AlarmCleanupReceiver::class.java).apply {
+                action = "ACTION_CLEANUP_ALARM_SOUND"
+            }
+            val cleanupPendingIntent = PendingIntent.getBroadcast(
+                context, 0, cleanupIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            // Use AlarmManager to schedule cleanup
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.set(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                android.os.SystemClock.elapsedRealtime() + 30000, // 30 seconds
+                cleanupPendingIntent
+            )
+
+            Log.d(TAG, "✅ Immediate sound and vibration started, cleanup scheduled in 30s")
+
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error playing immediate sound and vibration", e)
+        }
+    }
+
+    private fun playSound(
+        context: Context,
+        soundUri: String,
+        bypassSilentMode: Boolean,
+        soundResId: Int,
+        soundType: String
+    ) {
+        try {
+            // Stop any existing sound before playing new one
+            mediaPlayer?.apply {
+                if (isPlaying) stop()
+                release()
+            }
+
+            mediaPlayer = MediaPlayer().apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    val audioAttributes = AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
+                    setAudioAttributes(audioAttributes)
+                } else {
+                    @Suppress("DEPRECATION")
+                    setAudioStreamType(AudioManager.STREAM_ALARM)
+                }
+
+                if (soundResId != 0) {
+                    val uri = Uri.parse("android.resource://${context.packageName}/$soundResId")
+                    setDataSource(context, uri)
+                } else if (soundUri.isNotEmpty()) {
+                    setDataSource(context, Uri.parse(soundUri))
+                } else {
+                    val defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    setDataSource(context, defaultUri)
+                }
+
+                isLooping = true
+                setVolume(1.0f, 1.0f)
+                prepare()
+                start()
+            }
+
+            Log.d(TAG, "✅ Immediate sound started with type: $soundType")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error playing immediate sound", e)
+        }
+    }
+
+    private fun startVibration(context: Context, pattern: String) {
+        try {
+            // Stop any existing vibration before starting new one
+            vibrator?.cancel()
+
+            vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+                vibratorManager?.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            }
+
+            if (vibrator == null) {
+                Log.e(TAG, "❌ Vibrator service is null")
+                return
+            }
+
+            if (!vibrator!!.hasVibrator()) {
+                Log.e(TAG, "❌ Device does not have vibrator")
+                return
+            }
+
+            val vibrationPattern = when (pattern) {
+                "short" -> longArrayOf(0, 300, 200, 300, 200, 300)
+                "long" -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
+                "double" -> longArrayOf(0, 500, 200, 500, 200, 500, 200, 500)
+                "default" -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
+                else -> longArrayOf(0, 1000, 500, 1000, 500, 1000)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect = VibrationEffect.createWaveform(vibrationPattern, 0)
+                vibrator?.vibrate(effect)
+                Log.d(TAG, "✅ Immediate vibration started (API 26+) with pattern: $pattern")
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator?.vibrate(vibrationPattern, 0)
+                Log.d(TAG, "✅ Immediate vibration started (API < 26) with pattern: $pattern")
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error starting immediate vibration", e)
+        }
+    }
+
+    /**
+     * Stop immediate sound and vibration
+     * Called by AlarmCleanupReceiver or when AlarmRingingActivity starts
+     * @deprecated Use stopImmediateSoundAndVibrationStatic() instead
+     */
+    @Deprecated("Use stopImmediateSoundAndVibrationStatic() instead")
+    fun stopImmediateSoundAndVibration() {
+        stopImmediateSoundAndVibrationStatic()
+    }
+
+    /**
+     * Show snooze notification for snooze alarms
+     */
+    private fun showSnoozeNotification(
+        context: Context,
+        alarmId: Int,
+        title: String,
+        note: String,
+        snoozeMinutes: Int,
+        vibrationPattern: String,
+        soundType: String,
+        soundUri: String,
+        isSilentModeEnabled: Boolean
+    ) {
+        try {
+            val snoozeTime = System.currentTimeMillis() + (snoozeMinutes * 60 * 1000L)
+            val notificationManager = AlarmNotificationManager(context)
+            notificationManager.showSnoozeNotification(alarmId, title, snoozeTime)
+            Log.d(TAG, "✅ Snooze notification shown for alarm $alarmId")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error showing snooze notification", e)
+        }
     }
 }

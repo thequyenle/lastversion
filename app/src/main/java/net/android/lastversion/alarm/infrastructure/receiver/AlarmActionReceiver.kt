@@ -34,6 +34,10 @@ class AlarmActionReceiver : BroadcastReceiver() {
         when (intent.action) {
             AlarmNotificationManager.ACTION_DISMISS -> {
                 Log.d(TAG, "🔴 ACTION_DISMISS received for alarm $alarmId")
+
+                // 🔊 Stop immediate sound from AlarmReceiver
+                AlarmReceiver.stopImmediateSoundAndVibrationStatic()
+
                 notificationManager.cancelNotification(alarmId)
 
                 // ✅ FIX: Xử lý disable/reschedule alarm SAU KHI dismiss
@@ -46,7 +50,33 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
             AlarmNotificationManager.ACTION_SNOOZE -> {
                 Log.d(TAG, "😴 ACTION_SNOOZE received for alarm $alarmId")
+
+                // 🔊 Stop immediate sound from AlarmReceiver
+                AlarmReceiver.stopImmediateSoundAndVibrationStatic()
+
                 handleSnooze(context, alarmId, intent)
+            }
+
+            AlarmNotificationManager.ACTION_STOP_SNOOZE_SOUND -> {
+                Log.d(TAG, "🛑 ACTION_STOP_SNOOZE_SOUND received for alarm $alarmId")
+
+                // 🔊 Stop immediate sound from AlarmReceiver (snooze alarm)
+                AlarmReceiver.stopImmediateSoundAndVibrationStatic()
+
+                // 🗑️ Cancel the snooze alarm completely
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val scheduler = AlarmSchedulerImpl(context)
+                        scheduler.cancelAlarm(alarmId) // Cancel snooze alarm
+
+                        // Also cancel notification
+                        notificationManager.cancelNotification(alarmId)
+
+                        Log.d(TAG, "✅ Snooze alarm completely cancelled for alarm $alarmId")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "❌ Error cancelling snooze alarm", e)
+                    }
+                }
             }
 
             AlarmNotificationManager.ACTION_CANCEL_SNOOZE -> {
@@ -129,31 +159,38 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
                 Log.d(TAG, "✅ Found alarm in DB: ${alarm.label}")
 
-                // Tính giờ phút mới cho snooze
+                // Tính giờ phút mới cho snooze - SỬA LỖI CRITICAL
                 val snoozeCalendar = java.util.Calendar.getInstance().apply {
                     timeInMillis = snoozeTime
                 }
 
-                val snoozeHour12 = snoozeCalendar.get(java.util.Calendar.HOUR)
+                val snoozeHour24 = snoozeCalendar.get(java.util.Calendar.HOUR_OF_DAY)
                 val snoozeMinute = snoozeCalendar.get(java.util.Calendar.MINUTE)
-                val snoozeAmPm = if (snoozeCalendar.get(java.util.Calendar.AM_PM) == java.util.Calendar.AM) "AM" else "PM"
 
-                val displayHour = if (snoozeHour12 == 0) 12 else snoozeHour12
+                // Chuyển đổi sang 12-hour format cho display
+                val displayHour = when {
+                    snoozeHour24 == 0 -> 12
+                    snoozeHour24 > 12 -> snoozeHour24 - 12
+                    else -> snoozeHour24
+                }
+                val snoozeAmPm = if (snoozeHour24 < 12) "AM" else "PM"
 
-                Log.d(TAG, "⏰ Snooze alarm will ring at: $displayHour:${String.format("%02d", snoozeMinute)} $snoozeAmPm")
+                Log.d(TAG, "⏰ Snooze alarm will ring at: $displayHour:${String.format("%02d", snoozeMinute)} $snoozeAmPm (24h: $snoozeHour24)")
 
+                // ✅ CRITICAL FIX: Tạo snooze alarm với trigger time trực tiếp
                 val snoozeAlarm = alarm.copy(
                     id = alarmId + 50000,
                     hour = displayHour,
                     minute = snoozeMinute,
                     amPm = snoozeAmPm,
                     activeDays = BooleanArray(7) { false },
-                    isEnabled = true  // ✅ FIX: Đảm bảo snooze alarm được ENABLE
+                    isEnabled = true
                 )
 
                 Log.d(TAG, "✅ Snooze alarm object created with ID: ${snoozeAlarm.id}")
 
-                scheduler.scheduleAlarm(snoozeAlarm)
+                // ✅ CRITICAL FIX: Use direct snooze scheduling instead of getNextTriggerTime()
+                scheduler.scheduleSnoozeAlarm(snoozeAlarm, snoozeTime)
 
                 //  FIX: SAU KHI schedule snooze xong, xử lý alarm gốc
                 // Nếu là recurring alarm → reschedule
@@ -190,7 +227,9 @@ class AlarmActionReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val scheduler = AlarmSchedulerImpl(context)
+                // Cancel both the snooze alarm and its notification
                 scheduler.cancelAlarm(alarmId + 50000)
+                notificationManager.cancelNotification(alarmId + 50000)
                 Log.d(TAG, "✅ Snooze alarm ${alarmId + 50000} cancelled successfully")
                 Log.d(TAG, "----------------------------------------")
             } catch (e: Exception) {

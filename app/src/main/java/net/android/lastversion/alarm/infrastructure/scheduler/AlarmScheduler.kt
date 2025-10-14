@@ -6,4 +6,5 @@ interface AlarmScheduler {
     fun scheduleAlarm(alarm: Alarm)
     fun cancelAlarm(alarmId: Int)
     fun rescheduleAllAlarms(alarms: List<Alarm>)
+    fun scheduleSnoozeAlarm(alarm: Alarm, snoozeTime: Long)
 }

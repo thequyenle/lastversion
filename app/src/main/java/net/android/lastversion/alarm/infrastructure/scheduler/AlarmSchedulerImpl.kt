@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.util.Log
 import net.android.lastversion.alarm.domain.model.Alarm
 import net.android.lastversion.alarm.infrastructure.receiver.AlarmReceiver
+import net.android.lastversion.alarm.infrastructure.service.AlarmForegroundService
 import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 
 class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
@@ -165,6 +166,91 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
         Log.d(TAG, "Rescheduling ${alarms.size} alarms")
         alarms.filter { it.isEnabled }.forEach { alarm ->
             scheduleAlarm(alarm)
+        }
+    }
+
+    /**
+     * Schedule snooze alarm with exact trigger time
+     * This bypasses getNextTriggerTime() which doesn't work for snooze
+     */
+    override fun scheduleSnoozeAlarm(alarm: Alarm, snoozeTime: Long) {
+        Log.d(TAG, "========================================")
+        Log.d(TAG, "scheduleSnoozeAlarm() CALLED")
+        Log.d(TAG, "Alarm ID: ${alarm.id}")
+        Log.d(TAG, "Snooze time: ${java.util.Date(snoozeTime)}")
+        Log.d(TAG, "Current time: ${java.util.Date()}")
+
+        if (snoozeTime <= System.currentTimeMillis()) {
+            Log.e(TAG, "❌ ERROR: Snooze time is in the PAST!")
+            return
+        }
+
+        // Android 12+ cần quyền exact alarm
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Log.e(TAG, "❌ Cannot schedule snooze alarm - permission denied")
+                return
+            }
+            Log.d(TAG, "✅ Has exact alarm permission for snooze")
+        }
+
+        try {
+            // ===== PendingIntent cho snooze OPERATION =====
+            val operationIntent = Intent(context, AlarmReceiver::class.java).apply {
+                action = "net.android.lastversion.ACTION_FIRE_SNOOZE_ALARM"
+                putExtra(EXTRA_ALARM_ID, alarm.id)
+                putExtra(EXTRA_ALARM_HOUR, alarm.hour)
+                putExtra(EXTRA_ALARM_MINUTE, alarm.minute)
+                putExtra(EXTRA_ALARM_AM_PM, alarm.amPm)
+                putExtra(EXTRA_ALARM_LABEL, alarm.label)
+                putExtra(EXTRA_ALARM_NOTE, alarm.note)
+                putExtra(EXTRA_SNOOZE_MINUTES, alarm.snoozeMinutes)
+                putExtra(EXTRA_VIBRATION_PATTERN, alarm.vibrationPattern)
+                putExtra(EXTRA_SOUND_TYPE, alarm.soundType)
+                putExtra(EXTRA_IS_SILENT_MODE_ENABLED, alarm.isSilentModeEnabled)
+                putExtra(EXTRA_SOUND_URI, alarm.soundUri)
+            }
+
+            val opPendingIntent = PendingIntent.getBroadcast(
+                context,
+                alarm.id,
+                operationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            // ===== PendingIntent cho SHOW (Activity) =====
+            val showIntent = Intent(context, AlarmRingingActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                putExtra(EXTRA_ALARM_ID, alarm.id)
+                putExtra(EXTRA_ALARM_HOUR, alarm.hour)
+                putExtra(EXTRA_ALARM_MINUTE, alarm.minute)
+                putExtra(EXTRA_ALARM_AM_PM, alarm.amPm)
+                putExtra(EXTRA_ALARM_LABEL, alarm.label)
+                putExtra(EXTRA_ALARM_NOTE, alarm.note)
+                putExtra(EXTRA_SNOOZE_MINUTES, alarm.snoozeMinutes)
+                putExtra(EXTRA_VIBRATION_PATTERN, alarm.vibrationPattern)
+                putExtra(EXTRA_SOUND_TYPE, alarm.soundType)
+                putExtra(EXTRA_IS_SILENT_MODE_ENABLED, alarm.isSilentModeEnabled)
+                putExtra(EXTRA_SOUND_URI, alarm.soundUri)
+            }
+
+            val showPendingIntent = PendingIntent.getActivity(
+                context,
+                alarm.id shl 1,
+                showIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            // ===== Đặt AlarmClock với trigger time trực tiếp =====
+            val alarmClockInfo = AlarmManager.AlarmClockInfo(snoozeTime, showPendingIntent)
+            alarmManager.setAlarmClock(alarmClockInfo, opPendingIntent)
+
+            Log.d(TAG, "🎉 SUCCESS! Snooze alarm ${alarm.id} scheduled!")
+            Log.d(TAG, "Will ring at: ${java.util.Date(snoozeTime)}")
+            Log.d(TAG, "========================================")
+
+        } catch (e: Exception) {
+            Log.e(TAG, "❌❌❌ EXCEPTION in scheduleSnoozeAlarm:", e)
         }
     }
 

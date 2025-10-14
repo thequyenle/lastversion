@@ -246,23 +246,24 @@ class AlarmNotificationManager(private val context: Context) {
 
         val snoozeText = "Snoozed until ${java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(java.util.Date(snoozeTime))}"
 
-        val cancelSnoozeIntent = Intent(context, AlarmActionReceiver::class.java).apply {
-            action = ACTION_CANCEL_SNOOZE
+        // Content intent - dismiss snooze alarm when user clicks on notification
+        val dismissSnoozeIntent = Intent(context, AlarmActionReceiver::class.java).apply {
+            action = ACTION_STOP_SNOOZE_SOUND
             putExtra("alarm_id", alarmId)
         }
-        val cancelSnoozePendingIntent = PendingIntent.getBroadcast(
-            context, alarmId * 100, cancelSnoozeIntent,
+        val dismissSnoozePendingIntent = PendingIntent.getBroadcast(
+            context, alarmId * 101, dismissSnoozeIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         return NotificationCompat.Builder(context, SNOOZE_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_snooze)
             .setContentTitle(title)
-            .setContentText(snoozeText)
+            .setContentText("$snoozeText (Tap to dismiss)")
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
             .setAutoCancel(false)
-            .addAction(R.drawable.ic_clock, "Cancel", cancelSnoozePendingIntent)
+            .setContentIntent(dismissSnoozePendingIntent) // 🔥 Click notification to dismiss
             .setShowWhen(true)
             .setWhen(snoozeTime)
             .build()
@@ -288,5 +289,6 @@ class AlarmNotificationManager(private val context: Context) {
         const val ACTION_DISMISS = "ACTION_DISMISS"
         const val ACTION_SNOOZE = "ACTION_SNOOZE"
         const val ACTION_CANCEL_SNOOZE = "ACTION_CANCEL_SNOOZE"
+        const val ACTION_STOP_SNOOZE_SOUND = "ACTION_STOP_SNOOZE_SOUND"
     }
 }
