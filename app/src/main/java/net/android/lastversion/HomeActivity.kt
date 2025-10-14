@@ -186,15 +186,6 @@ class HomeActivity : BaseActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        // ✅ Clear the flag if app is finishing (user closed it)
-        if (isFinishing) {
-            val prefs = getSharedPreferences("onboarding_prefs", MODE_PRIVATE)
-            prefs.edit().putBoolean("app_was_running", false).apply()
-        }
-    }
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {

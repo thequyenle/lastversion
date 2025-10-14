@@ -29,17 +29,8 @@ class SplashActivity : BaseActivity() {
                     startActivity(Intent(this, LanguageActivity::class.java))
                 }
                 else -> {
-                    // ✅ Check if app was already running (HomeActivity exists in back stack)
-                    // If so, don't show tutorial again - just go to home
-                    val alreadyRunning = prefs.getBoolean("app_was_running", false)
-
-                    if (alreadyRunning) {
-                        // App was already running, go directly to home
-                        startActivity(Intent(this, HomeActivity::class.java))
-                    } else {
-                        // First launch after installation - show tutorial
-                        startActivity(Intent(this, TutorialActivity::class.java))
-                    }
+                    // ✅ Subsequent launches - always show tutorial
+                    startActivity(Intent(this, TutorialActivity::class.java))
                 }
             }
             finish()

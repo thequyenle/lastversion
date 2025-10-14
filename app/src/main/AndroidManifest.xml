@@ -9,7 +9,12 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- Android 9+ requires specific foreground service types -->
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Wake lock to keep service running -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" /> <!-- Exact alarm permissions for reliable timer (Android 12+) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+
+
+    <!-- Android 13+ -->
+   <!-- Exact alarm permissions for reliable timer (Android 12+) -->
     <uses-permission
         android:name="android.permission.SCHEDULE_EXACT_ALARM"
         tools:ignore="UnusedAttribute" />
@@ -51,14 +56,15 @@
             android:exported="false" />
         <activity
             android:name=".alarm.presentation.activity.AlarmRingingActivity"
-            android:exported="false"
+            android:exported="true"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:taskAffinity=".alarm.AlarmTask"
             android:allowTaskReparenting="false"
-            android:noHistory="true" />
+            android:noHistory="true"
+            />
         <receiver
             android:name=".alarm.infrastructure.receiver.AlarmReceiver"
             android:enabled="true"
@@ -118,9 +124,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
+
     </application>
 
 </manifest>

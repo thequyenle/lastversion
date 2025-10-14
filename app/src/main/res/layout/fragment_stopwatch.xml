@@ -24,9 +24,10 @@
     <ImageView
         android:id="@+id/imgStopwatch"
         android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_height="340dp"
         android:layout_marginTop="32dp"
         android:src="@drawable/img_stopwatch"
+        android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvStopwatchTitle" />
@@ -47,7 +48,9 @@
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_marginEnd="10dp"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -94,7 +97,9 @@
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_marginStart="10dp"
+            >
 
             <TextView
                 android:layout_width="wrap_content"

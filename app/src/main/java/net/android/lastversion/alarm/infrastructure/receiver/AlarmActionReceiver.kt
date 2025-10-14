@@ -60,7 +60,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
         }
     }
 
-    // ✅ THÊM: Xử lý logic sau khi dismiss
+    //  THÊM: Xử lý logic sau khi dismiss
     private suspend fun handleAlarmDismissed(context: Context, alarmId: Int) {
         try {
             if (alarmId == 0) {
@@ -155,7 +155,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
                 scheduler.scheduleAlarm(snoozeAlarm)
 
-                // ✅ FIX: SAU KHI schedule snooze xong, xử lý alarm gốc
+                //  FIX: SAU KHI schedule snooze xong, xử lý alarm gốc
                 // Nếu là recurring alarm → reschedule
                 // Nếu là one-time alarm → disable
                 if (alarm.hasRecurringDays()) {

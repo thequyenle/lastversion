@@ -69,7 +69,9 @@
                         android:layout_height="wrap_content"
                         android:text="@string/h"
                         android:textSize="24sp"
-                        android:textColor="#A1A1A1"/>
+                        android:textColor="#A1A1A1"
+                        android:layout_marginEnd="24dp"
+                        />
 
                     <com.shawnlin.numberpicker.NumberPicker
                         android:id="@+id/npMinute"
@@ -86,7 +88,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/m"
                         android:textSize="24sp"
-                        android:textColor="#A1A1A1"/>
+                        android:textColor="#A1A1A1"
+                        android:layout_marginEnd="24dp"/>
 
                     <com.shawnlin.numberpicker.NumberPicker
                         android:id="@+id/npSecond"

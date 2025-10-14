@@ -150,7 +150,9 @@ class AlarmRingingActivity : BaseActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(stopAlarmReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
         } else {
-            registerReceiver(stopAlarmReceiver, filter)
+            @Suppress("UnspecifiedRegisterReceiverFlag")
+
+            registerReceiver(stopAlarmReceiver, filter)  // ✅ No flag parameter for older versions
         }
 
         android.util.Log.d("AlarmRinging", "📡 Broadcast receiver registered for alarm $alarmId")

@@ -1,6 +1,7 @@
 package net.android.lastversion.alarm.infrastructure.notification
 
 import android.Manifest
+import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -17,6 +18,7 @@ import androidx.core.app.NotificationManagerCompat
 import net.android.lastversion.R
 import net.android.lastversion.MainActivity
 import net.android.lastversion.alarm.infrastructure.receiver.AlarmActionReceiver
+import net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity
 
 class AlarmNotificationManager(private val context: Context) {
 

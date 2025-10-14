@@ -1,12 +1,20 @@
 package net.android.lastversion.alarm.infrastructure.receiver
 
+import android.Manifest
+import android.app.KeyguardManager
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import net.android.lastversion.R
 import net.android.lastversion.alarm.data.local.database.AlarmDatabase
 import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
@@ -29,6 +37,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val title = intent.getStringExtra("alarm_label") ?: "Alarm"
         val note = intent.getStringExtra("alarm_note") ?: ""
+
         val snoozeMinutes = intent.getIntExtra("snooze_minutes", 5)
         val vibrationPattern = intent.getStringExtra("vibration_pattern") ?: "default"
         val soundType = intent.getStringExtra("sound_type") ?: "default"
@@ -38,32 +47,19 @@ class AlarmReceiver : BroadcastReceiver() {
         val minute = intent.getIntExtra("alarm_minute", 0)
         val amPm = intent.getStringExtra("alarm_am_pm") ?: "AM"
 
-        Log.d(TAG, "📋 Starting AlarmRingingActivity with alarm_id: $alarmId")
+        Log.d(TAG, "📋 Prepare full-screen UI with alarm_id: $alarmId")
 
-        // ✅ Get sound resource ID based on sound type
+        // ✅ Map sound type → raw res (giữ nguyên logic của bạn)
         val soundResId = when (soundType) {
             "astro" -> R.raw.astro
-            "bell" -> R.raw.bell
+            "bell"  -> R.raw.bell
             "piano" -> R.raw.piano
-            else -> 0
+            else    -> 0
         }
 
-        // ✅ Create Intent with proper flags to bypass SplashActivity/Tutorial
-        val alarmIntent = Intent(context, AlarmRingingActivity::class.java).apply {
-            // ✅ CRITICAL: These flags ensure AlarmRingingActivity opens directly
-            // even when app is killed, bypassing SplashActivity/Tutorial
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_NO_HISTORY or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
-                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-
-            // ✅ Set explicit component to ensure it goes directly to this activity
-            component = android.content.ComponentName(
-                context.packageName,
-                "net.android.lastversion.alarm.presentation.activity.AlarmRingingActivity"
-            )
-
+        // === Full-screen notification (chuẩn cho Android 10+) ===
+        val ringIntent = Intent(context, AlarmRingingActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             putExtra("alarm_id", alarmId)
             putExtra("alarm_hour", hour)
             putExtra("alarm_minute", minute)
@@ -78,16 +74,65 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra("sound_res_id", soundResId)
         }
 
-        try {
-            context.startActivity(alarmIntent)
-            Log.d(TAG, "✅ AlarmRingingActivity started successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "❌ Failed to start AlarmRingingActivity", e)
+        val fullScreenPi = PendingIntent.getActivity(
+            context,
+            alarmId,
+            ringIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val nm = context.getSystemService(NotificationManager::class.java)
+        val channelId = CHANNEL_ID
+
+        // Tạo channel IMPORTANCE_HIGH (đổi ID nếu trước đó đã tạo kênh mức thấp)
+        if (nm.getNotificationChannel(channelId) == null) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    channelId,
+                    "Alarms",
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = "Alarm ringing"
+                    setBypassDnd(true) // chỉ có tác dụng nếu user cho phép DND access
+                }
+            )
+        }
+        Log.d(TAG, "🔎 Channel '$channelId' importance=${nm.getNotificationChannel(channelId)?.importance}")
+
+        val noti = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.drawable.ic_alarm_enable)
+            .setContentTitle(title)
+            .setContentText(if (note.isNotEmpty()) note else "Ringing…")
+            .setCategory(Notification.CATEGORY_ALARM)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setOngoing(true)
+            .setFullScreenIntent(fullScreenPi, true) // ⭐ mấu chốt để bung màn hình chuông
+            .build()
+
+        // Android 13+: cần POST_NOTIFICATIONS ở runtime
+        val canNotify =
+            Build.VERSION.SDK_INT < 33 ||
+                    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+
+        if (!canNotify) {
+            Log.w(TAG, "⚠️ POST_NOTIFICATIONS not granted; skip showing full-screen notification")
+            // Không cố startActivity trực tiếp từ Receiver (bị chặn trên Android 10+)
+        } else {
+            try {
+                if (alarmId != 0) { // giữ nguyên quy ước preview = 0
+                    NotificationManagerCompat.from(context).notify(alarmId, noti)
+                    Log.d(TAG, "✅ Full-screen notification posted for alarm $alarmId")
+                } else {
+                    Log.d(TAG, "⚠️ Preview mode - skipping full-screen notification (alarmId = 0)")
+                }
+            } catch (se: SecurityException) {
+                Log.e(TAG, "❌ Cannot post notification (permission/policy)", se)
+            }
         }
 
-        // ✅ Show notification for real alarms (not preview mode)
+        // === Giữ nguyên: notification hành động (snooze/dismiss) của bạn ===
         if (alarmId != 0) {
-            Log.d(TAG, "✅ Real alarm - showing notification with functional snooze button")
+            Log.d(TAG, "✅ Real alarm - showing action notification (AlarmNotificationManager)")
             val notificationManager = AlarmNotificationManager(context)
             notificationManager.showAlarmNotification(
                 alarmId = alarmId,
@@ -100,14 +145,14 @@ class AlarmReceiver : BroadcastReceiver() {
                 isSilentModeEnabled = isSilentModeEnabled
             )
         } else {
-            Log.d(TAG, "⚠️ Preview mode - skipping notification (alarmId = 0)")
+            Log.d(TAG, "⚠️ Preview mode - skipping action notification (alarmId = 0)")
         }
 
-        // ✅ NOTE: Post-trigger logic (disable/reschedule) is handled in AlarmActionReceiver
-        // when user dismisses the alarm, to avoid race conditions with snooze
+        // ❌ Không mở Activity trực tiếp từ Receiver (bị chặn trên Android 10+)
+        // ❌ Không xử lý post-trigger ngay để tránh race condition (giữ nguyên comment-out)
     }
 
-    // ✅ Function to handle alarm dismissal - called from AlarmActionReceiver
+    // ====== GIỮ NGUYÊN CHỨC NĂNG NÀY ======
     suspend fun handleAlarmDismissed(context: Context, alarmId: Int) {
         try {
             if (alarmId == 0) {
@@ -122,21 +167,20 @@ class AlarmReceiver : BroadcastReceiver() {
 
             val alarm = repository.getAlarmById(alarmId)
             if (alarm != null && alarm.hasRecurringDays()) {
-                // Reschedule recurring alarm
                 scheduler.scheduleAlarm(alarm)
-                Log.d(TAG, "✅ Recurring alarm ${alarm.id} rescheduled")
+                Log.d(TAG, "Recurring alarm ${alarm.id} rescheduled")
             } else if (alarm != null) {
-                // Disable one-time alarm
                 repository.updateAlarm(alarm.copy(isEnabled = false))
-                Log.d(TAG, "✅ One-time alarm ${alarm.id} disabled")
+                Log.d(TAG, "One-time alarm ${alarm.id} disabled")
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Error handling alarm dismiss", e)
+            Log.e(TAG, "Error handling alarm dismiss", e)
         }
     }
 
     companion object {
         private const val TAG = "AlarmReceiver"
+        private const val CHANNEL_ID = "alarm_channel_v2" // dùng ID mới để đảm bảo IMPORTANCE_HIGH có hiệu lực
     }
 }
