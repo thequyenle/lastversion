@@ -442,11 +442,11 @@ class AlarmReceiver : BroadcastReceiver() {
         isSilentModeEnabled: Boolean
     ) {
         try {
-            val snoozeTime = System.currentTimeMillis() + (snoozeMinutes * 60 * 1000L)
             val notificationManager = AlarmNotificationManager(context)
             // Use the original alarm ID for notification to maintain consistency
             val originalAlarmId = alarmId - 50000
-            notificationManager.showSnoozeNotification(originalAlarmId, title, snoozeTime)
+            // When snooze alarm is ringing, show "Snooze time's up!" notification
+            notificationManager.showSnoozeAlarmRingingNotification(originalAlarmId, title)
             Log.d(TAG, context.getString(R.string.snooze_notification_shown, alarmId))
         } catch (e: Exception) {
             Log.e(TAG, context.getString(R.string.error_showing_snooze_notification), e)

@@ -84,6 +84,25 @@ class AlarmNotificationManager(private val context: Context) {
         }
     }
 
+    fun showSnoozeAlarmRingingNotification(alarmId: Int, title: String) {
+        if (!hasNotificationPermission()) return
+
+        try {
+            val notification = buildSnoozeAlarmRingingNotification(alarmId, title)
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+            notificationManager.notify(alarmId + SNOOZE_ID_OFFSET, notification)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to show snooze alarm ringing notification", e)
+        }
+    }
+
     fun cancelNotification(alarmId: Int) {
         try {
 
@@ -267,6 +286,34 @@ class AlarmNotificationManager(private val context: Context) {
             .setContentIntent(dismissSnoozePendingIntent) // 🔥 Click notification to dismiss
             .setShowWhen(true)
             .setWhen(snoozeTime)
+            .build()
+    }
+
+    private fun buildSnoozeAlarmRingingNotification(
+        alarmId: Int,
+        title: String
+    ): android.app.Notification {
+
+        // Content intent - dismiss snooze alarm when user clicks on notification
+        val dismissSnoozeIntent = Intent(context, AlarmActionReceiver::class.java).apply {
+            action = ACTION_STOP_SNOOZE_SOUND
+            putExtra("alarm_id", alarmId)
+        }
+        val dismissSnoozePendingIntent = PendingIntent.getBroadcast(
+            context, alarmId * 101, dismissSnoozeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return NotificationCompat.Builder(context, SNOOZE_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_snooze)
+            .setContentTitle(title)
+            .setContentText("Snooze time's up! (Tap to dismiss)")
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // Higher priority for ringing alarm
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .setContentIntent(dismissSnoozePendingIntent) // 🔥 Click notification to dismiss
+            .setCategory(NotificationCompat.CATEGORY_ALARM) // Mark as alarm category
+            .setDefaults(NotificationCompat.DEFAULT_ALL) // Use default sound/vibration for ringing
             .build()
     }
 
