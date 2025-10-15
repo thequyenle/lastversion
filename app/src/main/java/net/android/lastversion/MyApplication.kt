@@ -8,6 +8,7 @@ class MyApplication : Application() {
     companion object {
         const val PREFS_NAME = "rating_prefs"
         const val KEY_LAUNCH_COUNT = "launch_count"
+        const val KEY_EXIT_ATTEMPT_COUNT = "exit_attempt_count"
         const val KEY_HAS_RATED = "has_rated"
     }
 
@@ -40,5 +41,23 @@ class MyApplication : Application() {
     fun setHasRated(hasRated: Boolean) {
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         prefs.edit().putBoolean(KEY_HAS_RATED, hasRated).apply()
+    }
+
+    fun incrementExitAttemptCount(): Int {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val currentCount = prefs.getInt(KEY_EXIT_ATTEMPT_COUNT, 0)
+        val newCount = currentCount + 1
+        prefs.edit().putInt(KEY_EXIT_ATTEMPT_COUNT, newCount).apply()
+        return newCount
+    }
+
+    fun getExitAttemptCount(): Int {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        return prefs.getInt(KEY_EXIT_ATTEMPT_COUNT, 0)
+    }
+
+    fun resetExitAttemptCount() {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        prefs.edit().putInt(KEY_EXIT_ATTEMPT_COUNT, 0).apply()
     }
 }

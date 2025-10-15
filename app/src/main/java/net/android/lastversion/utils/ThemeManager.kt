@@ -80,7 +80,9 @@ class ThemeManager(private val context: Context) {
 
     // Thêm ảnh custom
     fun addCustomTheme(uri: Uri): String {
-        val themeId = "custom_${System.currentTimeMillis()}"
+        val timestamp = System.currentTimeMillis()
+        val sequence = getNextSequence()
+        val themeId = "custom_${timestamp}_${sequence}"
         val customDir = File(context.filesDir, CUSTOM_THEMES_DIR)
         if (!customDir.exists()) customDir.mkdirs()
 
@@ -98,7 +100,7 @@ class ThemeManager(private val context: Context) {
             resized.recycle()
         }
 
-        // Lưu ID
+        // Lưu ID với atomic operation
         val customIds = prefs.getStringSet(KEY_CUSTOM_THEME_IDS, setOf())?.toMutableSet() ?: mutableSetOf()
         customIds.add(themeId)
         prefs.edit().putStringSet(KEY_CUSTOM_THEME_IDS, customIds).apply()
@@ -106,10 +108,36 @@ class ThemeManager(private val context: Context) {
         return themeId
     }
 
+    private fun getNextSequence(): Int {
+        return prefs.getInt("custom_theme_sequence", 0) + 1.also {
+            prefs.edit().putInt("custom_theme_sequence", it).apply()
+        }
+    }
+
     // Lấy tất cả custom themes
     fun getCustomThemes(): List<Theme> {
         val customIds = prefs.getStringSet(KEY_CUSTOM_THEME_IDS, setOf()) ?: setOf()
-        return customIds.map { Theme(it, 0, ThemeType.CUSTOM) }
+        return customIds
+            .map { Theme(it, 0, ThemeType.CUSTOM) }
+            .sortedWith(compareByDescending<Theme> { theme ->
+                // Extract timestamp from theme ID (format: "custom_timestamp_sequence")
+                try {
+                    val afterCustom = theme.id.substringAfter("custom_")
+                    val timestampPart = afterCustom.substringBefore("_")
+                    timestampPart.toLong()
+                } catch (e: Exception) {
+                    0L // Fallback for invalid format
+                }
+            }.thenByDescending { theme ->
+                // Extract sequence from theme ID for tie-breaking
+                try {
+                    val afterCustom = theme.id.substringAfter("custom_")
+                    val sequencePart = afterCustom.substringAfter("_")
+                    sequencePart.toInt()
+                } catch (e: Exception) {
+                    0 // Fallback for invalid format
+                }
+            })
     }
 
     // Xóa custom theme

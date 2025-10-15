@@ -32,7 +32,9 @@ class SettingsFragment : Fragment() {
     companion object {
         private const val PREFS_NAME = "AlarmSettings"
         private const val KEY_VOLUME = "volume"
-        private const val KEY_RATED = "is_rated"
+        // Use the same rating prefs as MyApplication for consistency
+        private const val RATING_PREFS_NAME = "rating_prefs"
+        private const val KEY_RATED = "has_rated"
 
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
@@ -117,17 +119,23 @@ class SettingsFragment : Fragment() {
     }
 
     private fun saveRatingStatus(rated: Boolean) {
-        val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = requireContext().getSharedPreferences(RATING_PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().putBoolean(KEY_RATED, rated).apply()
     }
 
     private fun loadRatingStatus() {
-        val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = requireContext().getSharedPreferences(RATING_PREFS_NAME, Context.MODE_PRIVATE)
         isRated = prefs.getBoolean(KEY_RATED, false)
+
+        android.util.Log.d("SettingsFragment", "Loading rating status: isRated=$isRated")
 
         // Nếu đã rating rồi thì ẩn luôn
         if (isRated) {
+            android.util.Log.d("SettingsFragment", "Hiding rate us layout because user has already rated")
             layoutRateUs.visibility = View.GONE
+        } else {
+            android.util.Log.d("SettingsFragment", "Showing rate us layout because user has not rated yet")
+            layoutRateUs.visibility = View.VISIBLE
         }
     }
 
@@ -220,5 +228,8 @@ class SettingsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         activity?.showSystemUI(white = false)
+
+        // Reload rating status in case user rated from another part of the app
+        loadRatingStatus()
     }
 }

@@ -51,6 +51,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="I want when add new theme, theme always appears at first list. check for me why sometime it's not work">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760525519860" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="I want work for 3 state.&#10;1. when open app&#10;2. when kill app&#10;3. when lock screen. And you research about snooze maybe it's not really working">
           <value>
             <GhostTextMetaData>
@@ -70,6 +82,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1760523224196" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="are you sure? If I try so many time?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760525637263" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -195,6 +219,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="no I means, when rated from HomeActivity, it exit app, and dissappear at setting">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760526258739" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="no block others star, just block only star has chosen">
           <value>
             <GhostTextMetaData>
@@ -226,6 +262,30 @@
               <option name="timestamps">
                 <list>
                   <option value="1760459816601" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="when I click back device to exit app, it's not appear rating for me?. I want the odd time exit is not appear, the even is appear, when rating bar is rated from setting or homeactivity , it is always  disappear at setting,">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760526787586" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="when I click vote star when click back device, vote star at setting should disappear">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760526017167" />
                 </list>
               </option>
             </GhostTextMetaData>

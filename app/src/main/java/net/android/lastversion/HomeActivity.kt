@@ -191,19 +191,27 @@ class HomeActivity : BaseActivity() {
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         val app = application as MyApplication
-        val launchCount = app.getLaunchCount()
         val hasRated = app.hasRated()
+
+        android.util.Log.d("HomeActivity", "Back pressed - hasRated: $hasRated")
 
         if (hasRated) {
             // User has already rated, just exit app
+            android.util.Log.d("HomeActivity", "User already rated, exiting app")
             super.onBackPressed()
             finishAffinity()
         } else {
-            if (launchCount % 2 == 0) {
-                // Even launch - show rating dialog
+            // Increment exit attempt counter
+            val exitAttemptCount = app.incrementExitAttemptCount()
+            android.util.Log.d("HomeActivity", "Exit attempt count: $exitAttemptCount")
+
+            if (exitAttemptCount % 2 == 0) {
+                // Even exit attempt - show rating dialog
+                android.util.Log.d("HomeActivity", "Even exit attempt, showing rating dialog")
                 showRatingDialog()
             } else {
-                // Odd launch - exit app directly
+                // Odd exit attempt - exit app directly
+                android.util.Log.d("HomeActivity", "Odd exit attempt, exiting app directly")
                 super.onBackPressed()
                 finishAffinity()
             }
@@ -218,6 +226,9 @@ class HomeActivity : BaseActivity() {
             onRatingSubmitted = { rating ->
                 // Mark that user has rated
                 app.setHasRated(true)
+
+                // Reset exit attempt counter so next back press would be odd
+                app.resetExitAttemptCount()
 
                 // After rating, exit app
                 finishAffinity()
