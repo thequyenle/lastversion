@@ -277,7 +277,11 @@ class TimerFragment : Fragment() {
 
         currentSeconds = totalSeconds
         switchToRunningState()
-        startSyncTimer()
+        // Add a small delay to ensure service has time to initialize before starting sync
+        syncHandler = Handler(Looper.getMainLooper())
+        syncHandler?.postDelayed({
+            startSyncTimer()
+        }, 100) // 100ms delay to allow service to initialize
     }
 
     private fun togglePauseResume() {
@@ -301,6 +305,8 @@ class TimerFragment : Fragment() {
         syncHandler = Handler(Looper.getMainLooper())
         syncRunnable = object : Runnable {
             override fun run() {
+                Log.d("TimerFragment", "Sync timer check - isServiceRunning: ${TimerService.isServiceRunning}, currentSeconds: ${TimerService.currentRemainingSeconds}")
+
                 if (TimerService.isServiceRunning) {
                     currentSeconds = TimerService.currentRemainingSeconds
                     isPaused = TimerService.isCurrentlyPaused
@@ -319,8 +325,15 @@ class TimerFragment : Fragment() {
                     val delay = if (isPaused) 500L else 250L
                     syncHandler?.postDelayed(this, delay)
                 } else {
-                    // ✅ Service stopped - go back to picker
+                    // ✅ Service stopped - go back to picker, but add safety check
+                    Log.d("TimerFragment", "Service not running, checking if we should switch to picker state")
                     if (binding.layoutRunning.visibility == View.VISIBLE) {
+                        // Additional safety: only switch if we're not in the middle of starting a timer
+                        if (totalSeconds > 0 && currentSeconds == totalSeconds) {
+                            Log.d("TimerFragment", "Detected potential race condition, delaying switch to picker")
+                            syncHandler?.postDelayed(this, 100) // Check again after 100ms
+                            return
+                        }
                         switchToPickerState()
                     }
                     stopSyncTimer()

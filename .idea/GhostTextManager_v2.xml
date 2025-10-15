@@ -303,6 +303,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="why in timerFragment, sometime I click start, but It's immediately go back to state 1 UI, and service still running. Just sometime, not usually">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760524835175" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
