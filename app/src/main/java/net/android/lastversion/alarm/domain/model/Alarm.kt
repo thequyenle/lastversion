@@ -1,7 +1,9 @@
 package net.android.lastversion.alarm.domain.model
 
+import android.content.Context
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import net.android.lastversion.R
 import java.util.*
 
 @Parcelize
@@ -30,18 +32,26 @@ data class Alarm(
         return String.format("%02d:%02d %s", hour, minute, amPm)
     }
 
-    fun getActiveDaysText(): String {
-        if (activeDays.none { it }) return "Never"
-        if (activeDays.all { it }) return "Every day"
+    fun getActiveDaysText(context: Context): String {
+        if (activeDays.none { it }) return context.getString(R.string.never)
+        if (activeDays.all { it }) return context.getString(R.string.every_day)
 
         val weekdays = activeDays.slice(1..5).all { it }
         val weekends = activeDays[0] && activeDays[6]
 
         return when {
-            weekdays && !weekends -> "Weekdays"
-            weekends && !weekdays -> "Weekends"
+            weekdays && !weekends -> context.getString(R.string.weekdays)
+            weekends && !weekdays -> context.getString(R.string.weekends)
             else -> {
-                val dayNames = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+                val dayNames = arrayOf(
+                    context.getString(R.string.sun_short),
+                    context.getString(R.string.mon_short),
+                    context.getString(R.string.tue_short),
+                    context.getString(R.string.wed_short),
+                    context.getString(R.string.thu_short),
+                    context.getString(R.string.fri_short),
+                    context.getString(R.string.sat_short)
+                )
                 activeDays.toList().mapIndexedNotNull { index, active ->
                     if (active) dayNames[index] else null
                 }.joinToString(", ")

@@ -139,7 +139,7 @@ class AlarmFragment : Fragment() {
                 alarmViewModel.deleteAlarm(alarm)
 
                 // Hiển thị snackbar với UNDO
-                showSnackbar("Alarm deleted") {
+                showSnackbar(getString(R.string.alarm_deleted)) {
                     lifecycleScope.launch {
                         try {
                             // ✅ Lấy repository và scheduler
@@ -217,7 +217,7 @@ class AlarmFragment : Fragment() {
     private fun showSnackbar(message: String, action: (() -> Unit)? = null) {
         val snackbar = Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
         action?.let {
-            snackbar.setAction("UNDO") { it() }
+            snackbar.setAction(getString(R.string.undo)) { it() }
         }
         snackbar.show()
     }
@@ -233,7 +233,7 @@ class AlarmFragment : Fragment() {
     }
 
     private fun showAlarmMenu(alarm: Alarm, anchorView: View) {
-        val options = arrayOf("Duplicate", "Delete")
+        val options = arrayOf(getString(R.string.duplicate), getString(R.string.delete))
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setItems(options) { dialog, which ->
@@ -283,7 +283,7 @@ class AlarmFragment : Fragment() {
             alarmViewModel.deleteAlarm(alarm)
 
             // Hiển thị snackbar với UNDO action
-            showSnackbar("Alarm deleted") {
+            showSnackbar(getString(R.string.alarm_deleted)) {
                 // ✅ Khôi phục alarm bằng cách INSERT trực tiếp vào database
                 lifecycleScope.launch {
                     try {

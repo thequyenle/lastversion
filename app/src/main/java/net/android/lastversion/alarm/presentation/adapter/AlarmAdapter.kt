@@ -52,7 +52,7 @@ class AlarmAdapter(
         fun bind(alarm: Alarm) {
             tvTime.text = alarm.getTimeString()
             tvLabel.text = alarm.note
-            tvActiveDays.text = alarm.getActiveDaysText()
+            tvActiveDays.text = alarm.getActiveDaysText(itemView.context)
 
             updateAlarmState(alarm.isEnabled)
         }
