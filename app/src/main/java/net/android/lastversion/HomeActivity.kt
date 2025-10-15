@@ -18,6 +18,7 @@ import androidx.navigation.fragment.NavHostFragment
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import net.android.lastversion.utils.showSystemUI
+import net.android.lastversion.dialog.RatingDialog
 
 
 class HomeActivity : BaseActivity() {
@@ -189,8 +190,43 @@ class HomeActivity : BaseActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        super.onBackPressed()
-        finishAffinity()
+        val app = application as MyApplication
+        val launchCount = app.getLaunchCount()
+        val hasRated = app.hasRated()
+
+        if (hasRated) {
+            // User has already rated, just exit app
+            super.onBackPressed()
+            finishAffinity()
+        } else {
+            if (launchCount % 2 == 0) {
+                // Even launch - show rating dialog
+                showRatingDialog()
+            } else {
+                // Odd launch - exit app directly
+                super.onBackPressed()
+                finishAffinity()
+            }
+        }
+    }
+
+    private fun showRatingDialog() {
+        val app = application as MyApplication
+
+        RatingDialog.show(
+            this,
+            onRatingSubmitted = { rating ->
+                // Mark that user has rated
+                app.setHasRated(true)
+
+                // After rating, exit app
+                finishAffinity()
+            },
+            onDismiss = {
+                // If dialog is dismissed without rating, exit app
+                finishAffinity()
+            }
+        )
     }
 
 

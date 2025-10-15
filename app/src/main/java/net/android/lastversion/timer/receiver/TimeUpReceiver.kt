@@ -120,8 +120,8 @@ class TimeUpReceiver : BroadcastReceiver() {
 
             val notification = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_timer_enable)
-                .setContentTitle("Time's Up!")
-                .setContentText("Your timer has finished. Tap to stop sound.")
+                .setContentTitle(context.getString(R.string.time_up_notification))
+                .setContentText(context.getString(R.string.your_timer_has_finished_tap_to_stop_sound))
                 .setContentIntent(stopSoundPendingIntent) // Tap notification to stop sound
                 .setColor(Color.parseColor("#76E0C1"))
                 .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -130,8 +130,8 @@ class TimeUpReceiver : BroadcastReceiver() {
                 .setOngoing(true)
                 .setFullScreenIntent(contentIntent, true)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE or NotificationCompat.DEFAULT_LIGHTS)
-                .addAction(R.drawable.ic_stopwatch_enable, "Stop Sound", stopSoundPendingIntent)
-                .addAction(R.drawable.ic_timer_enable, "Open App", contentIntent)
+                .addAction(R.drawable.ic_stopwatch_enable, context.getString(R.string.stop_sound), stopSoundPendingIntent)
+                .addAction(R.drawable.ic_timer_enable, context.getString(R.string.open_app), contentIntent)
                 .build()
 
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager

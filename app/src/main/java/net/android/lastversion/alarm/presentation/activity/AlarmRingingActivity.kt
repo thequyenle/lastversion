@@ -252,7 +252,7 @@ class AlarmRingingActivity : BaseActivity() {
         if (snoozeMinutes == 0) {
             btnSnooze.visibility = View.GONE
         } else {
-            btnSnooze.text = "Snooze $snoozeMinutes min"
+            btnSnooze.text = getString(R.string.snooze_min, snoozeMinutes)
         }
     }
 

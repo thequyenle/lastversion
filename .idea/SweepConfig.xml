@@ -8,6 +8,8 @@
         <option value="search_files" />
         <option value="find_usages" />
         <option value="get_errors" />
+        <option value="bash" />
+        <option value="powershell" />
       </set>
     </option>
   </component>

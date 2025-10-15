@@ -75,7 +75,7 @@ class TimerFragment : Fragment() {
                 saveSoundPreferences()
             } catch (e: Exception) {
                 Log.e("TimerFragment", "Error selecting sound", e)
-                Toast.makeText(requireContext(), "Error selecting sound", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.error_selecting_sound), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -240,7 +240,7 @@ class TimerFragment : Fragment() {
         }
         requireContext().startService(intent)
         isPaused = true
-        binding.btnStop.text = "Continue"
+        binding.btnStop.text = getString(R.string.continuee)
     }
 
     private fun resumeTimer() {
@@ -249,7 +249,7 @@ class TimerFragment : Fragment() {
         }
         requireContext().startService(intent)
         isPaused = false
-        binding.btnStop.text = "Stop"
+        binding.btnStop.text = getString(R.string.stop_)
     }
 
     private fun startTimer() {
@@ -259,7 +259,7 @@ class TimerFragment : Fragment() {
         totalSeconds = h * 3600 + m * 60 + s
 
         if (totalSeconds == 0) {
-            Toast.makeText(requireContext(), "Please set a time!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.please_set_a_time), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -312,7 +312,7 @@ class TimerFragment : Fragment() {
                     }
 
                     updateUI(currentSeconds, totalSeconds)
-                    binding.btnStop.text = if (isPaused) "Continue" else "Stop"
+                    binding.btnStop.text = if (isPaused) getString(R.string.continuee) else getString(R.string.stop_)
 
                     val delay = if (isPaused) 500L else 250L
                     syncHandler?.postDelayed(this, delay)
@@ -372,7 +372,7 @@ class TimerFragment : Fragment() {
         binding.layoutPickers.visibility = View.GONE
         binding.layoutRunning.visibility = View.VISIBLE
         binding.tvTitle.visibility = View.VISIBLE
-        binding.btnStop.text = if (isPaused) "Continue" else "Stop"
+        binding.btnStop.text = if (isPaused) getString(R.string.continuee) else getString(R.string.stop_)
 
         imgTimerBackground.visibility = View.GONE
     }
@@ -408,11 +408,11 @@ class TimerFragment : Fragment() {
             requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
                 if (cursor.moveToFirst()) {
                     val idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    if (idx >= 0) cursor.getString(idx) else "Custom Sound"
-                } else "Custom Sound"
-            } ?: "Custom Sound"
+                    if (idx >= 0) cursor.getString(idx) else getString(R.string.custom_sound)
+                } else getString(R.string.custom_sound)
+            } ?: getString(R.string.custom_sound)
         } catch (e: Exception) {
-            "Custom Sound"
+            getString(R.string.custom_sound)
         }
     }
 
@@ -439,10 +439,10 @@ class TimerFragment : Fragment() {
     private fun updateSoundDisplay() {
         binding.tvSoundValue.text = when {
             selectedSoundUri != null -> getFileNameFromUri(selectedSoundUri!!)
-            selectedResId == R.raw.astro -> "Astro"
-            selectedResId == R.raw.bell -> "Bell"
-            selectedResId == R.raw.piano -> "Piano"
-            else -> "Astro"
+            selectedResId == R.raw.astro -> getString(R.string.astro)
+            selectedResId == R.raw.bell -> getString(R.string.bell)
+            selectedResId == R.raw.piano -> getString(R.string.piano)
+            else -> getString(R.string.astro)
         }
     }
 

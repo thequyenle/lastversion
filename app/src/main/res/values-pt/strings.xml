@@ -27,6 +27,8 @@
     <string name="tutorial_slide3_title">Cronômetro</string>
     <string name="tutorial_slide3_desc">Marque o tempo de suas séries</string>
 
+    <string name="alarm_saved">Alarmes salvos</string>
+
     <!-- ==================== PERMISSIONS ==================== -->
     <string name="permission">Permissão</string>
     <string name="grant_permission">Conceder permissão para continuar</string>
@@ -114,7 +116,7 @@
 
     <!-- ==================== ALARM ==================== -->
     <string name="alarm">Alarme</string>
-    <string name="alarm_clock">Despertador</string>
+    <string name="alarm_clock">Alarm Clock</string>
     <string name="alarm_fragment">Alarme</string>
     <string name="alarmItem">Alarme</string>
     <string name="set_alarm">Configurar alarme</string>
@@ -277,6 +279,53 @@
     <string name="fun">😊</string>
     <string name="let_us_know_your_experience">Conte-nos sua experiência</string>
     <string name="do_you_like_the_app">Você gosta do aplicativo?</string>
+
+    <string name="cancel_dialog">Cancelar</string>
+    <string name="ok_dialog">OK</string>
+    <string name="alarm_note_dialog">Nota do alarme</string>
+    <string name="enter_alarm_note_dialog">Digite a nota do alarme</string>
+    <string name="am_pm">AM PM</string>
+    <string name="welcome_to_home_screen">Bem-vindo à tela inicial</string>
+    <string name="alarm_clock_title">Despertador</string>
+    <string name="system_sound">Som do sistema</string>
+    <string name="five_minutes_0_seconds">5 minutos 0 segundos</string>
+    <string name="hours_content_description">Horas</string>
+    <string name="minutes_content_description">Minutos</string>
+    <string name="alarm_menu_title">Alarme</string>
+
+    <string name="theme_added">Tema adicionado!</string>
+    <string name="error_selecting_sound">Erro ao selecionar som</string>
+    <string name="please_set_a_time">Por favor, defina um horário!</string>
+    <string name="error_saving_alarm_format">Erro ao salvar alarme: %s</string>
+    <string name="test_alarm_feature_toast">Testar recurso do alarme</string>
+    <string name="oh_no">Oh, não!</string>
+    <string name="please_give_us_some_feedback">Por favor, nos dê um feedback</string>
+    <string name="could_be_better">Poderia ser melhor!</string>
+    <string name="how_can_we_improve">Como podemos melhorar?</string>
+    <string name="we_love_you_too">Nós também te amamos!</string>
+    <string name="thanks_for_your_feedback">Obrigado pelo seu feedback</string>
+
+    <string name="stop_sound">Parar som</string>
+    <string name="open_app">Abrir app</string>
+    <string name="time_up_notification">Tempo esgotado!</string>
+    <string name="your_timer_has_finished_tap_to_stop_sound">Seu temporizador terminou. Toque para parar o som.</string>
+    <string name="your_timer_has_finished">Seu temporizador terminou</string>
+    <string name="timer_running">Temporizador em execução</string>
+    <string name="remaining">restante</string>
+    <string name="custom_sound">Som personalizado</string>
+
+
+    <string name="timer_alarm">Alarme do temporizador</string>
+    <string name="timer_finished_notifications">Notificações de temporizador finalizado</string>
+    <string name="timer_backup">Backup do temporizador</string>
+    <string name="timer_completion_notifications_when_app_is_killed">Notificações de conclusão do temporizador quando o app é fechado</string>
+    <string name="stopwatch_notification">Notificação de cronômetro</string>
+    <string name="stopwatch_notification_description">Notificação de cronômetro</string>
+    <string name="timer_service">Serviço de temporizador</string>
+    <string name="timer_notifications">Notificações de temporizador</string>
+    <string name="share_app_via">Compartilhar app via</string>
+    <string name="check_out_this_amazing_alarm_clock_app">Confira este incrível app de despertador: http://play.google.com/store/apps/details?id=%s</string>
+    <string name="snooze_min">Posponer %1$s min</string>
 
 
 </resources>

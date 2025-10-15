@@ -413,7 +413,7 @@ class SetAlarmActivity : BaseActivity() {
                 finish()
 
             } catch (e: Exception) {
-                Toast.makeText(this@SetAlarmActivity, "Error saving alarm: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SetAlarmActivity, getString(R.string.error_saving_alarm_format, e.message), Toast.LENGTH_SHORT).show()
             }
         }
     }

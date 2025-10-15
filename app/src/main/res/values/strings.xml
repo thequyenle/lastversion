@@ -281,5 +281,67 @@
     <string name="alarm_saved">Alarms saved</string>
 
     <string name="channel_importance">Channel \'%s\' importance=%d</string>
+    <string name="cancel_dialog">Cancel</string>
+    <string name="ok_dialog">OK</string>
+    <string name="alarm_note_dialog">Alarm note</string>
+    <string name="enter_alarm_note_dialog">Enter alarm note</string>
+    <string name="am_pm">AM PM</string>
+
+    <!-- ==================== ADDITIONAL STRINGS ==================== -->
+
+    <!-- From XML Layouts -->
+    <string name="welcome_to_home_screen">Welcome to Home Screen</string>
+    <string name="system_sound">System sound</string>
+    <string name="five_minutes_0_seconds">5 minutes 0 seconds</string>
+    <string name="hours_content_description">Hours</string>
+    <string name="minutes_content_description">Minutes</string>
+
+    <!-- From Menu Files -->
+
+    <!-- From Kotlin Files - Toast Messages -->
+    <string name="theme_added">Theme added!</string>
+    <string name="error_selecting_sound">Error selecting sound</string>
+    <string name="please_set_a_time">Please set a time!</string>
+    <string name="test_alarm_feature_toast">Test alarm feature</string>
+
+    <!-- From Kotlin Files - Rating Dialog -->
+    <string name="oh_no">Oh, no!</string>
+    <string name="please_give_us_some_feedback">Please give us some feedback</string>
+    <string name="could_be_better">Could be better!</string>
+    <string name="how_can_we_improve">How can we improve?</string>
+    <string name="we_love_you_too">We love you too!</string>
+    <string name="thanks_for_your_feedback">Thanks for your feedback</string>
+
+    <!-- From Kotlin Files - Timer/Stopwatch -->
+    <string name="stop_sound">Stop Sound</string>
+    <string name="open_app">Open App</string>
+    <string name="time_up_notification">Time\'s Up!</string>
+    <string name="your_timer_has_finished_tap_to_stop_sound">Your timer has finished. Tap to stop sound.</string>
+    <string name="your_timer_has_finished">Your timer has finished</string>
+    <string name="timer_running">Timer Running</string>
+    <string name="remaining">remaining</string>
+    <string name="custom_sound">Custom Sound</string>
+
+    <!-- From Kotlin Files - Notifications -->
+    <string name="timer_alarm">Timer Alarm</string>
+    <string name="timer_finished_notifications">Timer finished notifications</string>
+    <string name="timer_backup">Timer Backup</string>
+    <string name="timer_completion_notifications_when_app_is_killed">Timer completion notifications when app is killed</string>
+    <string name="stopwatch_notification_description">Stopwatch notification</string>
+    <string name="timer_service">Timer Service</string>
+    <string name="timer_notifications">Timer notifications</string>
+
+    <!-- From Kotlin Files - Share -->
+    <string name="share_app_via">Share app via</string>
+    <string name="check_out_this_amazing_alarm_clock_app">Check out this amazing Alarm Clock app: http://play.google.com/store/apps/details?id=%s</string>
+    <string name="error_saving_alarm_format">Error saving alarm: %s</string>
+    <string name="stopwatch_notification">Stopwatch notification</string>
+    <string name="error_restoring_alarm_format" translatable="false">Erreur lors de la restauration de l\'alarme : %s</string>
+    <string name="alarm_clock_title" translatable="false">Alarm Clock</string>
+    <string name="alarm_menu_title" translatable="false">Alarm</string>
+    <string name="bell" translatable="false">bell</string>
+    <string name="piano" translatable="false">piano</string>
+    <string name="snooze_min">Snooze %1$s min</string>
+
 
 </resources>

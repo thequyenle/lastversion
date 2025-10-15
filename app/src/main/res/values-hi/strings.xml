@@ -114,7 +114,7 @@
 
     <!-- ==================== ALARM ==================== -->
     <string name="alarm">अलार्म</string>
-    <string name="alarm_clock">अलार्म घड़ी</string>
+    <string name="alarm_clock">Alarm Clock</string>
     <string name="alarm_fragment">अलार्म</string>
     <string name="alarmItem">अलार्म</string>
     <string name="set_alarm">अलार्म सेट करें</string>
@@ -280,5 +280,52 @@
     <string name="let_us_know_your_experience">हमें अपना अनुभव बताएं</string>
     <string name="do_you_like_the_app">क्या आपको ऐप पसंद है?</string>
 
+    <string name="cancel_dialog">रद्द करें</string>
+    <string name="ok_dialog">ठीक है</string>
+    <string name="alarm_note_dialog">अलार्म नोट</string>
+    <string name="enter_alarm_note_dialog">अलार्म नोट दर्ज करें</string>
+    <string name="am_pm">AM PM</string>
+    <string name="welcome_to_home_screen">होम स्क्रीन पर स्वागत है</string>
+    <string name="alarm_clock_title">अलार्म घड़ी</string>
+    <string name="system_sound">सिस्टम ध्वनि</string>
+    <string name="five_minutes_0_seconds">5 मिनट 0 सेकंड</string>
+    <string name="hours_content_description">घंटे</string>
+    <string name="minutes_content_description">मिनट</string>
+    <string name="alarm_menu_title">अलार्म</string>
+
+    <string name="theme_added">थीम जोड़ी गई!</string>
+    <string name="error_selecting_sound">ध्वनि चयन में त्रुटि</string>
+    <string name="please_set_a_time">कृपया एक समय सेट करें!</string>
+    <string name="error_saving_alarm_format">अलार्म सहेजने में त्रुटि: %s</string>
+    <string name="test_alarm_feature_toast">अलार्म फीचर टेस्ट करें</string>
+    <string name="oh_no">ओह, नहीं!</string>
+    <string name="please_give_us_some_feedback">कृपया हमें कुछ प्रतिक्रिया दें</string>
+    <string name="could_be_better">अधिक अच्छा हो सकता है!</string>
+    <string name="how_can_we_improve">हम इसे कैसे सुधार सकते हैं?</string>
+    <string name="we_love_you_too">हम भी तुमसे प्यार करते हैं!</string>
+    <string name="thanks_for_your_feedback">आपकी प्रतिक्रिया के लिए धन्यवाद</string>
+
+    <string name="stop_sound">ध्वनि बंद करें</string>
+    <string name="open_app">ऐप खोलें</string>
+    <string name="time_up_notification">समय समाप्त!</string>
+    <string name="your_timer_has_finished_tap_to_stop_sound">आपका टाइमर समाप्त हो गया है। ध्वनि बंद करने के लिए टैप करें।</string>
+    <string name="your_timer_has_finished">आपका टाइमर समाप्त हो गया है</string>
+    <string name="timer_running">टाइमर चल रहा है</string>
+    <string name="remaining">बाकी</string>
+    <string name="custom_sound">कस्टम ध्वनि</string>
+
+    <string name="timer_alarm">टाइमर अलार्म</string>
+    <string name="timer_finished_notifications">टाइमर समाप्त होने पर नोटिफिकेशन</string>
+    <string name="timer_backup">टाइमर बैकअप</string>
+    <string name="timer_completion_notifications_when_app_is_killed">टाइमर की समाप्ति पर नोटिफिकेशन जब ऐप बंद हो</string>
+    <string name="stopwatch_notification">स्टॉपवॉच</string>
+    <string name="stopwatch_notification_description">स्टॉपवॉच नोटिफिकेशन</string>
+    <string name="timer_service">टाइमर सेवा</string>
+    <string name="timer_notifications">टाइमर नोटिफिकेशन</string>
+    <string name="share_app_via">ऐप साझा करें</string>
+    <string name="check_out_this_amazing_alarm_clock_app">इस अद्भुत अलार्म घड़ी ऐप को देखें: http://play.google.com/store/apps/details?id=%s</string>
+    <string name="snooze_min">  दिन में झपकी लेना %1$s m</string>
 
 </resources>
+
+

@@ -123,8 +123,8 @@ class TimerBackupReceiver : BroadcastReceiver() {
 
             val notification = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_timer_enable)
-                .setContentTitle("Time's Up!")
-                .setContentText("Your timer has finished")
+                .setContentTitle(context.getString(R.string.time_up_notification))
+                .setContentText(context.getString(R.string.your_timer_has_finished))
                 .setContentIntent(openAppIntent) // Tap notification = open app
                 .setColor(Color.parseColor("#76E0C1"))
                 .setOngoing(true) // Keep persistent until user stops it
@@ -132,7 +132,7 @@ class TimerBackupReceiver : BroadcastReceiver() {
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setAutoCancel(false)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE or NotificationCompat.DEFAULT_LIGHTS)
-                .addAction(R.drawable.ic_stopwatch_enable, "Stop Sound", stopSoundPendingIntent)
+                .addAction(R.drawable.ic_stopwatch_enable, context.getString(R.string.stop_sound), stopSoundPendingIntent)
                 .build()
 
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -168,7 +168,7 @@ class StopwatchService : Service() {
 
         val builder = NotificationCompat.Builder(this, StopwatchConst.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_alarm_enable) // Đảm bảo có icon này
-            .setContentTitle("Stopwatch")
+            .setContentTitle(getString(R.string.stopwatch_notification))
             .setContentText(content)
             .setContentIntent(piOpen)
             .setOnlyAlertOnce(true)
@@ -180,20 +180,20 @@ class StopwatchService : Service() {
         if (running) {
             builder.addAction(
                 R.drawable.ic_pause, // Đảm bảo có icon này  
-                "Pause",
+                getString(R.string.pause),
                 piPauseOrResume
             )
         } else {
             builder.addAction(
                 R.drawable.ic_play_arrow, // Đảm bảo có icon này
-                "Resume",
+                getString(R.string.resume),
                 piPauseOrResume
             )
         }
 
         builder.addAction(
             R.drawable.ic_stop, // Đảm bảo có icon này
-            "Stop",
+            getString(R.string.stop_),
             piStop
         )
 

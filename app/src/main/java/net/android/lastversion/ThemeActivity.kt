@@ -35,7 +35,7 @@ class ThemeActivity : BaseActivity() {
             val themeId = themeManager.addCustomTheme(it)
             // Don't save the selected theme yet, just add it
             loadThemes()
-            Toast.makeText(this, "Theme added!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.theme_added), Toast.LENGTH_SHORT).show()
         }
     }
 

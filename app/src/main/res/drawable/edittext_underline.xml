@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Background trong suốt cho toàn bộ EditText -->
+    <!-- Transparent background -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#00000000" />
+            <solid android:color="@android:color/transparent" />
         </shape>
     </item>
-    <!-- Chỉ vẽ line dưới cùng màu xanh -->
-    <item
-        android:top="-2dp"
-        android:left="-2dp"
-        android:right="-2dp"
-        android:bottom="0dp">
+
+    <!-- Bottom border only -->
+    <item android:gravity="bottom">
         <shape android:shape="rectangle">
-            <stroke
-                android:width="2dp"
-                android:color="#7DD3C0" />
+            <size android:height="1dp" />
+            <solid android:color="#84DCC6" />
         </shape>
     </item>
 </layer-list>

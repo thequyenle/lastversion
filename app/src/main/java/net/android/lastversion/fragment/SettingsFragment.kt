@@ -153,10 +153,10 @@ class SettingsFragment : Fragment() {
             type = "text/plain"
             putExtra(
                 Intent.EXTRA_TEXT,
-                "Check out this amazing Alarm Clock app: http://play.google.com/store/apps/details?id=${requireContext().packageName}"
+                getString(R.string.check_out_this_amazing_alarm_clock_app, requireContext().packageName)
             )
         }
-        startActivity(Intent.createChooser(shareIntent, "Share app via"))
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_app_via)))
     }
 
     private fun setupPrivacyPolicyClick(view: View) {

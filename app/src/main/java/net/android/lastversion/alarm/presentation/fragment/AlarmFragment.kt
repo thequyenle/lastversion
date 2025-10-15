@@ -110,7 +110,7 @@ class AlarmFragment : Fragment() {
         // Optional: Handle test buttons if they exist
         view.findViewById<View>(R.id.btnTestAlarm)?.setOnClickListener {
             // Test alarm functionality
-            Toast.makeText(requireContext(), "Test alarm feature", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.test_alarm_feature_toast), Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -110,13 +110,14 @@
                 </LinearLayout>
 
                 <!-- Start Timer Button -->
-                <Button
+                <TextView
                     android:id="@+id/btnStartTimer"
                     android:layout_width="189dp"
-                    android:layout_height="40dp"
+                    android:layout_height="45dp"
                     android:text="@string/start_timer"
+                    android:gravity="center"
                     android:layout_marginTop="32dp"
-                    android:backgroundTint="#76E0C1"
+                    android:background="@drawable/bg_btn_timer"
                     app:cornerRadius="24dp"
                     android:textColor="#FFFFFF" />
 
@@ -234,7 +235,7 @@
                                 android:id="@+id/tvRH"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="00"
+                                android:text="@string/_00"
                                 android:textStyle="bold"
                                 android:textSize="22sp" />
                         </LinearLayout>
@@ -258,7 +259,7 @@
                                 android:id="@+id/tvRM"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="00"
+                                android:text="@string/_00"
                                 android:textStyle="bold"
                                 android:textSize="22sp" />
                         </LinearLayout>
@@ -282,7 +283,7 @@
                                 android:id="@+id/tvRS"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="00"
+                                android:text="@string/_00"
                                 android:textStyle="bold"
                                 android:textSize="22sp" />
                         </LinearLayout>

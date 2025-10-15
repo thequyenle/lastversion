@@ -89,6 +89,7 @@
     <string name="exact_alarm_permission_message">Pour que les alarmes fonctionnent de manière fiable, veuillez activer l\'autorisation \'Alarmes et rappels\'.</string>
     <string name="permissions_required_message">Certaines autorisations sont nécessaires pour que les alarmes fonctionnent correctement</string>
 
+    <string name="alarm_saved">Alarmes sauvegardées</string>
     <!-- ==================== SETTINGS ==================== -->
     <string name="settings">Paramètres</string>
     <string name="settings_title">Paramètres</string>
@@ -114,7 +115,7 @@
 
     <!-- ==================== ALARM ==================== -->
     <string name="alarm">Alarme</string>
-    <string name="alarm_clock">Réveil</string>
+    <string name="alarm_clock">Alarm Clock</string>
     <string name="alarm_fragment">Alarme</string>
     <string name="alarmItem">Alarme</string>
     <string name="set_alarm">Régler l\'alarme</string>
@@ -277,6 +278,53 @@
     <string name="fun">😊</string>
     <string name="let_us_know_your_experience">Faites-nous part de votre expérience</string>
     <string name="do_you_like_the_app">Aimez-vous l\'application ?</string>
+
+    <string name="cancel_dialog">Annuler</string>
+    <string name="ok_dialog">OK</string>
+    <string name="alarm_note_dialog">Note d\'alarme</string>
+    <string name="enter_alarm_note_dialog">Entrez la note de l\'alarme</string>
+    <string name="am_pm">AM PM</string>
+    <string name="welcome_to_home_screen">Bienvenue à l\'écran d\'accueil</string>
+    <string name="system_sound">Son du système</string>
+    <string name="five_minutes_0_seconds">5 minutes 0 secondes</string>
+    <string name="hours_content_description">Heures</string>
+    <string name="minutes_content_description">Minutes</string>
+    <string name="theme_added">Thème ajouté!</string>
+    <string name="error_selecting_sound">Erreur de sélection du son</string>
+    <string name="please_set_a_time">Veuillez définir une heure!</string>
+
+    <string name="test_alarm_feature_toast">Test de la fonctionnalité de l\'alarme</string>
+    <string name="oh_no">Oh non!</string>
+    <string name="please_give_us_some_feedback">Veuillez nous donner un retour</string>
+    <string name="could_be_better">Cela pourrait être mieux!</string>
+    <string name="how_can_we_improve">Comment pouvons-nous améliorer cela?</string>
+    <string name="we_love_you_too">Nous t\'aimons aussi!</string>
+    <string name="thanks_for_your_feedback">Merci pour votre retour</string>
+
+    <string name="stop_sound">Arrêter le son</string>
+    <string name="open_app">Ouvrir l\'app</string>
+    <string name="time_up_notification">Le temps est écoulé!</string>
+    <string name="your_timer_has_finished_tap_to_stop_sound">Votre minuterie est terminée. Touchez pour arrêter le son.</string>
+    <string name="your_timer_has_finished">Votre minuterie est terminée</string>
+    <string name="timer_running">Minuteur en cours</string>
+    <string name="remaining">restant</string>
+    <string name="custom_sound">Son personnalisé</string>
+
+    <string name="timer_alarm">Alarme du minuteur</string>
+    <string name="timer_finished_notifications">Notifications de minuteur terminé</string>
+    <string name="timer_backup">Sauvegarde du minuteur</string>
+    <string name="timer_completion_notifications_when_app_is_killed">Notifications de fin de minuteur lorsque l\'application est fermée</string>
+
+    <string name="stopwatch_notification_description">Notification de chronomètre</string>
+    <string name="timer_service">Service du minuteur</string>
+    <string name="timer_notifications">Notifications de minuteur</string>
+    <string name="share_app_via">Partager l\'app via</string>
+    <string name="check_out_this_amazing_alarm_clock_app">Découvrez cette incroyable application de réveil : http://play.google.com/store/apps/details?id=%s</string>
+    <string name="error_saving_alarm_format">Erreur lors de l\'enregistrement de l\'alarme : %s</string>
+
+    <string name="error_restoring_alarm_format">Erreur lors de la restauration de l\'alarme : %s</string>
+    <string name="stopwatch_notification">Notification de chronomètre</string>
+    <string name="snooze_min">Posponer %1$s min</string>
 
 
 </resources>

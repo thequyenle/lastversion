@@ -455,7 +455,7 @@ class TimerService : Service() {
         )
 
         val pauseResumeAction = if (isPaused) ACTION_RESUME else ACTION_PAUSE
-        val pauseResumeText = if (isPaused) "Resume" else "Pause"
+        val pauseResumeText = if (isPaused) getString(R.string.resume) else getString(R.string.pause)
         val pauseResumeIntent = PendingIntent.getService(
             this, 1, Intent(this, TimerService::class.java).apply { action = pauseResumeAction },
             PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
@@ -468,8 +468,8 @@ class TimerService : Service() {
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_timer_enable)
-            .setContentTitle("Timer Running")
-            .setContentText("${formatTime(remainingSeconds)} remaining")
+            .setContentTitle(getString(R.string.timer_running))
+            .setContentText("${formatTime(remainingSeconds)} ${getString(R.string.remaining)}")
             .setContentIntent(contentIntent)
             .setColor(Color.parseColor("#76E0C1"))
             .setOngoing(true)
@@ -478,7 +478,7 @@ class TimerService : Service() {
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .addAction(R.drawable.ic_stopwatch_enable, pauseResumeText, pauseResumeIntent)
-            .addAction(R.drawable.ic_stopwatch_enable, "Stop", stopIntent)
+            .addAction(R.drawable.ic_stopwatch_enable, getString(R.string.stop_), stopIntent)
             .build()
     }
 
@@ -497,8 +497,8 @@ class TimerService : Service() {
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_timer_enable)
-            .setContentTitle("Time's Up!")
-            .setContentText("Your ${formatTime(totalSeconds)} timer has finished")
+            .setContentTitle(getString(R.string.time_up_notification))
+            .setContentText(getString(R.string.your_timer_has_finished))
             .setContentIntent(contentIntent)
             .setColor(Color.parseColor("#76E0C1"))
             .setOngoing(true)
@@ -506,7 +506,7 @@ class TimerService : Service() {
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
             .setAutoCancel(false)
-            .addAction(R.drawable.ic_stopwatch_enable, "Stop Sound", stopSoundIntent)
+            .addAction(R.drawable.ic_stopwatch_enable, getString(R.string.stop_sound), stopSoundIntent)
             .build()
     }
 

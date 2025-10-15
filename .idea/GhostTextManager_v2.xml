@@ -3,6 +3,30 @@
   <component name="GhostTextManager">
     <option name="inputs">
       <map>
+        <entry key="Can not extract resource from com.android.aaptcompiler.ParsedResource@&lt;file_name&gt;&#10;&#10;maybe you should unextract resoure this">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760516660108" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="I only want a bottom line at edittext of dialog_alarm_note. You have to check in so much diffence device. to sure it's really work">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760512618963" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="I want My Alarm Ringing for android 9 to 13. When even I exit app or kill app check for me">
           <value>
             <GhostTextMetaData>
@@ -70,6 +94,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1760448048893" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="finding every string in my project, and exstract string resource it. don't miss anything">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760514833347" />
                 </list>
               </option>
             </GhostTextMetaData>
