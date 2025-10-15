@@ -47,8 +47,8 @@ class LanguageActivity : BaseActivity() {
         }
 
         findViewById<ImageButton>(R.id.btnDone).setOnClickListener {
-            // Lưu ngôn ngữ đã chọn
-            LocaleHelper.changeLanguage(this, selectedLanguageCode)
+            // Lưu ngôn ngữ đã chọn (không recreate ngay)
+            LocaleHelper.setLanguage(this, selectedLanguageCode)
 
             // Kiểm tra xem có phải mở từ Settings không
             val fromSettings = intent.getBooleanExtra("from_settings", false)
@@ -57,13 +57,6 @@ class LanguageActivity : BaseActivity() {
                 // Nếu từ Settings, chỉ cần finish và quay lại
                 setResult(RESULT_OK)
                 finish()
-
-                // Restart activity để apply ngôn ngữ mới
-                val intent = Intent(this, HomeActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                intent.putExtra("open_settings", true) // ✅ THÊM DÒNG NÀY
-
-                startActivity(intent)
             } else {
                 // Nếu từ onboarding, tiếp tục flow bình thường
                 getSharedPreferences("onboarding_prefs", MODE_PRIVATE)

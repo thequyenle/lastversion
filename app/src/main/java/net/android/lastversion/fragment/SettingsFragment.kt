@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import net.android.lastversion.LanguageActivity
 import net.android.lastversion.R
 import net.android.lastversion.ThemeActivity
 import net.android.lastversion.dialog.RatingDialog
+import net.android.lastversion.utils.LocaleHelper
 import net.android.lastversion.utils.showSystemUI
 
 private const val ARG_PARAM1 = "param1"
@@ -28,6 +30,16 @@ class SettingsFragment : Fragment() {
     // Track rating status
     private var isRated = false
     private lateinit var layoutRateUs: ConstraintLayout
+
+    // Activity result launcher for language change
+    private val languageLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            // Language was changed, recreate the activity to apply changes
+            activity?.recreate()
+        }
+    }
 
     companion object {
         private const val PREFS_NAME = "AlarmSettings"
@@ -144,7 +156,7 @@ class SettingsFragment : Fragment() {
         layoutLanguage.setOnClickListener {
             val intent = Intent(requireContext(), LanguageActivity::class.java)
             intent.putExtra("from_settings", true)  // ✅ QUAN TRỌNG: Đánh dấu là từ Settings
-            startActivity(intent)
+            languageLauncher.launch(intent)
         }
     }
 

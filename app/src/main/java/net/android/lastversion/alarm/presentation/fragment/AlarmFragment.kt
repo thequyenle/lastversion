@@ -39,6 +39,7 @@ import net.android.lastversion.utils.showSystemUI
 import net.android.lastversion.utils.showWithHiddenNavigation
 import net.android.lastversion.utils.setOnClickListenerWithDebounce
 import android.content.Context
+import android.view.WindowManager
 import net.android.lastversion.utils.hideNavigationBar
 
 
@@ -316,8 +317,10 @@ class AlarmFragment : Fragment() {
         dialog.showWithHiddenNavigation()
         // Convert dp to pixels and set fixed dimensions
         val width = (240 * resources.displayMetrics.density).toInt()
-        val height = (152 * resources.displayMetrics.density).toInt()
-        dialog.window?.setLayout(width, height)
+        val layoutParams = dialog.window?.attributes
+        layoutParams?.width = width
+        layoutParams?.height = WindowManager.LayoutParams.WRAP_CONTENT
+        dialog.window?.attributes = layoutParams
     }
 
     private fun duplicateAlarm(alarm: Alarm) {

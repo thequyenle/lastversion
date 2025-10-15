@@ -303,6 +303,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="when I save language, it's flickered? fix this">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760527551874" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="when open app, and Alarmringing, when I click stop it's still playing the sound. maybe double sound, check double sound in three state">
           <value>
             <GhostTextMetaData>
