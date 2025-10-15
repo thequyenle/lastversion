@@ -3,6 +3,18 @@
   <component name="GhostTextManager">
     <option name="inputs">
       <map>
+        <entry key="At rating dialog, when I click on the star has been voted, it should not disappears, it should keep the star">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760522905773" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Can not extract resource from com.android.aaptcompiler.ParsedResource@&lt;file_name&gt;&#10;&#10;maybe you should unextract resoure this">
           <value>
             <GhostTextMetaData>
@@ -46,6 +58,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1760448996237" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="It's still not work, I think the way is prevent click which star has choosen">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760523224196" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -147,6 +171,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="it's still problem, not working">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760523753889" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="my rating bar when I click 0 star, it's still not appears toast. maybe this disable so can't create event">
           <value>
             <GhostTextMetaData>
@@ -154,6 +190,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1760456751246" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="no block others star, just block only star has chosen">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760523416417" />
                 </list>
               </option>
             </GhostTextMetaData>

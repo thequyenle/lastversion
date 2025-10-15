@@ -229,7 +229,9 @@ class TimerFragment : Fragment() {
     }
 
     private fun setupButtons() {
-        binding.btnStartTimer.setOnClickListenerWithDebounce { startTimer() }
+        binding.btnStartTimer.setOnClickListenerWithDebounce {
+            Log.d("TimerFragment", "Start timer button clicked")
+            startTimer() }
         binding.btnRestart.setOnClickListenerWithDebounce { goBackToPicker() }
         binding.btnStop.setOnClickListenerWithDebounce { togglePauseResume() }
     }
@@ -369,6 +371,8 @@ class TimerFragment : Fragment() {
     }
 
     private fun switchToRunningState() {
+        Log.d("TimerFragment", "Start timer button clicked 1")
+
         binding.layoutPickers.visibility = View.GONE
         binding.layoutRunning.visibility = View.VISIBLE
         binding.tvTitle.visibility = View.VISIBLE
@@ -378,6 +382,9 @@ class TimerFragment : Fragment() {
     }
 
     private fun switchToPickerState() {
+        Log.d("TimerFragment", "Start timer button clicked3")
+
+
         binding.layoutPickers.visibility = View.VISIBLE
         binding.layoutRunning.visibility = View.GONE
         binding.tvTitle.visibility = View.VISIBLE

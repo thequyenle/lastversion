@@ -58,8 +58,9 @@ class RatingDialog(
         super.onStart()
         hideNavigationBar() // ẩn lại khi dialog được show lại
 
-        // Reset về trạng thái ban đầu mỗi khi dialog hiển thị
-        resetToInitialState()
+        // Only reset UI elements that should be reset, not the rating
+        // The rating should remain as selected by the user
+        resetUIElementsOnly()
     }
 
     private fun resetToInitialState() {
@@ -75,6 +76,23 @@ class RatingDialog(
         // Disable button vote and apply blur effect
         btnVote.isEnabled = false
         btnVote.setBackgroundResource(R.drawable.btn_rate_background_disabled)
+    }
+
+    private fun resetUIElementsOnly() {
+        // Only reset UI elements that should be reset when dialog is shown again
+        // Do NOT reset the rating - keep user's selection
+
+        // Update UI based on current rating (if any)
+        if (selectedRating > 0) {
+            updateUIForRating(selectedRating)
+        } else {
+            // If no rating selected, show default state
+            imvAvtRate.setImageResource(R.drawable.ic_ask)
+            tv1.text = context.getString(R.string.do_you_like_the_app)
+            tv2.text = context.getString(R.string.let_us_know_your_experience)
+            btnVote.isEnabled = false
+            btnVote.setBackgroundResource(R.drawable.btn_rate_background_disabled)
+        }
     }
 
     private fun initViews() {
@@ -104,10 +122,32 @@ class RatingDialog(
     }
 
     private fun setupListeners() {
+        // Set up touch listener to intercept clicks on already selected stars
+        ratingBar.setOnTouchListener { _, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN && selectedRating > 0) {
+                // Calculate which star was clicked based on touch position
+                val starWidth = ratingBar.width / 5f // Assuming 5 stars
+                val clickedStar = ((event.x / starWidth) + 1).toInt().coerceIn(1, 5)
+
+                android.util.Log.d("RatingDialog", "Touch detected on star: $clickedStar, current rating: $selectedRating")
+
+                // Prevent clicking on the exact star that's already selected
+                if (clickedStar == selectedRating) {
+                    android.util.Log.d("RatingDialog", "Blocking click on already selected star: $selectedRating")
+                    return@setOnTouchListener true // Consume the touch event
+                }
+            }
+            false // Let the rating bar handle other touches
+        }
+
         // Rating bar change listener
         ratingBar.setOnRatingChangeListener { _, rating, fromUser ->
             if (fromUser) {
-                selectedRating = rating.toInt()
+                val newRating = rating.toInt()
+
+                android.util.Log.d("RatingDialog", "Rating change: current=$selectedRating, new=$newRating")
+
+                selectedRating = newRating
 
                 // Always ensure button state matches rating
                 if (selectedRating == 0) {
