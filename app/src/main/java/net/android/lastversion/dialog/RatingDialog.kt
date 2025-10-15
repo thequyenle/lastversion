@@ -72,8 +72,9 @@ class RatingDialog(
         tv1.text = "Do you like the app?"
         tv2.text = "Let us know your experience"
 
-        // Disable button vote
+        // Disable button vote and apply blur effect
         btnVote.isEnabled = false
+        btnVote.setBackgroundResource(R.drawable.btn_rate_background_disabled)
     }
 
     private fun initViews() {
@@ -93,8 +94,9 @@ class RatingDialog(
         tv1.text = "Do you like the app?"
         tv2.text = "Let us know your experience"
 
-        // Disable button vote ban đầu
+        // Disable button vote ban đầu và áp dụng blur
         btnVote.isEnabled = false
+        btnVote.setBackgroundResource(R.drawable.btn_rate_background_disabled)
 
         // Reset rating bar về 0 (tất cả sao empty)
         ratingBar.rating = 0f
@@ -177,8 +179,13 @@ class RatingDialog(
             }
         }
 
-        // Enable button vote (không đổi background, không làm mờ)
+        // Enable/disable button vote và áp dụng/xóa blur effect
         btnVote.isEnabled = rating > 0
+        if (rating > 0) {
+            btnVote.setBackgroundResource(R.drawable.btn_rate_background)
+        } else {
+            btnVote.setBackgroundResource(R.drawable.btn_rate_background_disabled)
+        }
 
         // Debug log to confirm button state
         android.util.Log.d("RatingDialog", "UI updated for rating $rating, Button enabled: ${btnVote.isEnabled}")
