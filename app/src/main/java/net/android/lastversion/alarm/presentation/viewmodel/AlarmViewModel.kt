@@ -109,7 +109,7 @@ class AlarmViewModel(
                 val alarm = _uiState.value.alarms.find { it.id == alarmId }
                 if (alarm != null) {
                     if (alarm.isEnabled) {
-                        // Cancel the scheduled alarm
+                        // Cancel the scheduled alarm first
                         alarmScheduler.cancelAlarm(alarmId)
                         Log.d(TAG, "🔴 Alarm $alarmId is being turned OFF")
 
@@ -122,13 +122,20 @@ class AlarmViewModel(
                         stopIntent.putExtra("alarm_id", alarmId)
                         context.sendBroadcast(stopIntent)
                         Log.d(TAG, "📡 Broadcast sent to stop alarm $alarmId")
+
+                        // Toggle alarm in database (this will disable it)
+                        toggleAlarmUseCase(alarmId)
+
+                        // NO RESCHEDULING - if user turns off alarm, it stays off
+                        // The alarm will only be rescheduled when user explicitly turns it back on
+                        Log.d(TAG, "⏹️ Alarm $alarmId disabled - no rescheduling until user turns it back on")
                     } else {
                         Log.d(TAG, "🟢 Alarm $alarmId is being turned ON")
                         alarmScheduler.scheduleAlarm(alarm.copy(isEnabled = true))
+                        toggleAlarmUseCase(alarmId)
                     }
                 }
 
-                toggleAlarmUseCase(alarmId)
                 Log.d(TAG, "✅ Alarm toggled successfully")
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = e.message)

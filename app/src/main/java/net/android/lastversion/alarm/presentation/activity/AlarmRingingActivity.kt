@@ -27,9 +27,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.android.lastversion.BaseActivity
 import net.android.lastversion.R
+import net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl
 import net.android.lastversion.alarm.infrastructure.notification.AlarmNotificationManager
 import net.android.lastversion.alarm.infrastructure.receiver.AlarmActionReceiver
 import net.android.lastversion.alarm.infrastructure.receiver.AlarmReceiver
+import net.android.lastversion.alarm.infrastructure.scheduler.AlarmSchedulerImpl
 import net.android.lastversion.utils.ThemeManager
 import net.android.lastversion.utils.ThemeType
 import net.android.lastversion.utils.setOnClickListenerWithDebounce
@@ -252,7 +254,7 @@ class AlarmRingingActivity : BaseActivity() {
         if (snoozeMinutes == 0) {
             btnSnooze.visibility = View.GONE
         } else {
-            btnSnooze.text = getString(R.string.snooze_min, snoozeMinutes)
+            btnSnooze.text = getString(R.string.snooze_min, snoozeMinutes.toString())
         }
     }
 
@@ -374,6 +376,31 @@ class AlarmRingingActivity : BaseActivity() {
 
         val notificationManager = AlarmNotificationManager(this)
         notificationManager.cancelNotification(alarmId)
+
+        // Handle alarm logic after dismiss
+        lifecycleScope.launch {
+            try {
+                val repository = net.android.lastversion.alarm.data.repository.AlarmRepositoryImpl(
+                    net.android.lastversion.alarm.data.local.database.AlarmDatabase.getDatabase(this@AlarmRingingActivity).alarmDao()
+                )
+                val alarm = repository.getAlarmById(alarmId)
+
+                if (alarm != null) {
+                    if (alarm.hasRecurringDays()) {
+                        // For recurring alarms, reschedule for next occurrence
+                        android.util.Log.d("AlarmRinging", "🔄 Recurring alarm $alarmId - rescheduling for next occurrence")
+                        val scheduler = net.android.lastversion.alarm.infrastructure.scheduler.AlarmSchedulerImpl(this@AlarmRingingActivity)
+                        scheduler.scheduleAlarm(alarm.copy(isEnabled = true))
+                    } else {
+                        // For one-time alarms, disable them completely
+                        android.util.Log.d("AlarmRinging", "⏹️ One-time alarm $alarmId - disabling")
+                        repository.updateAlarm(alarm.copy(isEnabled = false))
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("AlarmRinging", "Error handling alarm dismiss", e)
+            }
+        }
 
         finish()
     }

@@ -75,6 +75,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="It not still working, when I click stop, it's still switch on even not schedual loop">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760530498923" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="It's still not work, I think the way is prevent click which star has choosen">
           <value>
             <GhostTextMetaData>
@@ -255,6 +267,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="so right now, I want click on stop alarm when alarmringing trigger, It should switch off this alarm if not loop time">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760530010775" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="this is problem, when alarmRinging in 10:00 AM, I click snooze 5minute, so there is appears a notification that Snooze until 10:05 AM, but when arrive 10:05 Oclock, there is appears a notification that Snooze until 10:10 AM ( Tap to dismiss). I think It's not suitable, It should be Snooze time's up ( Tap to dismiss )">
           <value>
             <GhostTextMetaData>
@@ -382,6 +406,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1760524835175" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="why when I open app, alarmring trigger, then I click stop, but switch of that alarm still on?. Fix until done">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760531023788" />
                 </list>
               </option>
             </GhostTextMetaData>
